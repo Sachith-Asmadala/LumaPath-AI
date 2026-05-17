@@ -777,11 +777,11 @@ This project is planned to be released under the MIT License.
 
 ## Author
 
-Developed by **[Your Name]**
+Developed by **Sachith_Asmadala**
 
-GitHub: [https://github.com/your-username](https://github.com/your-username)
+GitHub: https://github.com/your-username](https://github.com/Sachith-02
 
-LinkedIn: [https://linkedin.com/in/your-profile](https://linkedin.com/in/your-profile)
+LinkedIn: https://linkedin.com/in/your-profile](https://linkedin.com/in/your-profile)](https://www.linkedin.com/in/sachith-asmadala-3b185a333
 
 ---
 
