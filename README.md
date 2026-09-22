@@ -1,158 +1,278 @@
 # LumaPath AI
 
-> **AI-powered student life, wellness, productivity, and career guidance SaaS platform.**
+> **Know what to do next. Stay on track. Build your future.**
 
-LumaPath AI is a production-level AI-powered student life guidance platform designed to help university students manage academic pressure, emotional wellness, productivity, career planning, and internship preparation through personalized AI mentoring, smart tracking, and scalable SaaS architecture.
+LumaPath AI is an adaptive Student Success and Career Readiness platform that combines academic planning, personal capacity, skills, and career goals to help students decide what to do next and continuously adapt their path.
 
-The project is designed to demonstrate strong understanding of **Software Engineering**, **Distributed Systems**, **Cloud-Native Architecture**, **Microservices**, **DevOps**, **AI Integration**, and **secure backend engineering**.
+**hackX 11.0 — ideaX Semi-Final Project**
 
----
+> **Development note:** this repository currently contains product and prototype documentation only. The application features and technical architecture described below are planned unless explicitly marked otherwise.
 
-## Table of Contents
+## Contents
 
-- [About the Project](#about-the-project)
-- [Project Vision](#project-vision)
-- [Core Features](#core-features)
+- [Overview](#overview)
+- [The Problem](#the-problem)
+- [The Solution](#the-solution)
+- [Core Product Promise](#core-product-promise)
+- [hackX 11.0 Prototype](#hackx-110-prototype)
+- [Prototype Demo Flow](#prototype-demo-flow)
+- [Full Product Vision](#full-product-vision)
+- [AI and Decision Intelligence](#ai-and-decision-intelligence)
 - [System Architecture](#system-architecture)
-- [Tech Stack](#tech-stack)
-- [Microservices Breakdown](#microservices-breakdown)
-- [Database Design](#database-design)
-- [AI Integration](#ai-integration)
-- [Security Features](#security-features)
-- [DevOps and Deployment](#devops-and-deployment)
-- [Folder Structure](#folder-structure)
+- [Target Tech Stack](#target-tech-stack)
+- [Security and Responsible Support](#security-and-responsible-support)
 - [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [API Overview](#api-overview)
+- [Project Structure](#project-structure)
+- [Current Development Status](#current-development-status)
 - [Roadmap](#roadmap)
-- [Software Engineering Principles](#software-engineering-principles)
-- [Distributed Systems Concepts](#distributed-systems-concepts)
-- [Portfolio Value](#portfolio-value)
-- [Project Status](#project-status)
+- [Team](#team)
+- [Future Vision](#future-vision)
 - [License](#license)
 
----
+## Overview
 
-## About the Project
+LumaPath AI is envisioned as a student life operating system: one place for academic productivity, wellbeing and capacity awareness, task management, adaptive planning, AI mentoring, career development, and evidence-based skill progress.
 
-Many university students face academic pressure, emotional burnout, career uncertainty, relationship stress, productivity issues, and internship preparation challenges. LumaPath AI brings these areas into one intelligent platform.
+The platform is intended to understand a student's:
 
-The platform acts as a digital student guidance assistant that helps students:
+- academic workload and deadlines;
+- available time and current capacity;
+- skills and evidence of progress;
+- career goal and learning progress.
 
-- Understand their stress and mood patterns
-- Organize studies and daily goals
-- Build consistent productivity habits
-- Receive AI-powered academic and career guidance
-- Prepare for internships and interviews
-- Track career growth and technical skills
-- Receive smart reminders and motivational support
+It can then help the student identify a realistic next action, understand why that action matters, and adjust the plan as circumstances change.
 
-LumaPath AI is not only a student support system. It is also designed as a technically strong SaaS product that can be showcased for internships, final-year projects, and software engineering portfolios.
+## The Problem
 
----
+University students often manage coursework, deadlines, wellbeing, skill development, and internship preparation across disconnected tools. A static to-do list may show what is due, but it does not account for changing capacity, competing deadlines, career goals, or the evidence needed to demonstrate progress.
 
-## Project Vision
+This fragmentation makes it difficult to answer a simple but important question: **What should I do next?**
 
-The goal of LumaPath AI is to become a complete student life operating system.
+## The Solution
 
-It combines:
+LumaPath brings academic and career context into one adaptive workflow. The intended product combines:
 
-- AI mentoring
-- Emotional wellness support
-- Productivity management
-- Career growth tracking
-- Personalized learning guidance
-- Smart analytics
-- Scalable cloud-native architecture
+- a personalised student profile;
+- academic tasks, goals, habits, and deadlines;
+- daily capacity, mood, and stress check-ins;
+- deadline risk and priority analysis;
+- weekly planning and automatic replanning;
+- career readiness, skill-gap analysis, and personalised pathways;
+- explainable AI guidance, reminders, and progress insights.
 
-The platform is especially useful for Software Engineering, IT, and Computer Science students who need support in both academic life and career preparation.
+## Core Product Promise
 
----
+```text
+Student Context
+      ↓
+Tasks + Deadlines + Capacity + Skills + Career Goal
+      ↓
+Risk & Priority Analysis
+      ↓
+Adaptive Planning
+      ↓
+Next Best Action
+      ↓
+AI Explanation
+      ↓
+Progress & Replanning
+```
 
-## Core Features
+The product is guided by one engineering principle:
 
-### 1. AI Mentor Assistant
+> **Rules decide. Optimisation schedules. AI explains.**
 
-- Conversational AI mentor
-- Academic guidance
-- Emotional support guidance
-- Career advice
-- Productivity coaching
-- Personalized recommendations
-- Context-aware memory
-- Safety-aware responses
+- Structured logic determines priority, constraints, and deadline risk.
+- Planning logic creates realistic schedules from the student's time and capacity.
+- AI provides explanations, guidance, and personalised communication.
+- Critical scheduling decisions should remain traceable rather than being controlled blindly by a language model.
 
-### 2. Student Dashboard
+## hackX 11.0 Prototype
 
-- Mood tracking
-- Stress level monitoring
-- Daily journaling
-- Goal tracking
-- Study planning
-- Habit tracking
-- Productivity summary
+The current milestone is a focused prototype for the **hackX 11.0 ideaX Semi-Finals**, part of the Inter-University Startup Challenge. It is intended to demonstrate the central decision loop within the competition's short pitch-and-demo format, not the complete long-term platform.
 
-### 3. Wellness and Journaling
+### Prototype Scope
 
-- Daily mood check-ins
-- Stress score tracking
-- Journal entries
-- Burnout signal detection
-- Reflection history
-- Emotional trend analysis
+- Student profile and career target
+- Task and deadline manager
+- Daily capacity check-in
+- Deadline risk detection
+- Next Best Action recommendation
+- AI weekly planning
+- Automatic plan rescheduling
+- Explainable recommendations
+- Career skill-gap analysis
+- Career readiness view
 
-### 4. Productivity Management
+Detailed scope boundaries and acceptance criteria are recorded in [docs/prototype-scope.md](docs/prototype-scope.md).
 
-- Study goals
-- Daily tasks
-- Habit streaks
-- Smart reminders
-- Study planning
-- Focus session tracking
+### Prototype Status
 
-### 5. Internship and Career Module
+| Feature | Status |
+| --- | --- |
+| Student Dashboard | Planned |
+| Student Profile | Planned |
+| Task Manager | Planned |
+| Capacity Check-In | Planned |
+| Deadline Risk | Planned |
+| Next Best Action | Planned |
+| Weekly Planner | Planned |
+| Automatic Replanning | Planned |
+| Skill-Gap Analysis | Planned |
+| Explainable Recommendations | Planned |
+| Career Readiness | Planned |
 
-- Skill roadmap generation
-- Resume tracking
-- Interview preparation
-- Coding challenge planner
-- GitHub progress tracking
-- LinkedIn growth tracking
-- Career readiness score
+These statuses describe what is present in this repository. They should be updated only when the corresponding implementation is committed and verifiable.
 
-### 6. AI Analytics Engine
+## Prototype Demo Flow
 
-- Behavioral analysis
-- Productivity insights
-- Burnout risk prediction
-- Learning recommendations
-- Personalized improvement plans
+The proposed demo follows **Maya**, a student working toward a career as a DevOps Engineer:
 
-### 7. Notification System
+1. Maya's student profile and career target are shown.
+2. Her academic tasks and deadlines are loaded.
+3. Maya records her current available time and capacity.
+4. LumaPath identifies a deadline at risk.
+5. It recommends her Next Best Action.
+6. A realistic weekly plan is generated.
+7. An exam or deadline changes.
+8. LumaPath replans the affected work.
+9. An explanation shows why the priorities changed.
+10. The career view identifies Maya's next missing DevOps skill.
 
-- Smart reminders
-- Deadline alerts
-- AI-generated encouragement
-- Event-driven notifications
-- Study and career nudges
+## Full Product Vision
 
----
+The prototype is only the first decision loop. The complete product vision retains the broader academic, wellbeing, productivity, mentoring, and career capabilities below.
+
+**Legend:** **Prototype Core** is in the competition scope; **Planned** belongs to the broader product; **Advanced / Future** is a later-stage capability. These labels describe scope, not completed implementation.
+
+### Academic Success
+
+- **Prototype Core:** student dashboard and personalised profile
+- **Prototype Core:** academic tasks, deadlines, deadline alerts, and risk detection
+- **Prototype Core:** weekly study plan, Next Best Action, and automatic replanning
+- **Planned:** academic details, daily goals, study goals, and learning guidance
+- **Planned:** focus-session and study-progress tracking
+- **Advanced / Future:** university LMS and calendar integrations
+
+### AI Planning
+
+- **Prototype Core:** priority recommendations based on deadlines and capacity
+- **Prototype Core:** explainable recommendations and plan changes
+- **Planned:** personalised improvement plans and learning recommendations
+- **Planned:** smart reminders and motivational support
+- **Advanced / Future:** recommendation optimisation informed by long-term outcomes
+
+### Student Wellness and Capacity
+
+- **Prototype Core:** daily capacity check-in
+- **Planned:** mood and stress tracking
+- **Planned:** daily journaling and reflection history
+- **Planned:** burnout signals and emotional trend analysis
+- **Planned:** safety-aware supportive guidance
+- **Advanced / Future:** counsellor or authorised support dashboards with appropriate consent and safeguards
+
+### Productivity
+
+- **Prototype Core:** task and plan management
+- **Planned:** goal tracking and productivity summaries
+- **Planned:** habits, habit streaks, and focus sessions
+- **Planned:** study planning and productivity coaching
+- **Planned:** event-driven notifications and nudges
+
+### Career Growth
+
+- **Prototype Core:** career target, readiness view, and skill-gap analysis
+- **Prototype Core:** personalised career pathway and next skill recommendation
+- **Planned:** internship preparation and skill roadmaps
+- **Planned:** resume/CV tracking and improvement support
+- **Planned:** interview preparation and coding-challenge planning
+- **Planned:** portfolio development and evidence-based skill progress
+- **Planned:** GitHub progress tracking and LinkedIn growth tracking
+
+### AI Mentor and Learning
+
+- **Planned:** conversational AI mentor
+- **Planned:** academic, productivity, and career guidance
+- **Planned:** context-aware memory and personalised recommendations
+- **Planned:** internship and resume guidance
+- **Planned:** emotional support guidance within clearly defined safety boundaries
+- **Advanced / Future:** retrieval-augmented guidance using approved student context
+
+### Career Intelligence
+
+- **Planned:** career-readiness scoring with transparent contributing factors
+- **Planned:** skill demand and pathway insights
+- **Planned:** learning-resource recommendations
+- **Advanced / Future:** labour-market and internship intelligence from trusted data sources
+
+### Analytics and Notifications
+
+- **Planned:** productivity and learning-progress insights
+- **Planned:** mood, stress, and behavioural trend views
+- **Planned:** deadline, study, career, and habit reminders
+- **Planned:** AI-generated encouragement with user controls
+- **Advanced / Future:** privacy-aware institutional insights using aggregated data
+
+### Integrations and Platform
+
+- **Planned:** GitHub, calendar, email, and push-notification integrations
+- **Advanced / Future:** university LMS integration
+- **Advanced / Future:** team study groups and mobile applications
+- **Advanced / Future:** admin and counsellor experiences
+- **Advanced / Future:** premium SaaS capabilities and multi-region deployment
+
+## AI and Decision Intelligence
+
+The initial decision design separates deterministic product logic from generative AI:
+
+1. **Context:** collect explicit profile, workload, deadline, capacity, skill, and career-goal inputs.
+2. **Risk:** use auditable rules to flag deadline pressure and constraint conflicts.
+3. **Priority:** rank feasible actions using declared factors rather than hidden model judgment.
+4. **Plan:** allocate work into available time and recalculate when inputs change.
+5. **Explain:** use AI to turn the structured result into clear, personalised guidance.
+6. **Learn:** record outcomes and evidence so future recommendations can improve safely.
+
+Longer-term AI concepts include context memory, embeddings, vector search, RAG, response caching, prompt-injection defenses, and a safety layer. These are target capabilities; no AI provider or algorithm has been implemented in this repository.
 
 ## System Architecture
 
-LumaPath AI follows a scalable microservices architecture with an API Gateway, independent backend services, event-driven communication, distributed caching, multiple databases, and AI integration.
+### Competition Prototype Architecture
+
+Because application development has not yet started, the prototype architecture remains intentionally technology-neutral:
+
+```mermaid
+flowchart TD
+    S[Student] --> UI[Prototype Web Interface]
+    UI --> API[Backend API]
+    API --> CORE[Core Modules]
+    CORE --> PROFILE[Profiles]
+    CORE --> TASKS[Tasks]
+    CORE --> PLAN[Planning]
+    CORE --> RISK[Risk and Priority]
+    CORE --> CAREER[Career]
+    PROFILE --> DB[(Database)]
+    TASKS --> DB
+    PLAN --> DB
+    RISK --> DB
+    CAREER --> DB
+    API --> AI[AI Provider for Explanations]
+```
+
+The first implementation should stay modular but small: one web application, one backend boundary, one database, and an optional AI provider for explanations.
+
+### Target Production Architecture
+
+The long-term architecture may evolve into independently deployable services once real scale and team needs justify that complexity.
 
 ```mermaid
 flowchart LR
-    U[Student User] --> FE[Next.js Frontend]
-
+    U[Student] --> FE[Web or Mobile Client]
     FE --> GW[API Gateway]
-
     GW --> AUTH[Auth Service]
-    GW --> USER[User Service]
+    GW --> USER[User and Profile Service]
     GW --> AI[AI Mentor Service]
-    GW --> JOURNAL[Journaling Service]
-    GW --> PROD[Productivity Service]
+    GW --> WELL[Wellness and Journal Service]
+    GW --> PROD[Productivity and Planning Service]
     GW --> CAREER[Career Service]
     GW --> ANALYTICS[Analytics Service]
     GW --> NOTIF[Notification Service]
@@ -161,630 +281,160 @@ flowchart LR
     USER --> PG
     PROD --> PG
     CAREER --> PG
-
     AI --> MONGO[(MongoDB)]
-    JOURNAL --> MONGO
-
+    WELL --> MONGO
     GW --> REDIS[(Redis)]
-    AUTH --> REDIS
-    AI --> REDIS
-
     AI --> VECTOR[(Vector Database)]
-    AI --> LLM[OpenAI / Claude API]
-
-    JOURNAL --> KAFKA[Kafka Event Bus]
-    PROD --> KAFKA
-    CAREER --> KAFKA
-    AI --> KAFKA
-
-    KAFKA --> ANALYTICS
-    KAFKA --> NOTIF
-
-    NOTIF --> EMAIL[Email / Push Provider]
-
-    subgraph Observability
-        PROM[Prometheus]
-        GRAF[Grafana]
-        ELK[ELK Stack]
-        TRACE[OpenTelemetry]
-    end
-
-    GW --> PROM
-    AI --> PROM
-    ANALYTICS --> PROM
-    PROM --> GRAF
+    AI --> LLM[AI Provider]
+    PROD --> BUS[Kafka or RabbitMQ]
+    CAREER --> BUS
+    WELL --> BUS
+    BUS --> ANALYTICS
+    BUS --> NOTIF
 ```
 
----
+This is a **target architecture**, not the current repository structure. Possible service responsibilities include authentication, profiles, AI mentoring, journaling, productivity and planning, career readiness, analytics, notifications, and external integrations.
 
-## Tech Stack
+### Target Data Strategy
 
-### Frontend
+- **PostgreSQL:** users, profiles, goals, habits, tasks, plans, skills, career pathways, notifications, roles, and permissions
+- **MongoDB:** flexible journal entries, mood logs, conversation history, and summaries where document storage is justified
+- **Redis:** sessions, rate limits, short-lived plan data, and response caching
+- **Vector database:** approved context embeddings and retrieval data for future RAG features
 
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- Zustand or Redux
-- Responsive SaaS UI
-- Dark mode support
+The prototype should begin with the smallest data store that meets its needs rather than introducing every planned database.
 
-### Backend
+## Target Tech Stack
 
-- Node.js
-- NestJS
-- REST APIs
-- Microservices architecture
-- DTO validation
-- Dependency injection
-- Swagger / OpenAPI documentation
+No framework or dependency has been installed yet. The original technical direction is retained here as a candidate stack to validate before implementation.
 
-### Databases
+| Area | Target / Candidate Technologies | Current State |
+| --- | --- | --- |
+| Frontend | Next.js, TypeScript, Tailwind CSS, Framer Motion, Zustand or Redux | Not started |
+| Backend | Node.js, NestJS, REST, DTO validation, OpenAPI | Not started |
+| Data | PostgreSQL; later MongoDB, Redis, and a vector database where justified | Not started |
+| Messaging | Kafka or RabbitMQ for later event-driven workflows | Not started |
+| AI | Provider API, RAG, embeddings, context memory, safety layer | Not started |
+| Delivery | Docker, Docker Compose, GitHub Actions, Nginx | Not started |
+| Scale | Kubernetes and cloud deployment on an evaluated provider | Future target |
+| Observability | Prometheus, Grafana, ELK, OpenTelemetry | Future target |
 
-- PostgreSQL for structured transactional data
-- MongoDB for journaling and chat history
-- Redis for caching, sessions, and rate limiting
-- Vector database for AI memory and semantic search
+Potential production metrics include API latency, error rates, planning and AI response time, AI token usage, message-consumer lag, query performance, cache hit rate, and notification delivery rate.
 
-### Message Broker
+### Engineering Direction
 
-- Apache Kafka or RabbitMQ
-- Event-driven notifications
-- Analytics pipelines
-- Async processing
+As the system grows, it may apply SOLID, DRY, KISS, clean or hexagonal architecture, domain-driven design, repository and service-layer patterns, dependency injection, CQRS where useful, and event-driven integration. Distributed-system concerns such as retries, circuit breakers, graceful degradation, horizontal scaling, load balancing, eventual consistency, observability, and fault tolerance belong to later phases—not the initial prototype.
 
-### AI
+## Security and Responsible Support
 
-- OpenAI API
-- Claude API fallback
-- RAG architecture
-- Embeddings
-- Vector search
-- Context memory
-- AI safety layer
+Planned security controls include:
 
-### DevOps
+- secure authentication, password hashing, session or token rotation, and role-based access;
+- input validation, request sanitisation, rate limiting, and audit logging;
+- HTTPS/TLS, protected environment variables, secrets management, and encryption practices;
+- explicit consent and strong access controls for journal, mood, stress, and career data;
+- prompt-injection defenses and controlled context retrieval for AI features;
+- transparent recommendation factors and user control over reminders and personalisation.
 
-- Docker
-- Docker Compose
-- Kubernetes
-- GitHub Actions CI/CD
-- Nginx
-- AWS or GCP deployment
-- Prometheus
-- Grafana
-- ELK Stack
-
----
-
-## Microservices Breakdown
-
-| Service | Responsibility |
-|---|---|
-| API Gateway | Central routing, authentication validation, rate limiting, request aggregation |
-| Auth Service | Register, login, JWT, OAuth2, RBAC, refresh tokens |
-| User Service | Student profiles, preferences, academic details |
-| AI Mentor Service | AI chat, RAG, memory, recommendations, safety checks |
-| Journaling Service | Mood tracking, stress logs, daily journal entries |
-| Productivity Service | Goals, habits, tasks, study planning |
-| Career Service | Skill roadmap, resume tracker, interview planner, GitHub tracking |
-| Analytics Service | Burnout prediction, productivity insights, behavioral analysis |
-| Notification Service | Reminders, deadline alerts, AI encouragement messages |
-| Integration Service | GitHub, LinkedIn, calendar, external services |
-
----
-
-## Database Design
-
-### PostgreSQL
-
-Used for structured and relational data:
-
-- Users
-- Student profiles
-- Goals
-- Habits
-- Study plans
-- Career roadmaps
-- Skills
-- Notifications
-- Roles and permissions
-
-### MongoDB
-
-Used for flexible document-based data:
-
-- Journal entries
-- AI chat history
-- Conversation summaries
-- Mood logs
-- Emotional reflection history
-
-### Redis
-
-Used for high-speed caching:
-
-- Session caching
-- JWT refresh token cache
-- Rate limiting
-- AI response caching
-- Dashboard caching
-
-### Vector Database
-
-Used for AI memory and semantic search:
-
-- User context embeddings
-- Journal summary embeddings
-- Career plan embeddings
-- Study preference embeddings
-- RAG retrieval data
-
----
-
-## AI Integration
-
-LumaPath AI uses AI to provide personalized student guidance.
-
-### AI Flow
-
-```mermaid
-sequenceDiagram
-    actor Student
-    participant UI as Frontend
-    participant API as API Gateway
-    participant AI as AI Mentor Service
-    participant DB as Memory Store
-    participant VDB as Vector Database
-    participant LLM as AI Provider
-
-    Student->>UI: Sends message
-    UI->>API: POST /ai/chat
-    API->>AI: Forward authenticated request
-    AI->>DB: Retrieve recent memory
-    AI->>VDB: Retrieve relevant context
-    AI->>LLM: Generate response
-    LLM-->>AI: AI reply
-    AI->>DB: Save conversation summary
-    AI-->>API: Return response
-    API-->>UI: Display AI guidance
-```
-
-### AI Capabilities
-
-- Personalized study advice
-- Productivity coaching
-- Emotional support guidance
-- Internship preparation guidance
-- Resume improvement suggestions
-- Burnout risk detection
-- Context-aware recommendations
-- Smart reminders
-
-> Important: LumaPath AI provides supportive guidance only. It does not replace medical, psychological, or professional counseling services.
-
----
-
-## Security Features
-
-- JWT authentication
-- OAuth2 login
-- Role-Based Access Control
-- Refresh token rotation
-- Password hashing
-- API rate limiting
-- Input validation
-- Request sanitization
-- Secure environment variables
-- Database encryption practices
-- HTTPS/TLS support
-- AI prompt injection protection
-- Sensitive journal data protection
-- Audit logging
-
----
-
-## DevOps and Deployment
-
-LumaPath AI is designed for cloud-native deployment.
-
-### DevOps Features
-
-- Dockerized frontend and backend services
-- Docker Compose for local development
-- Kubernetes deployment for production
-- GitHub Actions CI/CD pipeline
-- Nginx reverse proxy or ingress controller
-- Environment-based configuration
-- Secrets management
-- Monitoring and alerting
-- Centralized logging
-
-### Deployment Pipeline
-
-```mermaid
-flowchart LR
-    DEV[Developer Push] --> GIT[GitHub]
-    GIT --> CI[GitHub Actions]
-    CI --> TEST[Run Tests]
-    TEST --> BUILD[Build Docker Images]
-    BUILD --> REG[Push to Registry]
-    REG --> STAGE[Deploy to Staging]
-    STAGE --> QA[Smoke Testing]
-    QA --> PROD[Deploy to Production]
-    PROD --> MON[Monitor with Grafana]
-```
-
----
-
-## Folder Structure
-
-```text
-lumapath-ai/
-├── apps/
-│   ├── web/
-│   ├── api-gateway/
-│   ├── auth-service/
-│   ├── user-service/
-│   ├── ai-mentor-service/
-│   ├── journaling-service/
-│   ├── productivity-service/
-│   ├── career-service/
-│   ├── analytics-service/
-│   └── notification-service/
-│
-├── packages/
-│   ├── shared-types/
-│   ├── common-utils/
-│   ├── config/
-│   └── logger/
-│
-├── infrastructure/
-│   ├── docker/
-│   ├── kubernetes/
-│   ├── terraform/
-│   └── nginx/
-│
-├── docs/
-│   ├── architecture.md
-│   ├── api-spec.md
-│   ├── database-design.md
-│   ├── deployment-guide.md
-│   ├── security.md
-│   ├── jira-workflow.md
-│   └── diagrams/
-│
-├── .github/
-│   └── workflows/
-│       ├── ci.yml
-│       └── cd.yml
-│
-├── docker-compose.yml
-├── README.md
-└── LICENSE
-```
-
----
+LumaPath is intended to provide supportive guidance only. It must not present itself as a replacement for medical, psychological, academic, legal, or professional counselling services. Crisis handling and escalation require dedicated safety design before wellness AI is released.
 
 ## Getting Started
 
-### Prerequisites
-
-Install the following tools:
-
-- Node.js
-- npm or pnpm
-- Docker
-- Docker Compose
-- Git
-- PostgreSQL
-- MongoDB
-- Redis
-
-### Clone the Repository
+Clone the documentation repository:
 
 ```bash
-git clone https://github.com/your-username/lumapath-ai.git
-cd lumapath-ai
+git clone https://github.com/IT24103430/LumaPath-AI.git
+cd LumaPath-AI
 ```
 
-### Install Dependencies
+There are currently no application dependencies or run commands. Start with this README and the [prototype scope](docs/prototype-scope.md). Installation, environment-variable, database, and Docker instructions will be added only after runnable application code exists.
 
-```bash
-npm install
+## Project Structure
+
+The current repository is deliberately small:
+
+```text
+LumaPath-AI/
+├── docs/
+│   └── prototype-scope.md
+└── README.md
 ```
 
-or
+The earlier multi-application, infrastructure, Kubernetes, Terraform, and CI/CD layouts remain possible future directions, but those directories do not exist yet.
 
-```bash
-pnpm install
-```
+## Current Development Status
 
-### Start Local Services
-
-```bash
-docker-compose up -d
-```
-
-### Run Frontend
-
-```bash
-cd apps/web
-npm run dev
-```
-
-### Run Backend Service
-
-```bash
-cd apps/api-gateway
-npm run start:dev
-```
-
----
-
-## Environment Variables
-
-Create a `.env` file for each service.
-
-Example:
-
-```env
-NODE_ENV=development
-PORT=3000
-
-DATABASE_URL=postgresql://user:password@localhost:5432/lumapath
-MONGODB_URI=mongodb://localhost:27017/lumapath
-REDIS_URL=redis://localhost:6379
-
-JWT_SECRET=your_jwt_secret
-JWT_REFRESH_SECRET=your_refresh_secret
-
-OPENAI_API_KEY=your_openai_api_key
-CLAUDE_API_KEY=your_claude_api_key
-
-KAFKA_BROKER=localhost:9092
-```
-
-> Never commit real API keys, database passwords, or secrets to GitHub.
-
----
-
-## API Overview
-
-### Auth Service
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/auth/register` | Register new student |
-| POST | `/auth/login` | Login student |
-| POST | `/auth/refresh` | Refresh JWT token |
-| POST | `/auth/logout` | Logout user |
-| GET | `/auth/me` | Get logged-in user |
-
-### AI Mentor Service
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/ai/chat` | Send message to AI mentor |
-| GET | `/ai/history/:id` | Get conversation history |
-| POST | `/ai/recommendations` | Generate personalized recommendations |
-| POST | `/ai/safety-check` | Check emotional risk level |
-
-### Journaling Service
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/journals` | Create journal entry |
-| GET | `/journals` | Get user journal entries |
-| GET | `/journals/:id` | Get single journal entry |
-| PATCH | `/journals/:id` | Update journal entry |
-| DELETE | `/journals/:id` | Delete journal entry |
-
-### Productivity Service
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/goals` | Create goal |
-| GET | `/goals` | Get goals |
-| POST | `/habits` | Create habit |
-| PATCH | `/habits/:id/check-in` | Complete habit check-in |
-| POST | `/study-plans` | Create study plan |
-
-### Career Service
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/career/roadmap` | Generate career roadmap |
-| GET | `/career/skills` | Get skill progress |
-| PATCH | `/career/skills/:id` | Update skill progress |
-| POST | `/career/interview-plan` | Generate interview plan |
-| POST | `/career/resume-review` | Review resume using AI |
-
----
+| Area | Status | Evidence in Repository |
+| --- | --- | --- |
+| Product vision | Documented | This README |
+| hackX prototype scope | Documented | `docs/prototype-scope.md` |
+| Prototype user flow | Documented | This README and scope document |
+| Frontend | Planned | No application code yet |
+| Backend and APIs | Planned | No application code yet |
+| Database | Planned | No schema or configuration yet |
+| AI integration | Planned | No provider integration yet |
+| Authentication | Planned beyond initial prototype | No implementation yet |
+| Testing and CI/CD | Planned | No test or workflow configuration yet |
+| Deployment and observability | Advanced / Future | No infrastructure configuration yet |
 
 ## Roadmap
 
-### Phase 1: Foundation
+### Milestone 1 — Competition Foundation
 
-- [ ] Create monorepo
-- [ ] Build landing page
-- [ ] Build dashboard UI
-- [ ] Create API Gateway
-- [ ] Set up authentication service
-- [ ] Connect PostgreSQL
-- [ ] Add Docker Compose
+- [x] Clarify the full product vision and focused prototype scope
+- [x] Document the demo story and honest implementation status
+- [ ] Confirm the prototype technology stack
+- [ ] Create the minimal application foundation
+- [ ] Add a representative demo data set for Maya
 
-### Phase 2: Core Student Features
+### Milestone 2 — Core Decision Loop
 
-- [ ] Student profile management
-- [ ] Mood tracking
-- [ ] Stress monitoring
-- [ ] Daily journaling
-- [ ] Goal tracking
-- [ ] Habit tracking
+- [ ] Build the student profile and dashboard
+- [ ] Build task and deadline management
+- [ ] Add capacity check-in and deadline-risk rules
+- [ ] Implement Next Best Action ranking
+- [ ] Generate and replan a weekly schedule
+- [ ] Explain recommendation factors clearly
 
-### Phase 3: AI Mentor
+### Milestone 3 — Career Readiness
 
-- [ ] AI chat interface
-- [ ] OpenAI API integration
-- [ ] Chat history storage
-- [ ] AI response caching
-- [ ] Safety response layer
-- [ ] Context memory
+- [ ] Model career targets, skills, and evidence
+- [ ] Add skill-gap analysis and a personalised pathway
+- [ ] Show career-readiness progress without unsupported claims
 
-### Phase 4: Career and Productivity
+### Milestone 4 — Broader Student Platform
 
-- [ ] Study planner
-- [ ] Internship roadmap generator
-- [ ] Resume tracker
-- [ ] Interview preparation planner
-- [ ] GitHub integration
+- [ ] Add goals, habits, focus sessions, mood, stress, and journaling
+- [ ] Add AI mentor, resume/CV, interview, internship, and learning support
+- [ ] Add GitHub, calendar, notification, and other approved integrations
+- [ ] Validate privacy, accessibility, safety, and recommendation quality
 
-### Phase 5: Distributed Systems
+### Milestone 5 — Scale and Operations
 
-- [ ] Kafka event streaming
-- [ ] Notification service
-- [ ] Analytics service
-- [ ] Redis rate limiting
-- [ ] Circuit breaker and retry handling
+- [ ] Introduce service separation only where operationally justified
+- [ ] Add caching, messaging, and specialised data stores as needed
+- [ ] Add containerisation, CI/CD, monitoring, logging, and tracing
+- [ ] Evaluate Kubernetes and multi-region deployment when scale requires them
 
-### Phase 6: DevOps and Production
+## Team
 
-- [ ] Dockerfiles for services
-- [ ] Kubernetes manifests
-- [ ] GitHub Actions CI/CD
-- [ ] Monitoring with Prometheus and Grafana
-- [ ] Logging with ELK Stack
-- [ ] Production deployment
+| Team Member | Role |
+| --- | --- |
+| [Sachith Asmadala](https://github.com/Sachith-02) | Team Member |
+| Dasun Weliange | Team Member |
+| Sudesh Sumanawansha | Team Member |
+| Buddi Jayasundara | Team Member |
 
----
+Roles will be updated as responsibilities are confirmed.
 
-## Software Engineering Principles
+Repository: [github.com/IT24103430/LumaPath-AI](https://github.com/IT24103430/LumaPath-AI)
 
-This project applies:
+## Future Vision
 
-- SOLID principles
-- DRY principle
-- KISS principle
-- Clean Architecture
-- Hexagonal Architecture
-- Domain-Driven Design
-- Repository Pattern
-- Service Layer Pattern
-- Dependency Injection
-- CQRS concepts
-- Event-Driven Architecture
-- API Gateway Pattern
+LumaPath AI aims to grow from a focused planning prototype into a trusted student-success platform connecting academic action, personal wellbeing, and career development. Future opportunities include mobile apps, team study groups, authorised counsellor and institutional experiences, richer career intelligence, a responsible recommendation engine, cloud deployment, and sustainable SaaS offerings.
 
----
-
-## Distributed Systems Concepts
-
-LumaPath AI demonstrates:
-
-- Microservices architecture
-- API Gateway
-- Event-driven communication
-- Message broker using Kafka or RabbitMQ
-- Distributed caching using Redis
-- Horizontal scaling
-- Stateless services
-- Load balancing
-- Database replication concepts
-- Eventual consistency
-- Retry mechanisms
-- Circuit breaker pattern
-- Graceful degradation
-- Observability
-- Fault tolerance
-
----
-
-## Observability
-
-The platform is designed with production observability in mind.
-
-Planned monitoring tools:
-
-- Prometheus for metrics
-- Grafana for dashboards
-- ELK Stack for centralized logs
-- OpenTelemetry for distributed tracing
-
-Metrics to monitor:
-
-- API latency
-- Error rate
-- AI response time
-- AI token usage
-- Kafka consumer lag
-- Database query performance
-- Redis cache hit rate
-- Notification delivery rate
-
----
-
-## Portfolio Value
-
-LumaPath AI is designed as a portfolio-worthy project for:
-
-- Software Engineering students
-- IT students
-- Backend developer internships
-- Full-stack developer internships
-- DevOps internships
-- Cloud engineering roles
-- AI application engineering roles
-
-This project demonstrates the ability to design and build a real-world SaaS product with modern software engineering practices.
-
----
-
-## Project Status
-
-Current status:
-
-- Project concept completed
-- Architecture planned
-- Frontend prototype in progress
-- Jira workflow prepared
-- Backend implementation planned
-- DevOps pipeline planned
-
-> This repository is actively being developed as a production-style academic and portfolio project.
-
----
-
-## Future Improvements
-
-- Mobile app using React Native or Expo
-- Calendar integration
-- University LMS integration
-- Advanced AI analytics
-- Team study groups
-- Counselor/admin dashboard
-- Premium SaaS subscription model
-- Multi-region deployment
-- Advanced recommendation engine
-
----
+The architecture should evolve with validated user needs. Microservices, multiple databases, event streaming, and Kubernetes are options for future scale—not measures of prototype success.
 
 ## License
 
-This project is planned to be released under the MIT License.
-
----
-
-## Author
-
-Developed by **Sachith_Asmadala**
-
-GitHub: https://github.com/your-username](https://github.com/Sachith-02
-
-LinkedIn: https://linkedin.com/in/your-profile](https://linkedin.com/in/your-profile)](https://www.linkedin.com/in/sachith-asmadala-3b185a333
-
----
-
-## Final Note
-
-LumaPath AI is more than a normal student dashboard. It is designed as a scalable, AI-powered, cloud-native SaaS platform that combines student wellness, academic productivity, career preparation, and intelligent mentoring into one complete system.
+No license file has been added yet. Until a license is selected and committed, normal copyright restrictions apply. The team can evaluate the MIT License or another suitable license in a future update.
