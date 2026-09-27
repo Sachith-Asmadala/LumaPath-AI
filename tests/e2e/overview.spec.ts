@@ -1,5 +1,21 @@
 import { expect, test } from "@playwright/test";
 
+test("Life Load Check-In adjusts planning time without scoring the optional note", async ({ page }) => {
+  await page.goto("/overview");
+  await expect(page.getByText("Life Load Check-In")).toBeVisible();
+  await page.getByRole("button", { name: /Low Capacity/ }).click();
+  await page.locator("summary").filter({ hasText: "Life load factors" }).click();
+  await page.getByRole("checkbox", { name: "Family responsibilities" }).check();
+  await page.getByRole("combobox", { name: "Family responsibilities impact" }).click();
+  await page.getByRole("option", { name: "High" }).click();
+  await page.getByRole("checkbox", { name: "Relationship pressure" }).check();
+  await page.getByRole("textbox", { name: "Anything else affecting your day?" }).fill("I need to help my family tonight.");
+  await expect(page.getByText("45m available · low energy · low focus · heavy workload")).toBeVisible();
+  await page.getByRole("button", { name: "Update the plan with this capacity" }).click();
+  await expect(page.getByRole("heading", { name: "Start the database research outline" })).toBeVisible({ timeout: 8000 });
+  await expect(page.getByText("You reported limited capacity today, so LumaPath protected your urgent work and moved lower-risk activities.").first()).toBeVisible();
+});
+
 test("Overview connects capacity, recovery, pathway and intelligence", async ({ page }) => {
   await page.goto("/overview");
   await expect(page.getByText("DevOps Readiness", { exact: true })).toBeVisible();

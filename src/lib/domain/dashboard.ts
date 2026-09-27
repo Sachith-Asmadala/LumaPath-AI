@@ -3,6 +3,8 @@ import { demoPlanBlocks, demoTasks } from "../demo-data/seed";
 import { scenarioDate } from "../demo-data/scenario";
 import { buildLowCapacityPlan, endAtMinutes } from "./planner";
 import { buildNextBestAction, riskLevel } from "./priority";
+import { hasLifeLoadFactors, planningCapacityMinutes } from "./life-load";
+import { replanLifeLoadBlocks } from "./planner";
 
 export const capacityStages = ["Capacity updated", "Checking deadlines", "Recalculating priorities", "Optimizing schedule", "Updating recommendation"];
 export const capacityPresets: { label: string; icon: string; capacity: StudentCapacity }[] = [
@@ -10,8 +12,8 @@ export const capacityPresets: { label: string; icon: string; capacity: StudentCa
   { label: "Normal Day", icon: "🙂", capacity: { availableMinutes: 270, energy: 3, focus: "high", workload: "moderate", unexpectedCommitmentMinutes: 0 } },
   { label: "High Focus", icon: "⚡", capacity: { availableMinutes: 360, energy: 5, focus: "high", workload: "light", unexpectedCommitmentMinutes: 0 } },
 ];
-export const availableCapacity = (capacity: StudentCapacity) => Math.max(0, capacity.availableMinutes - capacity.unexpectedCommitmentMinutes);
-export const isLowCapacity = (capacity: StudentCapacity) => availableCapacity(capacity) <= 120 || capacity.energy <= 2;
+export const availableCapacity = planningCapacityMinutes;
+export const isLowCapacity = (capacity: StudentCapacity) => availableCapacity(capacity) <= 120 || capacity.energy <= 2 || capacity.focus === "low";
 
 const percentage = (completed: number, total: number) => total ? Math.round(100 * completed / total) : 0;
 // Milestones with more prerequisites represent more pathway work in this demo.
@@ -92,7 +94,12 @@ export function adaptCapacityStage(state: DemoState, capacity: StudentCapacity, 
       return block;
     }).filter((block) => low || !["protected-focus-a", "protected-focus-b"].includes(block.id));
     const added = low ? replacements.filter((block) => block.isFocusBlock && !planBlocks.some((item) => item.id === block.id)) : [];
-    return { ...state, planBlocks: [...planBlocks, ...added] };
+    const updatedBlocks = [...planBlocks, ...added].map((block) => {
+      if (hasLifeLoadFactors(capacity) || !block.lifeLoadOriginalMinutes) return block;
+      const { lifeLoadOriginalMinutes, ...rest } = block;
+      return { ...rest, endAt: endAtMinutes(block.startAt, lifeLoadOriginalMinutes) };
+    });
+    return { ...state, planBlocks: low && hasLifeLoadFactors(capacity) ? replanLifeLoadBlocks(updatedBlocks, state.planBlocks, state.tasks, capacity) : updatedBlocks };
   }
   if (stage === 4) {
     const open = state.tasks.filter((task) => task.status !== "completed");

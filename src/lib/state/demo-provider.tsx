@@ -10,13 +10,14 @@ import { generateSkillGap } from "../domain/skill-gap";
 import { buildDevOpsRoadmap } from "../domain/personalized-roadmap";
 import { recommendLearningResources } from "../domain/resource-recommender";
 import { freePathForSkill } from "../demo-data/free-learning-paths";
+import { hasLifeLoadFactors } from "../domain/life-load";
 import { scheduleLearningPath } from "../domain/learning-path-scheduler";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
 import { raiseReadiness } from "../domain/readiness";
 import type { BaselineAssessmentResult, CareerSkill, DemoSimulation, DemoState, IntelligenceItem, NewTaskInput, OnboardingState, PlanBlock, StudentCapacity, Task, TaskCategory } from "../demo-data/types";
 
-import { adaptCapacityStage, capacityStages, recoverDatabase } from "../domain/dashboard";
+import { adaptCapacityStage, capacityStages, isLowCapacity, recoverDatabase } from "../domain/dashboard";
 
 type SimulationPatch = Partial<DemoSimulation>;
 type DemoAction =
@@ -151,7 +152,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
     case "update-block":
       return {
         ...state,
-        planBlocks: state.planBlocks.map((block) => block.id === action.block.id ? { ...action.block, isConflict: false } : block),
+        planBlocks: state.planBlocks.map((block) => block.id === action.block.id ? { ...action.block, lifeLoadOriginalMinutes: undefined, isConflict: false } : block),
       };
     case "update-task": {
       const task = state.tasks.find((item) => item.id === action.task.id);
@@ -459,7 +460,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const updateCapacity = useCallback(async (capacity: StudentCapacity) => {
     await showSteps("capacity", capacityStages, () => {
-      dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Plan adapted", result: ["Capacity updated", "Risk recalculated", "Schedule optimized", "Next action updated"], announcement: "Plan adapted. Your risk, schedule and next action now reflect your capacity." } });
+      const lifeLoad = hasLifeLoadFactors(capacity);
+      dispatch({ type: "simulation", patch: { kind: null, step: null, message: lifeLoad ? "Life load plan adapted" : "Plan adapted", result: ["Capacity updated", "Risk recalculated", "Schedule optimized", "Next action updated"], announcement: lifeLoad ? isLowCapacity(capacity) ? "You reported limited capacity today, so LumaPath protected your urgent work and moved lower-risk activities." : "Your reported commitments reduced today's planning time. LumaPath updated the plan around your priorities." : "Plan adapted. Your risk, schedule and next action now reflect your capacity." } });
     }, (stage) => dispatch({ type: "capacity-stage", capacity, stage }));
   }, [showSteps]);
 

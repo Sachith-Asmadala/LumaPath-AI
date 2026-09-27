@@ -9,6 +9,8 @@ export type CareerGoal = "DevOps Engineer" | "Backend Engineer" | "AI Engineer" 
 export type LearningBudget = "free only" | "under $20/month" | "flexible";
 export type LearningStyle = "video" | "hands-on" | "reading" | "projects";
 export type StudentGoal = "internship" | "entry-level job" | "certification";
+export type LifeLoadFactor = "Academic pressure" | "Family responsibilities" | "Relationship pressure" | "Financial pressure" | "Work / internship" | "Health / low energy" | "Social commitments" | "Other";
+export type LifeLoadImpact = "Low" | "Medium" | "High";
 
 export interface OnboardingState {
   completed: boolean;
@@ -62,6 +64,8 @@ export interface StudentCapacity {
   focus: "low" | "medium" | "high";
   workload: "light" | "moderate" | "heavy";
   unexpectedCommitmentMinutes: number;
+  lifeLoadFactors?: Partial<Record<LifeLoadFactor, LifeLoadImpact>>;
+  lifeLoadNote?: string;
 }
 
 export interface Task {
@@ -88,6 +92,7 @@ export interface PlanBlock {
   startAt: string;
   endAt: string;
   previousStartAt?: string;
+  lifeLoadOriginalMinutes?: number;
   isFixed?: boolean;
   isFocusBlock?: boolean;
   isConflict?: boolean;

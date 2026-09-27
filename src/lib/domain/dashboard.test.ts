@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createDemoState } from "../demo-data/seed";
 import { scenarioDate } from "../demo-data/scenario";
-import { adaptCapacityStage, capacityPresets, dashboardMetrics, recoverDatabase, selectCurrentCareerSkill, selectDeadlineRiskTasks, selectNextBestAction, selectTodayTimeline } from "./dashboard";
+import { adaptCapacityStage, availableCapacity, capacityPresets, dashboardMetrics, recoverDatabase, selectCurrentCareerSkill, selectDeadlineRiskTasks, selectNextBestAction, selectTodayTimeline } from "./dashboard";
 import { demoReducer } from "../state/demo-provider";
 
 const low = capacityPresets[0].capacity;
@@ -9,6 +9,37 @@ function adapt(state = createDemoState()) {
   return [0, 1, 2, 3, 4].reduce((current, stage) => adaptCapacityStage(current, low, stage), state);
 }
 describe("connected dashboard", () => {
+  it("uses life load only as a planning buffer and protects urgent academic work", () => {
+    const seed = createDemoState();
+    const capacity = { ...seed.capacity, availableMinutes: 120, energy: 1 as const, focus: "low" as const, lifeLoadFactors: { "Family responsibilities": "High" as const, "Relationship pressure": "Medium" as const }, lifeLoadNote: "I need to help my family tonight." };
+    expect(availableCapacity(capacity)).toBe(45);
+    expect(availableCapacity({ ...capacity, lifeLoadNote: "" })).toBe(45);
+    const optional = { id: "optional-meeting", taskId: "optional-meeting", title: "Optional catch-up", category: "Personal" as const, startAt: `${scenarioDate()}T16:00:00`, endAt: `${scenarioDate()}T16:45:00` };
+    const withOptional = { ...seed, tasks: [...seed.tasks, { id: "optional-meeting", title: "Optional catch-up", category: "Personal" as const, status: "upcoming" as const, estimatedMinutes: 45, progress: 0, difficulty: 1, careerSkillIds: [], riskScore: 10, careerRelevance: 0, description: "Optional" }], planBlocks: [...seed.planBlocks, optional] };
+    const next = [0, 1, 2, 3, 4].reduce((current, stage) => adaptCapacityStage(current, capacity, stage), withOptional);
+    expect(next.capacity.lifeLoadFactors).toEqual(capacity.lifeLoadFactors);
+    expect(next.planBlocks.find((block) => block.id === "block-database")?.startAt.startsWith(scenarioDate())).toBe(true);
+    expect(next.planBlocks.find((block) => block.id === "block-aws")?.startAt).toBe(`${scenarioDate(3)}T17:30:00`);
+    expect(next.planBlocks.some((block) => block.id === optional.id)).toBe(false);
+    expect(next.tasks.some((task) => task.id === optional.id)).toBe(true);
+    expect(next.activeAction.taskId).toBe("database-assignment");
+  });
+  it("shortens a flexible career-learning session when today's capacity is limited", () => {
+    const seed = createDemoState();
+    const learningTask = { id: "learning-docker", title: "Docker fundamentals", category: "career-learning" as const, status: "upcoming" as const, estimatedMinutes: 90, progress: 0, difficulty: 2, careerSkillIds: ["docker"], skill: "Docker", riskScore: 20, careerRelevance: 90, description: "Practice containers." };
+    seed.tasks = [...seed.tasks, learningTask];
+    seed.planBlocks = [...seed.planBlocks, { id: "block-learning-docker", taskId: learningTask.id, title: learningTask.title, category: "career-learning", startAt: `${scenarioDate()}T21:00:00`, endAt: `${scenarioDate()}T22:30:00` }];
+    seed.tasks = seed.tasks.map((task) => task.id === "docker-lab" || task.id === "se-presentation" ? { ...task, status: "completed" as const } : task);
+    const capacity = { ...seed.capacity, availableMinutes: 180, energy: 1 as const, lifeLoadFactors: { "Family responsibilities": "High" as const } };
+    const next = [0, 1, 2, 3, 4].reduce((current, stage) => adaptCapacityStage(current, capacity, stage), seed);
+    const block = next.planBlocks.find((item) => item.id === "block-learning-docker")!;
+    expect(block.startAt.startsWith(scenarioDate())).toBe(true);
+    expect((new Date(block.endAt).getTime() - new Date(block.startAt).getTime()) / 60_000).toBe(30);
+    expect(next.tasks.find((task) => task.id === learningTask.id)?.estimatedMinutes).toBe(90);
+    const restored = [0, 1, 2, 3, 4].reduce((current, stage) => adaptCapacityStage(current, { ...seed.capacity, lifeLoadFactors: {} }, stage), next);
+    const restoredBlock = restored.planBlocks.find((item) => item.id === block.id)!;
+    expect((new Date(restoredBlock.endAt).getTime() - new Date(restoredBlock.startAt).getTime()) / 60_000).toBe(90);
+  });
   it("sequences risk, schedule and recommendation without dropping future work", () => {
     const seed = createDemoState();
     const risk = adaptCapacityStage(seed, low, 1);
