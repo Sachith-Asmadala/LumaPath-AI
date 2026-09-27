@@ -1,0 +1,191 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-risk: var(--risk);
+  --color-pathway: var(--pathway);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-inset: var(--surface-inset);
+  --font-sans: var(--font-ui);
+  --font-display: var(--font-heading);
+  --font-mono: var(--font-data);
+  --radius-panel: 20px;
+  --radius-inset: 14px;
+  --radius: 1rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.25);
+  --radius-2xl: calc(var(--radius) * 1.6);
+}
+
+:root {
+  color-scheme: dark;
+  --background: #131316;
+  --foreground: #e2ebf0;
+  --card: #191c22;
+  --card-foreground: #e2ebf0;
+  --popover: #1b1e24;
+  --popover-foreground: #e2ebf0;
+  --primary: #74f6fb;
+  --primary-foreground: #131316;
+  --secondary: #22252b;
+  --secondary-foreground: #e2ebf0;
+  --muted: #202329;
+  --muted-foreground: #9fadb5;
+  --accent: #242a2d;
+  --accent-foreground: #e2ebf0;
+  --destructive: #bc668e;
+  --border: #2a3035;
+  --input: #2a3035;
+  --ring: #74f6fb;
+  --success: #73ff70;
+  --warning: #fff385;
+  --risk: #bc668e;
+  --pathway: #d39cca;
+  --surface: #19262b;
+  --surface-raised: #1a1d23;
+  --surface-inset: #17191e;
+  --font-ui: "Onest Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Red Hat Display Variable", "Onest Variable", ui-sans-serif, sans-serif;
+  --font-data: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --sidebar: #151619;
+  --sidebar-foreground: #e2ebf0;
+  --sidebar-primary: #74f6fb;
+  --sidebar-primary-foreground: #131316;
+  --sidebar-accent: #202329;
+  --sidebar-accent-foreground: #e2ebf0;
+  --sidebar-border: #292d33;
+  --sidebar-ring: #74f6fb;
+}
+
+:root.light {
+  color-scheme: light;
+  --background: #f6f8fa;
+  --foreground: #142535;
+  --card: #ffffff;
+  --card-foreground: #142535;
+  --popover: #ffffff;
+  --popover-foreground: #142535;
+  --primary: #087d96;
+  --primary-foreground: #ffffff;
+  --secondary: #eaf0f3;
+  --secondary-foreground: #142535;
+  --muted: #eaf0f3;
+  --muted-foreground: #50616e;
+  --accent: #e3f1f4;
+  --accent-foreground: #142535;
+  --destructive: #a73863;
+  --border: #dbe3e8;
+  --input: #dbe3e8;
+  --ring: #087d96;
+  --success: #217d44;
+  --warning: #8f6900;
+  --risk: #a73863;
+  --pathway: #7b3c82;
+  --surface: #eaf4f6;
+  --surface-raised: #ffffff;
+  --surface-inset: #eff3f6;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #142535;
+  --sidebar-primary: #087d96;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eaf0f3;
+  --sidebar-accent-foreground: #142535;
+  --sidebar-border: #dbe3e8;
+  --sidebar-ring: #087d96;
+}
+
+@utility type-page-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 2vw, 1.9rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+@utility type-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+@utility type-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+@layer base {
+  * { @apply border-border outline-ring/40; }
+  html { @apply font-sans; scroll-behavior: smooth; background: var(--background); }
+  body { @apply min-h-dvh bg-background text-foreground antialiased; font-family: var(--font-ui); background-image: radial-gradient(ellipse at 58% -28%, rgb(116 246 251 / 5%), transparent 54%); }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  ::selection { color: var(--primary-foreground); background: var(--primary); }
+}
+
+@layer components {
+  .planner-calendar-wrap .fc { --fc-page-bg-color: transparent; --fc-neutral-bg-color: rgb(255 255 255 / 2%); --fc-neutral-text-color: #9fadb5; --fc-border-color: #2a3035; --fc-today-bg-color: rgb(116 246 251 / 3%); --fc-now-indicator-color: #74f6fb; --fc-list-event-hover-bg-color: rgb(255 255 255 / 4%); --fc-small-font-size: 0.66rem; color: #e2ebf0; font-family: var(--font-ui); }
+  .planner-calendar-wrap .fc .fc-scrollgrid, .planner-calendar-wrap .fc td, .planner-calendar-wrap .fc th { border-color: rgb(255 255 255 / 6%); }
+  .planner-calendar-wrap .fc .fc-col-header-cell-cushion { padding: 0.5rem 0.25rem; color: #9fadb5; font-size: 0.62rem; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; }
+  .planner-calendar-wrap .fc .fc-timegrid-slot-label-cushion { padding-right: 0.6rem; color: #77848d; font-family: var(--font-data); font-size: 0.58rem; }
+  .planner-calendar-wrap .fc .fc-timegrid-slot { height: 2.35rem; }
+  .planner-calendar-wrap .fc .fc-timegrid-slot-minor { border-top-style: dashed; border-top-color: rgb(255 255 255 / 3%); }
+  .planner-calendar-wrap .fc .fc-timegrid-now-indicator-line { border-width: 1px; }
+  .planner-calendar-wrap .fc .fc-timegrid-now-indicator-arrow { display: none; }
+  .planner-calendar-wrap .fc .fc-timegrid-event { border-radius: 8px; transition: top 280ms cubic-bezier(0.16, 1, 0.3, 1), height 280ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms ease, filter 180ms ease; }
+  .planner-calendar-wrap .fc .fc-event-main { padding: 5px 7px; }
+  .planner-calendar-wrap .planner-event-inner { display: flex; flex-direction: column; gap: 3px; }
+  .planner-calendar-wrap .planner-event-time { color: currentColor; font-family: var(--font-data); font-size: 0.58rem; opacity: 0.72; }
+  .planner-calendar-wrap .planner-event-title { overflow: hidden; font-size: 0.68rem; font-weight: 550; line-height: 1.35; text-overflow: ellipsis; }
+  .planner-calendar-wrap .planner-event-academic { border: 1px solid rgb(116 246 251 / 21%) !important; background: rgb(116 246 251 / 8%) !important; color: #c3f7f8 !important; }
+  .planner-calendar-wrap .planner-event-career { border: 1px solid rgb(211 156 202 / 24%) !important; background: rgb(211 156 202 / 8%) !important; color: #ead2e7 !important; }
+  .planner-calendar-wrap .planner-event-personal { border: 1px solid rgb(159 173 181 / 20%) !important; background: rgb(159 173 181 / 7%) !important; color: #c5cdd1 !important; }
+  .planner-calendar-wrap .planner-event-internship { border: 1px solid rgb(115 255 112 / 20%) !important; background: rgb(115 255 112 / 7%) !important; color: #c2f8c1 !important; }
+  .planner-calendar-wrap .planner-event-recommended { border: 1px dashed rgb(116 246 251 / 33%) !important; background: rgb(116 246 251 / 6%) !important; color: #c3f7f8 !important; }
+  .planner-calendar-wrap .planner-event-conflict { border: 1px solid rgb(255 243 133 / 48%) !important; background: rgb(255 243 133 / 12%) !important; box-shadow: inset 2px 0 0 rgb(255 243 133 / 72%); filter: saturate(0.85); }
+  .planner-calendar-wrap .fc .fc-highlight { background: rgb(116 246 251 / 8%); }
+  .planner-calendar-wrap .fc .fc-daygrid-day-number { color: #aab6bd; font-size: 0.68rem; text-decoration: none; }
+  .pathway-unlock-edge .react-flow__edge-path { stroke-dasharray: 8 10; animation: pathway-unlock-flow 350ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+}
+
+@keyframes pathway-unlock-flow { 0% { stroke-dashoffset: 44; } 100% { stroke-dashoffset: 0; } }
+@keyframes brand-appear { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+.brand-loading-logo { animation: brand-appear 320ms ease-out both; }
+@media (max-width: 767px) {
+  .planner-calendar-wrap .fc .fc-timegrid-slot { height: 2.75rem; }
+  .planner-calendar-wrap .fc .fc-timegrid-event .fc-event-main { padding: 7px 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .brand-loading-logo { animation: none; }
+  .planner-calendar-wrap .fc .fc-timegrid-event { transition-property: opacity; transition-duration: 80ms; }
+  .pathway-unlock-edge .react-flow__edge-path { animation: none; }
+}
