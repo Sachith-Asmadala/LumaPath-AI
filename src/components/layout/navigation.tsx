@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Activity, BriefcaseBusiness, CalendarDays, ChartNoAxesCombined, CheckSquare2, Compass, LayoutDashboard, Mic2, Network, Settings2, Sparkles, ShieldCheck } from "lucide-react";
+import { Activity, ArrowUpRight, BriefcaseBusiness, CalendarDays, ChartNoAxesCombined, CheckSquare2, Compass, LayoutDashboard, Mic2, Network, Settings2, Sparkles, ShieldCheck } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { BrandIcon } from "@/components/brand/brand-icon";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { brand } from "@/lib/brand";
+import { selectDeadlineRiskTasks } from "@/lib/domain/dashboard";
 
 const primaryLinks = [
   { label: "Overview", href: "/overview", icon: LayoutDashboard },
@@ -57,7 +58,8 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
   const resetJourney = () => { resetDemo(); router.replace("/onboarding"); };
   const [commandOpen, setCommandOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
-  const activeRoute = primaryLinks.find((link) => link.href === pathname)?.label ?? (pathname === "/settings" ? "Settings" : "Overview");
+  const activeRoute = primaryLinks.find((link) => link.href === pathname || pathname.startsWith(`${link.href}/`))?.label ?? (pathname === "/settings" ? "Settings" : "Overview");
+  const priorityCount = selectDeadlineRiskTasks(state).filter((task) => task.riskScore >= 70).length;
 
   return (
     <>
@@ -70,17 +72,18 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
             <span className="hidden group-data-[collapsible=icon]:flex"><BrandIcon size={38} decorative priority /></span>
           </Link>
         </SidebarHeader>
-        <SidebarContent className="px-2 pt-3">
+        <SidebarContent className="px-3 pt-3">
           <SidebarGroup className="p-0">
             <SidebarGroupContent>
               <SidebarMenu className="gap-1">
-                {primaryLinks.map(({ label, href, icon: Icon }) => {
+                {primaryLinks.map(({ label, href, icon: Icon }, index) => {
                   const isActive = pathname === href || (href !== "/overview" && pathname.startsWith(`${href}/`));
                   return (
                     <SidebarMenuItem key={href}>
-                      <SidebarMenuButton asChild isActive={isActive} tooltip={label} className={cn("relative h-11 px-3 text-[0.82rem] text-muted-foreground transition-colors hover:text-foreground data-active:bg-white/[0.055] data-active:text-foreground md:h-10", isActive && "text-foreground")}>
+                      {(index === 0 || index === 4) && <p className={cn("px-3 pb-3 text-[0.58rem] font-medium uppercase tracking-[0.16em] text-muted-foreground/80 group-data-[collapsible=icon]:hidden", index === 4 && "pt-6")}>{index === 0 ? "Your everyday" : "Your next chapter"}</p>}
+                      <SidebarMenuButton asChild isActive={isActive} tooltip={label} className={cn("relative h-11 rounded-xl px-3 text-[0.78rem] text-muted-foreground transition-colors hover:text-foreground data-active:bg-sidebar-accent data-active:text-foreground md:h-10", isActive && "text-foreground")}>
                         <Link href={href} aria-current={isActive ? "page" : undefined} onClick={() => { if (isMobile) setOpenMobile(false); }}>
-                          {isActive && <motion.span layoutId={reduceMotion ? undefined : "sidebar-active-indicator"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-y-2 left-0 w-[2px] rounded-r-full bg-primary" transition={{ duration: reduceMotion ? 0.08 : 0.22 }} />}
+                          {isActive && <motion.span layoutId={reduceMotion ? undefined : "sidebar-active-indicator"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute right-3 size-1.5 rounded-full bg-primary/70 group-data-[collapsible=icon]:hidden" transition={{ type: "spring", stiffness: 400, damping: 36 }} />}
                           <Icon className="size-[17px] shrink-0 transition-transform duration-200 group-hover/menu-button:-translate-y-px motion-reduce:transition-none" strokeWidth={1.7} aria-hidden="true" />
                           <span>{label}</span>
                         </Link>
@@ -98,7 +101,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium text-foreground">Your week is in view</p>
-                <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">3 priorities · 2 focus blocks</p>
+                <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">{priorityCount} priorities · {state.planBlocks.filter((block) => block.isFocusBlock).length} focus blocks</p>
               </div>
             </div>
             <Button onClick={() => { if (isMobile) setOpenMobile(false); setCopilotOpen(true); }} variant="ghost" className="h-11 w-full justify-start gap-2.5 rounded-lg px-3 text-muted-foreground hover:text-foreground md:h-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0" aria-label="Open AI Copilot">
@@ -110,10 +113,11 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
         </SidebarContent>
         <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 py-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
           <Button asChild variant="ghost" className="h-11 justify-start gap-2.5 px-2.5 text-muted-foreground hover:text-foreground md:h-9 group-data-[collapsible=icon]:hidden"><Link href="/settings"><Settings2 className="size-4" aria-hidden="true" />Settings</Link></Button>
+          <Link href="/" className="flex min-h-9 items-center gap-2.5 px-2.5 text-xs text-muted-foreground transition-colors hover:text-primary group-data-[collapsible=icon]:hidden">About LumaPath<ArrowUpRight className="ml-auto size-3.5" /></Link>
           <Button onClick={resetJourney} variant="ghost" className="h-11 justify-start px-2.5 text-[0.7rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground md:h-8 group-data-[collapsible=icon]:hidden" title="Restart the student journey">Demo Reset</Button>
           <Separator className="bg-sidebar-border" />
           <div className="flex items-center gap-2.5 overflow-hidden px-1.5 py-1 group-data-[collapsible=icon]:px-0">
-            <Avatar className="size-8 rounded-xl border border-white/10 bg-[#25292d]"><AvatarFallback className="rounded-xl bg-transparent text-xs font-semibold text-primary">{state.student.initials}</AvatarFallback></Avatar>
+            <Avatar className="size-8 rounded-xl border border-border bg-secondary"><AvatarFallback className="rounded-xl bg-transparent text-xs font-semibold text-primary">{state.student.initials}</AvatarFallback></Avatar>
             <div className="min-w-0 group-data-[collapsible=icon]:hidden">
               <p className="truncate text-xs font-medium text-foreground">{state.student.name}</p>
               <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">{state.onboarding.degree}</p>
@@ -122,7 +126,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarFooter>
       </Sidebar>}
-      <SidebarInset className="min-w-0 overflow-x-hidden bg-transparent">
+      <SidebarInset className="workspace-surface min-w-0 overflow-x-hidden bg-transparent" data-page={pathname.split("/")[1]}>
         {pathname !== "/focus" && <TopBar title={activeRoute} onOpenCommand={() => setCommandOpen(true)} onOpenCopilot={() => setCopilotOpen(true)} />}
         <main className={cn("relative z-10 min-h-[calc(100dvh-4.5rem)]", pathname === "/focus" ? "pb-0" : "pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-10")}>
           {pathname !== "/overview" && <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8"><DecisionPulse /></div>}
@@ -131,7 +135,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
         {pathname !== "/focus" && <MobileBottomNav pathname={pathname} />}
       </SidebarInset>
       {pathname !== "/focus" && <StudentContextGraph />}
-      {pathname !== "/focus" && pathname !== "/overview" && <Button onClick={() => setCopilotOpen(true)} size="icon" className="fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 size-11 rounded-full border border-primary/20 bg-[#1d292c] text-primary shadow-[0_12px_28px_-18px_rgba(0,0,0,0.7)] hover:bg-[#243438] md:hidden" aria-label="Open Luma AI Copilot"><Sparkles className="size-4" /></Button>}
+      {pathname !== "/focus" && pathname !== "/overview" && <Button onClick={() => setCopilotOpen(true)} size="icon" className="fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 size-11 rounded-full border border-primary/20 bg-card text-primary shadow-sm hover:bg-accent md:hidden" aria-label="Open Luma AI Copilot"><Sparkles className="size-4" /></Button>}
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} onOpenCopilot={() => setCopilotOpen(true)} />
       <CopilotDrawer open={copilotOpen} onOpenChange={setCopilotOpen} route={pathname} />
       <Toaster position="bottom-right" richColors={false} closeButton />

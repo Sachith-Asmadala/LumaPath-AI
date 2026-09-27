@@ -57,8 +57,8 @@ export function CareerSkillCard({ skill, prerequisites, unlocks, recommended, pe
 
 export function CareerSkillNode({ data }: NodeProps<CareerFlowNode>) {
   return <>
-    <Handle type="target" position={Position.Left} className="!size-2 !border-[#1a1d23] !bg-border" />
+    <Handle type="target" position={Position.Left} className="!size-2 !border-card !bg-border" />
     <CareerSkillCard {...data} />
-    <Handle type="source" position={Position.Right} className="!size-2 !border-[#1a1d23] !bg-border" />
+    <Handle type="source" position={Position.Right} className="!size-2 !border-card !bg-border" />
   </>;
 }

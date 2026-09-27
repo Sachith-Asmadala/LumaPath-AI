@@ -1,0 +1,45 @@
+/* Quiet surfaces; each workspace keeps its own information hierarchy. */
+.workspace-surface { background: var(--background); }
+.workspace-page { min-width: 0; }
+.workspace-page [data-slot="card"] { box-shadow: 0 3px 12px -10px color-mix(in srgb, var(--foreground) 22%, transparent); transition: border-color 240ms ease, box-shadow 240ms ease; }
+.workspace-page [data-slot="card"]:hover { border-color: color-mix(in srgb, var(--primary) 25%, var(--border)); }
+.workspace-page .type-page-title { text-wrap: balance; }
+.workspace-page [data-slot="card-title"] { font-weight: 500; }
+.workspace-surface[data-page="evidence"] .workspace-page > div > div:first-child { border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+.workspace-surface[data-page="intelligence"] .workspace-page > div > div:first-child { border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+.workspace-surface[data-page="skills"] .workspace-page > div > div:first-child { border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+.workspace-surface .planner-calendar-wrap .fc { --fc-neutral-bg-color: var(--muted); --fc-neutral-text-color: var(--muted-foreground); --fc-border-color: var(--border); --fc-today-bg-color: color-mix(in srgb, var(--primary) 4%, transparent); --fc-now-indicator-color: var(--primary); color: var(--foreground); }
+.workspace-surface .planner-calendar-wrap .fc :is(.fc-scrollgrid, td, th) { border-color: color-mix(in srgb, var(--border) 75%, transparent); }
+.workspace-surface .planner-calendar-wrap .fc .fc-col-header-cell-cushion { color: var(--muted-foreground); padding-block: 16px; font-size: 0.64rem; letter-spacing: 0.08em; }
+.workspace-surface .planner-calendar-wrap .fc .fc-timegrid-slot-label-cushion, .workspace-surface .planner-calendar-wrap .fc .fc-daygrid-day-number { color: var(--muted-foreground); }
+.workspace-surface .planner-calendar-wrap .fc .fc-event-main { color: inherit; }
+.workspace-surface .planner-calendar-wrap .fc .fc-timegrid-slot-minor { border-top-color: color-mix(in srgb, var(--border) 40%, transparent); }
+.workspace-surface .planner-calendar-wrap .fc .fc-highlight { background: color-mix(in srgb, var(--primary) 8%, transparent); }
+.analytics-stat { position: relative; min-height: 158px; border-radius: 18px; padding: 22px; border: 1px solid var(--border); background: var(--card); }
+.analytics-stat:first-child { background: var(--tint-sage); }
+.analytics-stat:last-child { background: var(--tint-lavender); }
+.analytics-stat .stat-number { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 450; letter-spacing: -0.055em; line-height: 1.15; }
+.task-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 28px 0; border-block: 1px solid var(--border); }
+.task-summary > div { display: flex; align-items: center; gap: 14px; padding: 20px; }
+.task-summary > div + div { border-left: 1px solid var(--border); }
+.task-summary-number { font-family: var(--font-heading); font-size: 2rem; font-weight: 450; letter-spacing: -0.055em; line-height: 1; }
+.task-summary-label { font-size: 0.7rem; color: var(--muted-foreground); }
+.skill-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; overflow: hidden; border: 1px solid var(--border); border-radius: 16px; background: var(--border); margin-block: 24px; }
+.skill-summary > div { background: var(--card); padding: 22px; }
+.skill-summary > div:first-child { background: var(--tint-sage); }
+.skill-summary strong { display: block; font-family: var(--font-heading); font-weight: 450; font-size: 2rem; letter-spacing: -0.05em; }
+.skill-summary span { font-size: 0.72rem; color: var(--muted-foreground); }
+.focus-retreat { position: relative; isolation: isolate; }
+.focus-retreat::before { content: ''; position: absolute; pointer-events: none; z-index: -1; inset: 20% 10% 14%; border: 1px solid var(--border); border-radius: 50%; opacity: 0.6; }
+.focus-retreat::after { content: ''; position: absolute; pointer-events: none; z-index: -1; inset: 15% 15% 9%; border: 1px solid var(--border); border-radius: 50%; opacity: 0.35; transform: rotate(-20deg); }
+@media (max-width: 767px) {
+ .workspace-page [class*="text-[0.5"], .workspace-page [class*="text-[0.6"] { font-size: 0.75rem; }
+ .workspace-page :is(button, a[data-slot="button"]) { min-height: 40px; }
+ .analytics-stat { min-height: 142px; padding: 18px; }
+ .task-summary > div { flex-direction: column; gap: 10px; align-items: flex-start; padding: 18px 12px; }
+ .task-summary-number { font-size: 1.8rem; }
+ .task-summary-label { font-size: 0.68rem; }
+ .skill-summary > div { padding: 18px 12px; }
+ .skill-summary span { font-size: 0.65rem; }
+}
+@media (prefers-reduced-motion: reduce) { .workspace-page [data-slot="card"] { transition: none; } }

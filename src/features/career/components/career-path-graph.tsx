@@ -18,7 +18,7 @@ const personalizedPositions: Record<string, { x: number; y: number }> = {
   docker: { x: 620, y: 340 }, cicd: { x: 310, y: 340 }, cloud: { x: 0, y: 340 },
   terraform: { x: 0, y: 680 }, kubernetes: { x: 310, y: 680 }, monitoring: { x: 620, y: 680 },
 };
-const defaultEdgeOptions = { type: "smoothstep" as const, markerEnd: { type: MarkerType.ArrowClosed, color: "#576168" } };
+const defaultEdgeOptions = { type: "smoothstep" as const, markerEnd: { type: MarkerType.ArrowClosed, color: "var(--muted-foreground)" } };
 
 export function CareerPathGraph() {
   const { state } = useDemo();
@@ -50,8 +50,8 @@ export function CareerPathGraph() {
       target: skill.id,
       type: "smoothstep",
       className: activeEdge ? "pathway-unlock-edge" : undefined,
-      markerEnd: { type: MarkerType.ArrowClosed, color: activeEdge ? "#74f6fb" : "#576168" },
-      style: { stroke: activeEdge ? "#74f6fb" : "#465059", strokeWidth: activeEdge ? 1.8 : 1.3, transition: "stroke 250ms ease, stroke-width 250ms ease" },
+      markerEnd: { type: MarkerType.ArrowClosed, color: activeEdge ? "var(--primary)" : "var(--muted-foreground)" },
+      style: { stroke: activeEdge ? "var(--primary)" : "var(--border)", strokeWidth: activeEdge ? 1.8 : 1.3, transition: "stroke 250ms ease, stroke-width 250ms ease" },
     };
   })), [state.careerSkills, personalized]);
 
@@ -63,7 +63,7 @@ export function CareerPathGraph() {
     <CardContent className="p-0">
       <div className={`hidden ${personalized ? "h-[1020px] lg:block" : "h-[950px] md:block"}`}>
         <ReactFlow nodes={nodes as Node[]} edges={edges} nodeTypes={nodeTypes} defaultEdgeOptions={defaultEdgeOptions} fitView fitViewOptions={{ padding: 0.08 }} minZoom={0.55} maxZoom={1.25} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} proOptions={{ hideAttribution: true }} aria-label="DevOps career prerequisite path">
-          <Background color="#343c42" gap={22} size={1} />
+          <Background color="var(--border)" gap={22} size={1} />
           <Controls position="bottom-right" showInteractive={false} className="!overflow-hidden !rounded-xl !border !border-border !bg-background/80 !shadow-none [&>button]:!border-border [&>button]:!bg-background [&>button]:!text-muted-foreground [&>button:hover]:!text-foreground" />
         </ReactFlow>
       </div>

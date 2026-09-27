@@ -6,20 +6,6 @@
   background: var(--background);
 }
 
-:global(.dark) .dashboard {
-  --background: #0b1120;
-  --surface-raised: #111d30;
-  --card-foreground: #e7eef9;
-  --foreground: #e7eef9;
-  --muted-foreground: #9aaac0;
-  --border: #25344b;
-  --primary: #6ad9f5;
-  --primary-foreground: #091322;
-  --pathway: #b4a2fa;
-  background: radial-gradient(ellipse at 10% 0%, #15345755, transparent 42%),
-    radial-gradient(ellipse at 100% 28%, #31265322, transparent 38%), var(--background);
-}
-
 .content {
   max-width: 1436px;
   margin-inline: auto;
@@ -40,22 +26,16 @@
 .dashboard [data-slot="card"] {
   border: 1px solid var(--border);
   border-radius: 22px;
-  box-shadow: 0 8px 28px -20px rgb(0 0 0 / 30%);
-}
-
-:global(.dark) .dashboard [data-slot="card"] {
-  background: linear-gradient(145deg, rgb(24 39 61 / 72%), rgb(15 25 43 / 88%));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%), 0 12px 32px -24px rgb(0 0 0 / 65%);
-  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px -14px color-mix(in srgb, var(--foreground) 22%, transparent);
 }
 
 .panel [data-slot="card-header"] { padding: 24px 24px 0; }
 .panel [data-slot="card-content"] { padding: 0 24px 24px; }
 .panel [data-slot="card-title"] { font-size: 1.05rem; letter-spacing: -0.025em; }
 
-:global(.dark) .hero > [data-slot="card"] {
-  border-color: rgb(106 217 245 / 24%);
-  background: linear-gradient(125deg, #153044dd, #122239ee 52%, #1d2038ee);
+.hero > [data-slot="card"] {
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
+  background: var(--tint-sage);
 }
 
 .hero h2 {

@@ -14,13 +14,13 @@ export function AnimatedCard({ children, className, delay = 0, as = "div", hover
   const Tag = as === "article" ? motion.article : as === "section" ? motion.section : motion.div;
   const hidden = { opacity: 0, y: reduced ? 0 : 10 };
   const visible = { opacity: 1, y: 0 };
-  return <Tag className={className} variants={staggered ? { hidden, visible } : undefined} initial={staggered ? undefined : hidden} animate={staggered ? undefined : visible} whileHover={hover && !reduced ? { y: -3 } : undefined} transition={{ duration: reduced ? 0.01 : 0.28, delay: staggered || reduced ? 0 : delay, ease }}>{children}</Tag>;
+  return <Tag className={className} variants={staggered ? { hidden, visible } : undefined} initial={staggered ? undefined : hidden} animate={staggered ? undefined : visible} whileHover={hover && !reduced ? { y: -2 } : undefined} transition={{ duration: reduced ? 0.01 : 0.4, delay: staggered || reduced ? 0 : delay, ease }}>{children}</Tag>;
 }
 
 export function StaggerContainer({ children, className }: { children: ReactNode; className?: string }) {
   const reduced = useReducedMotion();
   const mobile = useIsMobile();
-  return <motion.div className={className} initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: reduced || mobile ? 0 : 0.07 } } }}>{children}</motion.div>;
+  return <motion.div className={className} initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: reduced || mobile ? 0 : 0.045 } } }}>{children}</motion.div>;
 }
 
 type MotionButtonProps = Omit<ComponentProps<typeof Button>, "asChild" | "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "onAnimationEnd" | "onAnimationIteration">;
@@ -56,7 +56,7 @@ export const AnimatedProgress = memo(function AnimatedProgress({ value, classNam
   return (
     <Progress
       value={value}
-      className={cn("h-1.5 overflow-hidden bg-white/[0.07]", className)}
+      className={cn("h-1.5 overflow-hidden bg-muted", className)}
       indicatorClassName={cn("bg-primary transition-transform duration-[280ms] [transition-delay:var(--progress-delay)] motion-reduce:transition-none motion-reduce:delay-0", indicatorClassName)}
       style={{ "--progress-delay": `${delay}ms` } as React.CSSProperties}
       aria-label={`Progress ${value}%`}
@@ -99,7 +99,7 @@ export function ScoreRing({ value, size = 132, stroke = 8, className, animateOnM
   return (
     <div className={cn("relative grid shrink-0 place-items-center", className)} style={{ width: size, height: size }}>
       <svg className="absolute inset-0 -rotate-90" viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`Career readiness ${value} percent`}>
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgb(255 255 255 / 7%)" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--border)" strokeWidth={stroke} />
         <motion.circle
           cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--primary)" strokeWidth={stroke}
           strokeLinecap="round" strokeDasharray={circumference}

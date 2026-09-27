@@ -4,6 +4,7 @@ import { seedExistingStudent } from "./seed-existing-student";
 test.beforeEach(async ({ page }) => seedExistingStudent(page));
 
 test("brand follows theme and sidebar state without a reload", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("theme", "dark"));
   await page.goto("/settings");
   const home = page.getByRole("link", { name: "LumaPath AI home" }).first();
   await expect(home.locator('img[src*="lumapath-logo-dark"]')).toBeVisible();

@@ -1,18 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import { LandingPage } from "@/components/public/landing-page";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Loading from "./loading";
-import { useDemo } from "@/lib/state/demo-provider";
-import { nextStudentJourneyRoute } from "@/lib/domain/student-journey";
+export const metadata: Metadata = {
+  title: "Your next chapter, one clear step | LumaPath AI",
+  description: "Find a thoughtful path through university, career learning, and everyday life. Plan your next step with LumaPath AI.",
+};
 
 export default function HomePage() {
-  const router = useRouter();
-  const { state, onboardingReady } = useDemo();
-
-  useEffect(() => {
-    if (onboardingReady) router.replace(nextStudentJourneyRoute(state));
-  }, [onboardingReady, router, state]);
-
-  return <Loading />;
+  return <LandingPage />;
 }

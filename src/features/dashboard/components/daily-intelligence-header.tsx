@@ -27,9 +27,9 @@ export function DailyIntelligenceHeader({ name }: { name: string }) {
   return (
     <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-end xl:gap-10">
       <div className="shrink-0">
-          <p className="type-eyebrow mb-3 text-primary">Student success command center</p>
-          <TypographyH1 className="text-[1.8rem] sm:text-[2.15rem]">Good morning, {name}</TypographyH1>
-          <TypographyP className="mt-2 text-sm">Here’s your smartest path for today.</TypographyP>
+          <p className="type-eyebrow mb-3 text-primary">A little clarity for your day</p>
+          <TypographyH1 className="text-[1.9rem] font-medium sm:text-[2.5rem]">Good morning, {name}</TypographyH1>
+          <TypographyP className="mt-2 text-sm">A thoughtful plan, with room for real life.</TypographyP>
           <p className="mt-3 text-[0.68rem] text-muted-foreground">{new Date(`${demoScenario.date}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</p>
       </div>
       <div className="flex items-start gap-3 rounded-2xl border border-primary/15 bg-primary/[0.035] p-4 sm:p-5 xl:max-w-[34rem]">

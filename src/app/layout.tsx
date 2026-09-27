@@ -5,6 +5,8 @@ import { DemoProvider } from "@/lib/state/demo-provider";
 import "@fontsource-variable/onest";
 import "@fontsource-variable/red-hat-display";
 import "./globals.css";
+import "./public.css";
+import "./workspace.css";
 
 export const metadata: Metadata = {
   title: {
@@ -29,15 +31,15 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f8fa" },
-    { media: "(prefers-color-scheme: dark)", color: "#131316" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f5f0" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c2322" },
   ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body><ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange><DemoProvider>{children}</DemoProvider></ThemeProvider></body>
+      <body><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider>{children}</DemoProvider></ThemeProvider></body>
     </html>
   );
 }

@@ -46,85 +46,93 @@
 
 :root {
   color-scheme: dark;
-  --background: #131316;
-  --foreground: #e2ebf0;
-  --card: #191c22;
-  --card-foreground: #e2ebf0;
-  --popover: #1b1e24;
-  --popover-foreground: #e2ebf0;
-  --primary: #74f6fb;
-  --primary-foreground: #131316;
-  --secondary: #22252b;
-  --secondary-foreground: #e2ebf0;
-  --muted: #202329;
-  --muted-foreground: #9fadb5;
-  --accent: #242a2d;
-  --accent-foreground: #e2ebf0;
-  --destructive: #bc668e;
-  --border: #2a3035;
-  --input: #2a3035;
-  --ring: #74f6fb;
-  --success: #73ff70;
-  --warning: #fff385;
-  --risk: #bc668e;
-  --pathway: #d39cca;
-  --surface: #19262b;
-  --surface-raised: #1a1d23;
-  --surface-inset: #17191e;
+  --background: #1c2322;
+  --foreground: #e0e5df;
+  --card: #252e2b;
+  --card-foreground: #e0e5df;
+  --popover: #29332f;
+  --popover-foreground: #e0e5df;
+  --primary: #a6c3b3;
+  --primary-foreground: #23362c;
+  --secondary: #303b35;
+  --secondary-foreground: #dde4dc;
+  --muted: #2c3631;
+  --muted-foreground: #a7b1a9;
+  --accent: #344039;
+  --accent-foreground: #e0e5df;
+  --destructive: #d39d94;
+  --border: #3b4740;
+  --input: #424e46;
+  --ring: #a6c3b3;
+  --success: #a8bba2;
+  --warning: #cfbc91;
+  --risk: #d39d94;
+  --pathway: #b9adc9;
+  --surface: #29372e;
+  --surface-raised: #252e2b;
+  --surface-inset: #202825;
   --font-ui: "Onest Variable", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Red Hat Display Variable", "Onest Variable", ui-sans-serif, sans-serif;
   --font-data: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  --sidebar: #151619;
-  --sidebar-foreground: #e2ebf0;
-  --sidebar-primary: #74f6fb;
-  --sidebar-primary-foreground: #131316;
-  --sidebar-accent: #202329;
-  --sidebar-accent-foreground: #e2ebf0;
-  --sidebar-border: #292d33;
-  --sidebar-ring: #74f6fb;
+  --sidebar: #202825;
+  --sidebar-foreground: #e0e5df;
+  --sidebar-primary: #a6c3b3;
+  --sidebar-primary-foreground: #23362c;
+  --sidebar-accent: #303b35;
+  --sidebar-accent-foreground: #e0e5df;
+  --sidebar-border: #354139;
+  --sidebar-ring: #a6c3b3;
+  --tint-sage: #2b3931;
+  --tint-clay: #39342f;
+  --tint-lavender: #33313b;
+  --paper-shadow: 0 24px 60px -36px rgb(0 0 0 / 45%);
 }
 
 :root.light {
   color-scheme: light;
-  --background: #f6f8fa;
-  --foreground: #142535;
-  --card: #ffffff;
-  --card-foreground: #142535;
-  --popover: #ffffff;
-  --popover-foreground: #142535;
-  --primary: #087d96;
-  --primary-foreground: #ffffff;
-  --secondary: #eaf0f3;
-  --secondary-foreground: #142535;
-  --muted: #eaf0f3;
-  --muted-foreground: #50616e;
-  --accent: #e3f1f4;
-  --accent-foreground: #142535;
-  --destructive: #a73863;
-  --border: #dbe3e8;
-  --input: #dbe3e8;
-  --ring: #087d96;
-  --success: #217d44;
-  --warning: #8f6900;
-  --risk: #a73863;
-  --pathway: #7b3c82;
-  --surface: #eaf4f6;
-  --surface-raised: #ffffff;
-  --surface-inset: #eff3f6;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #142535;
-  --sidebar-primary: #087d96;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eaf0f3;
-  --sidebar-accent-foreground: #142535;
-  --sidebar-border: #dbe3e8;
-  --sidebar-ring: #087d96;
+  --background: #f6f5f0;
+  --foreground: #313d36;
+  --card: #fdfcf8;
+  --card-foreground: #313d36;
+  --popover: #fdfcf8;
+  --popover-foreground: #313d36;
+  --primary: #527563;
+  --primary-foreground: #f9fbf7;
+  --secondary: #e9ede5;
+  --secondary-foreground: #39483d;
+  --muted: #eeeee7;
+  --muted-foreground: #68726a;
+  --accent: #e5ebdf;
+  --accent-foreground: #313d36;
+  --destructive: #a75b50;
+  --border: #dddfd4;
+  --input: #d5dacd;
+  --ring: #527563;
+  --success: #5c7956;
+  --warning: #8b7342;
+  --risk: #a75b50;
+  --pathway: #81718f;
+  --surface: #eaf0e5;
+  --surface-raised: #fdfcf8;
+  --surface-inset: #eeeee7;
+  --sidebar: #efefe8;
+  --sidebar-foreground: #313d36;
+  --sidebar-primary: #527563;
+  --sidebar-primary-foreground: #f9fbf7;
+  --sidebar-accent: #e2e7dc;
+  --sidebar-accent-foreground: #313d36;
+  --sidebar-border: #dcdfd3;
+  --sidebar-ring: #527563;
+  --tint-sage: #e8eee2;
+  --tint-clay: #f0e8dd;
+  --tint-lavender: #eae7ed;
+  --paper-shadow: 0 24px 60px -36px rgb(65 78 50 / 24%);
 }
 
 @utility type-page-title {
   font-family: var(--font-heading);
-  font-size: clamp(1.5rem, 2vw, 1.9rem);
-  font-weight: 650;
+  font-size: clamp(1.65rem, 2.5vw, 2.15rem);
+  font-weight: 550;
   letter-spacing: -0.035em;
   line-height: 1.12;
 }
@@ -146,13 +154,13 @@
 @layer base {
   * { @apply border-border outline-ring/40; }
   html { @apply font-sans; scroll-behavior: smooth; background: var(--background); }
-  body { @apply min-h-dvh bg-background text-foreground antialiased; font-family: var(--font-ui); background-image: radial-gradient(ellipse at 58% -28%, rgb(116 246 251 / 5%), transparent 54%); }
+  body { @apply min-h-dvh bg-background text-foreground antialiased; font-family: var(--font-ui);  }
   button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   ::selection { color: var(--primary-foreground); background: var(--primary); }
 }
 
 @layer components {
-  .planner-calendar-wrap .fc { --fc-page-bg-color: transparent; --fc-neutral-bg-color: rgb(255 255 255 / 2%); --fc-neutral-text-color: #9fadb5; --fc-border-color: #2a3035; --fc-today-bg-color: rgb(116 246 251 / 3%); --fc-now-indicator-color: #74f6fb; --fc-list-event-hover-bg-color: rgb(255 255 255 / 4%); --fc-small-font-size: 0.66rem; color: #e2ebf0; font-family: var(--font-ui); }
+  .planner-calendar-wrap .fc { --fc-page-bg-color: transparent; --fc-neutral-bg-color: var(--muted); --fc-neutral-text-color: var(--muted-foreground); --fc-border-color: var(--border); --fc-today-bg-color: color-mix(in srgb, var(--primary) 4%, transparent); --fc-now-indicator-color: var(--primary); --fc-list-event-hover-bg-color: var(--accent); --fc-small-font-size: 0.7rem; color: var(--foreground); font-family: var(--font-ui); }
   .planner-calendar-wrap .fc .fc-scrollgrid, .planner-calendar-wrap .fc td, .planner-calendar-wrap .fc th { border-color: rgb(255 255 255 / 6%); }
   .planner-calendar-wrap .fc .fc-col-header-cell-cushion { padding: 0.5rem 0.25rem; color: #9fadb5; font-size: 0.62rem; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; }
   .planner-calendar-wrap .fc .fc-timegrid-slot-label-cushion { padding-right: 0.6rem; color: #77848d; font-family: var(--font-data); font-size: 0.58rem; }
@@ -161,16 +169,16 @@
   .planner-calendar-wrap .fc .fc-timegrid-now-indicator-line { border-width: 1px; }
   .planner-calendar-wrap .fc .fc-timegrid-now-indicator-arrow { display: none; }
   .planner-calendar-wrap .fc .fc-timegrid-event { border-radius: 8px; transition: top 280ms cubic-bezier(0.16, 1, 0.3, 1), height 280ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms ease, filter 180ms ease; }
-  .planner-calendar-wrap .fc .fc-event-main { padding: 5px 7px; }
+  .planner-calendar-wrap .fc .fc-event-main { padding: 5px 7px; color: inherit; }
   .planner-calendar-wrap .planner-event-inner { display: flex; flex-direction: column; gap: 3px; }
   .planner-calendar-wrap .planner-event-time { color: currentColor; font-family: var(--font-data); font-size: 0.58rem; opacity: 0.72; }
   .planner-calendar-wrap .planner-event-title { overflow: hidden; font-size: 0.68rem; font-weight: 550; line-height: 1.35; text-overflow: ellipsis; }
-  .planner-calendar-wrap .planner-event-academic { border: 1px solid rgb(116 246 251 / 21%) !important; background: rgb(116 246 251 / 8%) !important; color: #c3f7f8 !important; }
-  .planner-calendar-wrap .planner-event-career { border: 1px solid rgb(211 156 202 / 24%) !important; background: rgb(211 156 202 / 8%) !important; color: #ead2e7 !important; }
-  .planner-calendar-wrap .planner-event-personal { border: 1px solid rgb(159 173 181 / 20%) !important; background: rgb(159 173 181 / 7%) !important; color: #c5cdd1 !important; }
-  .planner-calendar-wrap .planner-event-internship { border: 1px solid rgb(115 255 112 / 20%) !important; background: rgb(115 255 112 / 7%) !important; color: #c2f8c1 !important; }
-  .planner-calendar-wrap .planner-event-recommended { border: 1px dashed rgb(116 246 251 / 33%) !important; background: rgb(116 246 251 / 6%) !important; color: #c3f7f8 !important; }
-  .planner-calendar-wrap .planner-event-conflict { border: 1px solid rgb(255 243 133 / 48%) !important; background: rgb(255 243 133 / 12%) !important; box-shadow: inset 2px 0 0 rgb(255 243 133 / 72%); filter: saturate(0.85); }
+  .planner-calendar-wrap .planner-event-academic { border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent) !important; background: var(--tint-sage) !important; color: var(--primary) !important; }
+  .planner-calendar-wrap .planner-event-career { border: 1px solid color-mix(in srgb, var(--pathway) 25%, transparent) !important; background: var(--tint-lavender) !important; color: var(--pathway) !important; }
+  .planner-calendar-wrap .planner-event-personal { border: 1px solid color-mix(in srgb, var(--muted-foreground) 25%, transparent) !important; background: var(--muted) !important; color: var(--muted-foreground) !important; }
+  .planner-calendar-wrap .planner-event-internship { border: 1px solid color-mix(in srgb, var(--success) 25%, transparent) !important; background: var(--tint-sage) !important; color: var(--success) !important; }
+  .planner-calendar-wrap .planner-event-recommended { border: 1px dashed color-mix(in srgb, var(--primary) 25%, transparent) !important; background: var(--tint-sage) !important; color: var(--primary) !important; }
+  .planner-calendar-wrap .planner-event-conflict { border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent) !important; background: var(--tint-clay) !important; box-shadow: inset 2px 0 0 var(--warning); color: var(--warning) !important; }
   .planner-calendar-wrap .fc .fc-highlight { background: rgb(116 246 251 / 8%); }
   .planner-calendar-wrap .fc .fc-daygrid-day-number { color: #aab6bd; font-size: 0.68rem; text-decoration: none; }
   .pathway-unlock-edge .react-flow__edge-path { stroke-dasharray: 8 10; animation: pathway-unlock-flow 350ms cubic-bezier(0.16, 1, 0.3, 1) both; }

@@ -37,7 +37,7 @@ export function MiniCareerPath() {
           const current = id === currentSkill?.id;
           const highlighted = current && recommendationMatches;
           const completed = skill.status === "verified" || skill.status === "completed";
-          return <motion.li key={id} layout={!reduced} className="relative min-w-16 flex-1 snap-start md:min-w-0" aria-label={`${label}, ${skill.status.replaceAll("-", " ")}`}>
+          return <motion.li key={id} className="relative min-w-16 flex-1 snap-start md:min-w-0" aria-label={`${label}, ${skill.status.replaceAll("-", " ")}`}>
             <motion.div animate={{ borderColor: highlighted ? "var(--primary)" : current ? "var(--pathway)" : "var(--border)", backgroundColor: highlighted ? "color-mix(in srgb, var(--primary) 8%, transparent)" : "transparent" }} transition={{ duration: reduced ? 0.01 : 0.3 }} className="flex h-full min-h-20 flex-col items-center rounded-xl border px-1 py-2 text-center">
               <StatusPulse trigger={skill.status} className="mb-1.5 size-6">
                 <AnimatePresence mode="wait" initial={false}><motion.span key={skill.status} initial={{ opacity: 0, scale: reduced ? 1 : 0.75 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: reduced ? 1 : 0.75 }} transition={{ duration: reduced ? 0.01 : 0.2 }} className={`grid size-6 place-items-center rounded-full border ${completed ? "border-success/40 bg-success/[0.1] text-success" : current ? "border-primary/60 bg-primary/[0.1] text-primary" : "border-border bg-background/40 text-muted-foreground"}`}>

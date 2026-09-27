@@ -3,6 +3,8 @@ import { baselineQuestions } from "../../src/lib/domain/baseline-assessment";
 
 test("a new student reaches Overview through the free DevOps path and can reset the whole journey", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("link", { name: "Find my path", exact: true }).click();
+  await page.getByRole("button", { name: "Continue without an account" }).click();
   await expect(page).toHaveURL(/\/onboarding$/, { timeout: 15_000 });
   await page.getByRole("textbox", { name: "Full name" }).fill("Asha Perera");
   await page.getByRole("textbox", { name: "University" }).fill("Colombo University");
@@ -44,6 +46,7 @@ test("a new student reaches Overview through the free DevOps path and can reset 
   await page.reload();
   await expect(page.getByText("Asha Perera").first()).toBeVisible();
   await page.goto("/");
+  await page.getByRole("link", { name: "Continue your journey", exact: true }).first().click();
   await expect(page).toHaveURL(/\/overview$/);
   await page.goto("/onboarding");
   await expect(page).toHaveURL(/\/overview$/);
