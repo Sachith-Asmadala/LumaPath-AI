@@ -16,6 +16,8 @@ import { buildRecoveryCandidate, type RecoveryChoice } from "../domain/recovery-
 import { scoreDockerReassessment, selectLearningPathCompletion, dockerReassessmentQuestions } from "../domain/skill-reassessment";
 import { resourceLearningPath, scheduleLearningPath } from "../domain/learning-path-scheduler";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
+import { importLmsAssignments as applyLmsAssignments } from "../domain/smart-deadline-import";
+import type { LmsAssignment } from "../integrations/lms/types";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
 import { raiseReadiness } from "../domain/readiness";
 import type { BaselineAssessmentResult, CareerSkill, DemoSimulation, DemoState, IntelligenceItem, NewTaskInput, OnboardingState, PlanBlock, StudentCapacity, Task, TaskCategory } from "../demo-data/types";
@@ -44,6 +46,7 @@ type DemoAction =
   | { type: "simulation"; patch: SimulationPatch }
   | { type: "update-block"; block: PlanBlock }
   | { type: "update-task"; task: NewTaskInput & { id: string } }
+  | { type: "import-lms-assignments"; assignments: readonly LmsAssignment[] }
   | { type: "miss-task"; taskId: string }
   | { type: "complete-task"; taskId: string }
   | { type: "complete-focus-session"; taskId: string; minutes: number }
@@ -86,6 +89,12 @@ function makeNotification(state: DemoState, notification: Omit<DemoState["notifi
 
 export function demoReducer(state: DemoState, action: DemoAction): DemoState {
   switch (action.type) {
+    case "import-lms-assignments": {
+      const updated = applyLmsAssignments(state, action.assignments);
+      if (updated === state) return state;
+      const count = new Set(action.assignments.map((assignment) => `${assignment.source}:${assignment.externalId}`)).size;
+      return { ...updated, notifications: makeNotification(updated, { kind: "plan", title: `${count} deadline${count === 1 ? "" : "s"} imported`, description: "Risks and your planner have been updated from the demo LMS.", href: "/tasks" }) };
+    }
     case "hydrate-demo":
       return action.state;
     case "update-onboarding":
@@ -439,6 +448,7 @@ interface DemoContextValue {
   updateTask: (task: NewTaskInput & { id: string }) => void;
   missTask: (taskId: string) => void;
   addTask: (task: NewTaskInput) => void;
+  importLmsAssignments: (assignments: readonly LmsAssignment[]) => Promise<boolean>;
   markNotificationRead: (notificationId: string) => void;
   setFeedStatus: (itemId: string, status: IntelligenceItem["status"]) => void;
   setSimulationAnnouncement: (announcement: string) => void;
@@ -554,6 +564,19 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     });
     return true;
   }, [showSteps, state]);
+
+  const importLmsAssignments = useCallback(async (assignments: readonly LmsAssignment[]) => {
+    if (running.current || assignments.length === 0) return false;
+    const count = new Set(assignments.map((assignment) => `${assignment.source}:${assignment.externalId}`)).size;
+    const steps = [`${count} deadline${count === 1 ? "" : "s"} imported`, "Risks calculated", "Plan updated", "Recommendation updated"];
+    await showSteps("deadline-import", steps, () => {
+      dispatch({ type: "import-lms-assignments", assignments });
+      dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Deadlines imported", result: steps, announcement: steps.join(" → ") } });
+    }, (index) => {
+      if (index === 0) dispatch({ type: "simulation", patch: { result: steps } });
+    });
+    return true;
+  }, [showSteps]);
 
   const scheduleSelectedResource = useCallback(async (skillId: string, resourceId: string) => {
     if (running.current || state.selectedResourceBySkill[skillId] !== resourceId || state.scheduledPathBySkill[skillId]) return false;
@@ -706,10 +729,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     updateTask,
     missTask,
     addTask,
+    importLmsAssignments,
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, importLmsAssignments, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

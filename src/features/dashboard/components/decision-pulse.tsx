@@ -14,6 +14,8 @@ export function DecisionPulse({ floating = false }: { floating?: boolean }) {
   const [visible, setVisible] = useState(false);
   const isCapacity = simulation.kind === "capacity" || (simulation.kind === null && (simulation.message === "Plan adapted" || simulation.message === "Life load plan adapted"));
   const isLearningPath = simulation.kind === "learning-path" || (simulation.kind === null && simulation.message === "Learning path scheduled");
+  const isDeadlineImport = simulation.kind === "deadline-import" || (simulation.kind === null && simulation.message === "Deadlines imported");
+  const deadlineSteps = simulation.result.length ? simulation.result : ["Deadlines imported", "Risks calculated", "Plan updated", "Recommendation updated"];
   const learningSteps = ["Learning path added", "Capacity checked", "Academic deadlines protected", "Career learning scheduled"];
   const activeStage = capacityStages.indexOf(simulation.step ?? "");
   const movedTaskCount = new Set(state.planBlocks.filter((block) => block.taskId && block.previousStartAt && block.previousStartAt !== block.startAt).map((block) => block.taskId)).size;
@@ -39,7 +41,7 @@ export function DecisionPulse({ floating = false }: { floating?: boolean }) {
     aria-label="Decision Engine updates"
   >
     <div className="rounded-2xl border border-primary/20 bg-primary/[0.045] px-4 py-3.5 sm:px-5">
-      <p className="flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles className="size-4" aria-hidden="true" />{isCapacity ? simulation.kind === "capacity" ? "LumaPath is adapting your day" : "Capacity changed" : isLearningPath ? "Learning path added" : "LumaPath Decision Engine"}</p>
+      <p className="flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles className="size-4" aria-hidden="true" />{isCapacity ? simulation.kind === "capacity" ? "LumaPath is adapting your day" : "Capacity changed" : isLearningPath ? "Learning path added" : isDeadlineImport ? "University deadlines synced" : "LumaPath Decision Engine"}</p>
       {simulation.kind === "capacity" ? <ol className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[0.68rem]" aria-label="Capacity update steps">
         {capacityStages.map((label, index) => {
           const status = index <= activeStage ? "complete" : index === activeStage + 1 ? "current" : "pending";
@@ -50,7 +52,7 @@ export function DecisionPulse({ floating = false }: { floating?: boolean }) {
         })}
       </ol> : isCapacity ? <ol className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[0.7rem] text-foreground/85" role="status">
         {capacityResults.map((result, index) => <motion.li key={result} initial={{ opacity: 0, x: reduced ? 0 : -4 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: reduced ? 0.01 : 0.2, delay: reduced ? 0 : index * 0.05 }} className="flex items-center gap-2">{index > 0 && <ArrowRight className="size-3 shrink-0 text-primary/70" aria-hidden="true" />}{result}</motion.li>)}
-      </ol> : isLearningPath ? <ol className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-foreground/85" role="status" aria-label="Learning path decision steps">{learningSteps.map((step, index) => <li key={step} className={`flex items-center gap-1.5 ${simulation.kind && index > learningSteps.indexOf(simulation.step ?? "") ? "text-muted-foreground" : "text-foreground"}`}>{index > 0 && <ArrowRight className="size-3 text-primary/70" aria-hidden="true" />}{step}</li>)}</ol> : <p role="status" className="mt-2 text-xs text-foreground/85">{simulation.kind ? simulation.step : simulation.announcement}</p>}
+      </ol> : isLearningPath ? <ol className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-foreground/85" role="status" aria-label="Learning path decision steps">{learningSteps.map((step, index) => <li key={step} className={`flex items-center gap-1.5 ${simulation.kind && index > learningSteps.indexOf(simulation.step ?? "") ? "text-muted-foreground" : "text-foreground"}`}>{index > 0 && <ArrowRight className="size-3 text-primary/70" aria-hidden="true" />}{step}</li>)}</ol> : isDeadlineImport ? <ol className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-foreground/85" role="status" aria-label="Deadline import decision steps">{deadlineSteps.map((step, index) => <li key={step} className={`flex items-center gap-1.5 ${simulation.kind && index > deadlineSteps.indexOf(simulation.step ?? "") ? "text-muted-foreground" : "text-foreground"}`}>{index > 0 && <ArrowRight className="size-3 text-primary/70" aria-hidden="true" />}{step}</li>)}</ol> : <p role="status" className="mt-2 text-xs text-foreground/85">{simulation.kind ? simulation.step : simulation.announcement}</p>}
       {simulation.message === "Life load plan adapted" && <p className="mt-2 text-xs leading-5 text-foreground/80">{simulation.announcement}</p>}
     </div>
   </motion.aside>}</AnimatePresence>;
