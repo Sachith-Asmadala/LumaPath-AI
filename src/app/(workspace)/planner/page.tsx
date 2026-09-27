@@ -14,6 +14,8 @@ import { Card } from "@/components/ui/card";
 import { Reveal } from "@/components/motion/animated";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { TypographyH1, TypographyP } from "@/components/shared/typography";
+import { PlannerAgenda } from "@/features/planner/components/planner-agenda";
+import { ViewSwitch } from "@/components/workspace/workspace-controls";
 import { TaskEditorDialog } from "@/features/planner/components/task-editor-dialog";
 import { useDemo } from "@/lib/state/demo-provider";
 import { demoPlanBlocks } from "@/lib/demo-data/seed";
@@ -25,6 +27,7 @@ const PlannerCalendar = dynamic(() => import("@/features/planner/components/plan
 });
 
 export default function PlannerPage() {
+  const [view, setView] = useState<"calendar" | "agenda">("calendar");
   const [editorOpen, setEditorOpen] = useState(false);
   const [selectedBlock, setSelectedBlock] = useState<PlanBlock | null>(null);
   const { state, generatePlan, replanWeek } = useDemo();
@@ -59,7 +62,7 @@ export default function PlannerPage() {
         <Card className="flex flex-col gap-1 rounded-[16px] border-border/75 bg-white/[0.02] px-4 py-3 shadow-none sm:flex-row sm:items-center sm:gap-3"><span className="grid size-8 place-items-center rounded-[10px] border border-success/15 bg-success/[0.04] text-success"><ShieldCheck className="size-4" /></span><div><p className="text-[0.7rem] font-medium text-foreground">Deadline protection</p><p className="mt-0.5 text-[0.62rem] text-muted-foreground">Fixed lectures and focus blocks stay visible.</p></div></Card>
         <Card className="flex flex-col gap-1 rounded-[16px] border-border/75 bg-white/[0.02] px-4 py-3 shadow-none sm:flex-row sm:items-center sm:gap-3"><span className="grid size-8 place-items-center rounded-[10px] border border-pathway/15 bg-pathway/[0.04] text-pathway"><CalendarDays className="size-4" /></span><div><p className="text-[0.7rem] font-medium text-foreground">Student context</p><p className="mt-0.5 text-[0.62rem] text-muted-foreground">Academic, career, and personal commitments.</p></div></Card>
       </div>
-      <section aria-labelledby="planner-calendar-title"><div className="mb-3 flex items-center justify-between gap-3"><SectionHeading eyebrow="Weekly plan" title="Time blocks" aside={<Badge variant="outline" className="rounded-full border-border text-[0.62rem] text-muted-foreground">Scenario week · {scenarioWeekLabel()}</Badge>} /></div><PlannerCalendar onEditTask={editBlock} /></section>
+      <section aria-label="Weekly plan"><div className="mb-3 flex items-center justify-between gap-3"><SectionHeading eyebrow="Weekly plan" title="Time blocks" aside={<Badge variant="outline" className="rounded-full border-border text-[0.62rem] text-muted-foreground">Scenario week · {scenarioWeekLabel()}</Badge>} /></div><div className="mb-4"><ViewSwitch label="Planner view" value={view} onChange={setView} options={[{ value: "calendar", label: "Calendar" }, { value: "agenda", label: "Agenda" }]} /></div>{view === "calendar" ? <PlannerCalendar onEditTask={editBlock} /> : <PlannerAgenda onEditTask={editBlock} />}</section>
       <TaskEditorDialog block={selectedBlock} open={editorOpen} onOpenChange={setEditorOpen} />
     </div>
   );

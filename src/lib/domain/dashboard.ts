@@ -149,6 +149,6 @@ export function weeklyPlannedHours(state: DemoState) {
     const date = scenarioDate(index);
     const blocks = state.planBlocks.filter((block) => block.startAt.startsWith(date) && !block.isFocusBlock);
     const hours = (categories: string[]) => Number((blocks.filter((block) => categories.includes(block.category)).reduce((sum, block) => sum + (new Date(block.endAt).getTime() - new Date(block.startAt).getTime()) / 3_600_000, 0)).toFixed(1));
-    return { day: new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "short" }), academic: hours(["Academic"]), career: hours(["Career", "AI Recommended", "Internship"]) };
+    return { day: new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "short" }), academic: hours(["Academic"]), career: hours(["Career", "career-learning", "AI Recommended", "Internship"]) };
   });
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { ViewSwitch } from "@/components/workspace/workspace-controls";
+import { useMemo, useState } from "react";
 import { Background, Controls, MarkerType, ReactFlow, type Edge, type Node } from "@xyflow/react";
 import { useDemo } from "@/lib/state/demo-provider";
 import { roadmapUnlocks } from "@/lib/domain/personalized-roadmap";
@@ -22,6 +23,7 @@ const defaultEdgeOptions = { type: "smoothstep" as const, markerEnd: { type: Mar
 
 export function CareerPathGraph() {
   const { state } = useDemo();
+  const [view, setView] = useState<"map" | "list">("map");
   const personalized = Boolean(state.assessment && state.onboarding.completed && state.onboarding.careerGoal === "DevOps Engineer");
   const recommendedName = personalized ? state.skillGap?.recommendedSkill : null;
   const cards = useMemo(() => state.careerSkills.map((skill) => ({
@@ -61,15 +63,16 @@ export function CareerPathGraph() {
       <span className="hidden items-center gap-2 text-xs text-muted-foreground lg:flex"><span className="size-1.5 rounded-full bg-success" />Verified or completed <span className="ml-2 size-1.5 rounded-full bg-primary" />In progress <span className="ml-2 size-1.5 rounded-full bg-pathway" />Available</span>
     </div>
     <CardContent className="p-0">
-      <div className={`hidden ${personalized ? "h-[1020px] lg:block" : "h-[950px] md:block"}`}>
+      <div className="hidden px-5 pt-4 lg:block"><ViewSwitch label="Pathway view" value={view} onChange={setView} options={[{ value: "map", label: "Pathway map" }, { value: "list", label: "Skill cards" }]} /></div>
+      <div className={`${view === "list" ? "!hidden" : ""} hidden ${personalized ? "h-[1020px] lg:block" : "h-[950px] lg:block"}`}>
         <ReactFlow nodes={nodes as Node[]} edges={edges} nodeTypes={nodeTypes} defaultEdgeOptions={defaultEdgeOptions} fitView fitViewOptions={{ padding: 0.08 }} minZoom={0.55} maxZoom={1.25} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} proOptions={{ hideAttribution: true }} aria-label="DevOps career prerequisite path">
           <Background color="var(--border)" gap={22} size={1} />
           <Controls position="bottom-right" showInteractive={false} className="!overflow-hidden !rounded-xl !border !border-border !bg-background/80 !shadow-none [&>button]:!border-border [&>button]:!bg-background [&>button]:!text-muted-foreground [&>button:hover]:!text-foreground" />
         </ReactFlow>
       </div>
-      <ol className={`space-y-3 p-4 ${personalized ? "lg:hidden" : "md:hidden"}`} aria-label="DevOps career pathway">
+      <ol className={`grid gap-3 p-4 ${view === "list" ? "sm:grid-cols-2 xl:grid-cols-3" : "lg:hidden"}`} aria-label="DevOps career pathway">
         {cards.map((data, index) => <li key={data.skill.id} className="relative">
-          {index > 0 && <div className="absolute -top-3 left-6 h-3 w-px bg-border" aria-hidden="true" />}
+          {index > 0 && view === "map" && <div className="absolute -top-3 left-6 h-3 w-px bg-border" aria-hidden="true" />}
           <CareerSkillCard {...data} compact />
         </li>)}
       </ol>

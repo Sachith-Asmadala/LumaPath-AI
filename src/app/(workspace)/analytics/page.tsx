@@ -1,5 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { useReducedMotion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { selectActionableSkill } from "@/lib/domain/workspace";
 import { dashboardMetrics, weeklyPlannedHours } from "@/lib/domain/dashboard";
 import { scenarioWeekLabel } from "@/lib/demo-data/scenario";
 
@@ -18,6 +22,9 @@ const chartConfig = {
 
 export default function AnalyticsPage() {
   const { state } = useDemo();
+  const [showData, setShowData] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const currentSkill = selectActionableSkill(state);
   const progress = dashboardMetrics(state);
   const weeklyData = weeklyPlannedHours(state);
   const productiveHours = Number((state.productiveMinutes / 60).toFixed(1));
@@ -38,12 +45,12 @@ export default function AnalyticsPage() {
           <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} tickMargin={10} />
           <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickFormatter={(value: number) => `${value}h`} />
           <ChartTooltip cursor={false} content={<ChartTooltipContent formatter={(value) => [`${value} hours`, ""]} />} />
-          <Bar dataKey="academic" stackId="effort" radius={[0, 0, 5, 5]} fill="var(--color-academic)" />
-          <Bar dataKey="career" stackId="effort" radius={[6, 6, 0, 0]} fill="var(--color-career)" />
+          <Bar isAnimationActive={!reducedMotion} animationDuration={450} dataKey="academic" stackId="effort" radius={[0, 0, 5, 5]} fill="var(--color-academic)" />
+          <Bar isAnimationActive={!reducedMotion} animationDuration={450} dataKey="career" stackId="effort" radius={[6, 6, 0, 0]} fill="var(--color-career)" />
         </BarChart>
-      </ChartContainer></CardContent></Card>
+      </ChartContainer><div className="mt-3 flex flex-wrap items-center justify-between gap-3"><div className="flex gap-4 text-xs text-muted-foreground"><span className="flex items-center gap-2"><span className="size-2 rounded-full bg-primary" />Academic</span><span className="flex items-center gap-2"><span className="size-2 rounded-full bg-pathway" />Career</span></div><Button variant="ghost" onClick={() => setShowData(!showData)} aria-expanded={showData} aria-controls="weekly-hours-table" className="h-11 text-xs">{showData ? "Hide data" : "View data"}</Button></div><div id="weekly-hours-table" hidden={!showData}><table className="mt-3 w-full text-left text-xs"><caption className="sr-only">Scheduled hours for the scenario week</caption><thead><tr className="border-b border-border"><th scope="col" className="py-3 font-medium">Day</th><th scope="col" className="py-3 font-medium">Academic</th><th scope="col" className="py-3 font-medium">Career</th></tr></thead><tbody>{weeklyData.map((day) => <tr key={day.day} className="border-b border-border/50"><th scope="row" className="py-2.5 font-normal">{day.day}</th><td>{day.academic}h</td><td>{day.career}h</td></tr>)}</tbody></table></div></CardContent></Card>
       <Card className="rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none"><CardHeader className="px-4 pt-4 sm:px-5 sm:pt-5"><p className="type-eyebrow mb-2 text-muted-foreground">Connected signals</p><CardTitle className="type-section-title">Where momentum is building</CardTitle></CardHeader><CardContent className="space-y-2.5 px-4 pb-5 sm:px-5">
-        {[{ title: "Academic progress", value: "Deadlines drive the current plan", icon: Target, color: "text-primary" }, { title: "Career pathway", value: `${state.careerSkills.filter((skill) => skill.status === "verified").length} skills verified · Docker in focus`, icon: TrendingUp, color: "text-pathway" }, { title: "Career evidence", value: `${state.evidence.filter((item) => item.status === "verified").length} pieces verified`, icon: CalendarCheck2, color: "text-success" }].map(({ title, value, icon: Icon, color }) => <div key={title} className="flex items-start gap-3 rounded-[13px] border border-border/65 bg-background/35 p-3"><Icon className={`mt-0.5 size-4 shrink-0 ${color}`} /><div><p className="text-[0.68rem] font-medium text-foreground">{title}</p><p className="mt-1 text-[0.62rem] leading-5 text-muted-foreground">{value}</p></div></div>)}
+        {[{ title: "Academic progress", value: "Deadlines drive the current plan", icon: Target, color: "text-primary" }, { title: "Career pathway", value: `${state.careerSkills.filter((skill) => skill.status === "verified").length} skills verified · ${currentSkill ? `${currentSkill.name} in focus` : "review your roadmap"}`, icon: TrendingUp, color: "text-pathway" }, { title: "Career evidence", value: `${state.evidence.filter((item) => item.status === "verified").length} pieces verified`, icon: CalendarCheck2, color: "text-success" }].map(({ title, value, icon: Icon, color }) => <div key={title} className="flex items-start gap-3 rounded-[13px] border border-border/65 bg-background/35 p-3"><Icon className={`mt-0.5 size-4 shrink-0 ${color}`} /><div><p className="text-[0.68rem] font-medium text-foreground">{title}</p><p className="mt-1 text-[0.62rem] leading-5 text-muted-foreground">{value}</p></div></div>)}
         <p className="pt-1 text-[0.59rem] leading-4 text-muted-foreground">Scheduled hours, completed tasks, and readiness reflect your current plan.</p>
       </CardContent></Card>
     </div>

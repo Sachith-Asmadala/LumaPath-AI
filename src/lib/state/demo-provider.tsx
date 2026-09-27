@@ -53,6 +53,7 @@ type DemoAction =
   | { type: "complete-skill"; skillId: string; stage?: "verify" | "unlock" | "finish" }
   | { type: "verify-evidence"; evidenceId: string }
   | { type: "plan-intelligence"; itemId: string }
+  | { type: "set-feed-status"; itemId: string; status: IntelligenceItem["status"] }
   | { type: "add-opportunity-preparation" }
   | { type: "select-action"; taskId: string }
   | { type: "mark-notification-read"; notificationId: string };
@@ -253,6 +254,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       };
     }
     case "complete-focus-session": {
+      if (!Number.isFinite(action.minutes) || action.minutes <= 0) return state;
       const task = state.tasks.find((item) => item.id === action.taskId);
       if (!task || task.status === "completed") return state;
       const addedProgress = task.id === "docker-lab"
@@ -359,6 +361,11 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       const readiness = raiseReadiness(state.readiness, "evidence", 2);
       const notifications = makeNotification(state, { kind: "evidence", title: "Evidence verified", description: `${verifiedItem?.label ?? "New evidence"} now contributes to your confidence score.`, href: "/evidence" });
       return { ...state, evidence, careerSkills, readiness, notifications };
+    }
+    case "set-feed-status": {
+      const item = state.intelligenceItems.find((candidate) => candidate.id === action.itemId);
+      if (!item || item.status === "planned" || action.status === "planned") return state;
+      return { ...state, intelligenceItems: state.intelligenceItems.map((candidate) => candidate.id === action.itemId ? { ...candidate, status: action.status } : candidate), simulation: { ...state.simulation, announcement: `Intelligence item ${action.status.replaceAll("-", " ")}.` } };
     }
     case "plan-intelligence": {
       const item = state.intelligenceItems.find((candidate) => candidate.id === action.itemId);
@@ -689,8 +696,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const markNotificationRead = useCallback((notificationId: string) => dispatch({ type: "mark-notification-read", notificationId }), []);
   const setSimulationAnnouncement = useCallback((announcement: string) => dispatch({ type: "simulation", patch: { announcement } }), []);
   const setFeedStatus = useCallback((itemId: string, status: IntelligenceItem["status"]) => {
-    dispatch({ type: "patch", patch: { intelligenceItems: state.intelligenceItems.map((item) => item.id === itemId ? { ...item, status } : item), simulation: { ...state.simulation, announcement: `Intelligence item ${status.replaceAll("-", " ")}.` } } });
-  }, [state.intelligenceItems, state.simulation]);
+    dispatch({ type: "set-feed-status", itemId, status });
+  }, []);
 
   const addTask = useCallback((input: NewTaskInput) => {
     const id = `task-${state.tasks.length + 1}`;

@@ -466,7 +466,7 @@ No license file has been added yet. Until a license is selected and committed, n
 
 # LumaPath AI
 
-LumaPath helps students connect academic deadlines, an adaptive day plan, and career readiness. The current app uses a deterministic local student scenario; changes made in the UI reset when the page is reloaded.
+LumaPath helps students connect academic deadlines, an adaptive day plan, and career readiness. The current app uses a deterministic local student scenario. After onboarding, shared student progress is saved in this browser and survives reloads; Demo Reset starts a fresh journey.
 
 ## Run locally
 
@@ -496,3 +496,17 @@ npm run build
 ```
 
 The browser tests require a one-time `npx playwright install chromium`. See [the dashboard review notes](docs/dashboard-review.md) for the connected Overview flow and its demo limitations.
+
+## Workspace controls
+
+- **Overview:** quick links to add tasks, import deadlines, and view the schedule.
+- **Tasks:** search, category filters, risk/deadline/duration sorting, and direct focus sessions.
+- **Planner:** calendar and chronological agenda views share the same editable blocks.
+- **Career Path and Skills:** map/card views, current versus target scores, and prerequisite-aware next steps.
+- **Evidence:** search sources and browse verified or pending work without changing confidence calculations.
+- **Intelligence:** Discover, Saved, and In your plan collections; dismiss with Undo.
+- **Analytics:** planned academic/career hours with an accessible data table.
+- **Focus:** capacity-aware duration choices, start/pause/reset, and explicit demo session completion.
+- **Settings:** light, dark, and device theme previews.
+
+Controls support keyboard navigation. Motion respects the device’s reduced-motion setting; mobile controls have larger tap targets. All learning and planning interactions continue to use the shared demo store.
