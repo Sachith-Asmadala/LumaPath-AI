@@ -26,7 +26,7 @@ describe("assessment skill gaps", () => {
     expect(gap.improve).toEqual(["Networking", "Docker"]);
     expect(gap.gap).toEqual(["CI/CD", "Cloud"]);
     expect(gap.recommendedSkill).toBe("Docker");
-    expect(gap.prerequisiteSkills).toEqual(["Git"]);
+    expect(gap.prerequisiteSkills).toEqual(["Networking"]);
     expect(gap.unlocks).toEqual(["CI/CD"]);
     expect(demoReducer(createDemoState(), { type: "set-assessment", result: demoResult }).skillGap).toEqual(gap);
   });

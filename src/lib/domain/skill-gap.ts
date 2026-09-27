@@ -1,5 +1,6 @@
 import type { BaselineAssessmentResult, BaselineSkill, SkillGapData, SkillGapLevel } from "../demo-data/types";
 import { baselineSkills } from "./baseline-assessment";
+import { devOpsRoadmapSteps } from "./personalized-roadmap";
 
 export const strongThreshold = 70;
 export const improveThreshold = 40;
@@ -7,11 +8,13 @@ export const improveThreshold = 40;
 const prerequisites: Record<BaselineSkill, readonly BaselineSkill[]> = {
   Linux: [],
   Git: ["Linux"],
-  Networking: ["Linux"],
-  Docker: ["Git"],
+  Networking: ["Git"],
+  Docker: ["Networking"],
   "CI/CD": ["Docker"],
-  Cloud: ["Git"],
+  Cloud: ["CI/CD"],
 };
+
+const targetFor = (skill: BaselineSkill) => devOpsRoadmapSteps.find((step) => step.baselineSkill === skill)!.targetScore;
 
 export function skillGapLevel(score: number): SkillGapLevel {
   if (score >= strongThreshold) return "strong";
@@ -23,7 +26,9 @@ export function generateSkillGap(result: BaselineAssessmentResult): SkillGapData
   for (const skill of baselineSkills) levels[skill] = skillGapLevel(result.skillScores[skill]);
 
   const belowTarget = baselineSkills.filter((skill) => levels[skill] !== "strong");
-  const eligible = belowTarget.filter((skill) => prerequisites[skill].every((required) => levels[required] === "strong"));
+  const prerequisitesMet = (skill: BaselineSkill): boolean => prerequisites[skill].every((required) =>
+    result.skillScores[required] >= targetFor(required) && prerequisitesMet(required));
+  const eligible = belowTarget.filter(prerequisitesMet);
 
   // Prefer work that opens blocked downstream skills, then the lowest current score.
   const recommendedSkill = [...eligible].sort((left, right) => {

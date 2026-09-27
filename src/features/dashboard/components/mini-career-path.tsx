@@ -36,7 +36,7 @@ export function MiniCareerPath() {
           const skill = state.careerSkills.find((item) => item.id === id)!;
           const current = id === currentSkill?.id;
           const highlighted = current && recommendationMatches;
-          const completed = skill.status === "verified";
+          const completed = skill.status === "verified" || skill.status === "completed";
           return <motion.li key={id} layout={!reduced} className="relative min-w-16 flex-1 snap-start md:min-w-0" aria-label={`${label}, ${skill.status.replaceAll("-", " ")}`}>
             <motion.div animate={{ borderColor: highlighted ? "var(--primary)" : current ? "var(--pathway)" : "var(--border)", backgroundColor: highlighted ? "color-mix(in srgb, var(--primary) 8%, transparent)" : "transparent" }} transition={{ duration: reduced ? 0.01 : 0.3 }} className="flex h-full min-h-20 flex-col items-center rounded-xl border px-1 py-2 text-center">
               <StatusPulse trigger={skill.status} className="mb-1.5 size-6">
@@ -45,7 +45,7 @@ export function MiniCareerPath() {
                 </motion.span></AnimatePresence>
               </StatusPulse>
               <span className="text-[0.67rem] font-semibold leading-tight text-foreground">{label}</span>
-              <AnimatePresence mode="wait" initial={false}><motion.span key={skill.status} initial={{ opacity: 0, y: reduced ? 0 : 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduced ? 0 : -4 }} transition={{ duration: reduced ? 0.01 : 0.18 }} className={`mt-1 text-[0.55rem] leading-tight ${completed ? "text-success" : current ? "text-primary" : "text-muted-foreground"}`}>{skill.status === "in-progress" ? "In Progress" : skill.status === "verified" ? "Verified" : skill.status === "available" ? "Available" : "Locked"}</motion.span></AnimatePresence>
+              <AnimatePresence mode="wait" initial={false}><motion.span key={skill.status} initial={{ opacity: 0, y: reduced ? 0 : 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduced ? 0 : -4 }} transition={{ duration: reduced ? 0.01 : 0.18 }} className={`mt-1 text-[0.55rem] leading-tight ${completed ? "text-success" : current ? "text-primary" : "text-muted-foreground"}`}>{skill.status === "in-progress" ? "In Progress" : skill.status === "verified" ? "Verified" : skill.status === "completed" ? "Completed" : skill.status === "available" ? "Available" : "Locked"}</motion.span></AnimatePresence>
             </motion.div>
             {index < steps.length - 1 && <motion.span animate={{ color: completed ? "var(--success)" : "var(--muted-foreground)" }} transition={{ duration: reduced ? 0.01 : 0.3 }} className="pointer-events-none absolute -right-2 top-5 z-10" aria-hidden="true"><ArrowRight className="size-3" /></motion.span>}
           </motion.li>;

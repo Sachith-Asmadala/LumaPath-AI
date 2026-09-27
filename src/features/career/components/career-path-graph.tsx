@@ -3,86 +3,76 @@
 import { useMemo } from "react";
 import { Background, Controls, MarkerType, ReactFlow, type Edge, type Node } from "@xyflow/react";
 import { useDemo } from "@/lib/state/demo-provider";
-import { CareerSkillNode, type CareerFlowNode } from "@/features/career/components/career-skill-node";
+import { roadmapUnlocks } from "@/lib/domain/personalized-roadmap";
+import { CareerSkillCard, CareerSkillNode, type CareerFlowNode } from "@/features/career/components/career-skill-node";
 import { Card, CardContent } from "@/components/ui/card";
 
 const nodeTypes = { careerSkill: CareerSkillNode };
-const positions: Record<string, { x: number; y: number }> = {
-  linux: { x: 24, y: 80 },
-  git: { x: 282, y: 80 },
-  docker: { x: 540, y: 80 },
-  cicd: { x: 282, y: 312 },
-  cloud: { x: 540, y: 312 },
-  terraform: { x: 540, y: 544 },
-  kubernetes: { x: 282, y: 544 },
-  monitoring: { x: 24, y: 544 },
+const standardPositions: Record<string, { x: number; y: number }> = {
+  linux: { x: 0, y: 0 }, git: { x: 310, y: 0 }, docker: { x: 620, y: 0 },
+  cicd: { x: 0, y: 320 }, cloud: { x: 310, y: 320 }, terraform: { x: 620, y: 320 },
+  kubernetes: { x: 0, y: 640 }, monitoring: { x: 310, y: 640 },
 };
-
+const personalizedPositions: Record<string, { x: number; y: number }> = {
+  linux: { x: 0, y: 0 }, git: { x: 310, y: 0 }, networking: { x: 620, y: 0 },
+  docker: { x: 620, y: 340 }, cicd: { x: 310, y: 340 }, cloud: { x: 0, y: 340 },
+  terraform: { x: 0, y: 680 }, kubernetes: { x: 310, y: 680 }, monitoring: { x: 620, y: 680 },
+};
 const defaultEdgeOptions = { type: "smoothstep" as const, markerEnd: { type: MarkerType.ArrowClosed, color: "#576168" } };
 
 export function CareerPathGraph() {
-  const { state, completeSkill } = useDemo();
-  const nodes = useMemo<CareerFlowNode[]>(() => state.careerSkills.map((skill) => ({
-    id: skill.id,
+  const { state } = useDemo();
+  const personalized = Boolean(state.assessment && state.onboarding.completed && state.onboarding.careerGoal === "DevOps Engineer");
+  const recommendedName = personalized ? state.skillGap?.recommendedSkill : null;
+  const cards = useMemo(() => state.careerSkills.map((skill) => ({
+    skill,
+    prerequisites: skill.prerequisites.map((id) => state.careerSkills.find((item) => item.id === id)?.name ?? id),
+    unlocks: roadmapUnlocks(state.careerSkills, skill.id),
+    recommended: skill.name === recommendedName,
+    personalized,
+  })), [state.careerSkills, recommendedName, personalized]);
+  const nodes = useMemo<CareerFlowNode[]>(() => cards.map((data) => ({
+    id: data.skill.id,
     type: "careerSkill",
-    position: positions[skill.id] ?? { x: 0, y: 0 },
-    data: { skill },
+    position: (personalized ? personalizedPositions : standardPositions)[data.skill.id] ?? { x: 0, y: 0 },
+    data,
     draggable: false,
     selectable: true,
-  })), [state.careerSkills]);
+  })), [cards, personalized]);
   const edges = useMemo<Edge[]>(() => state.careerSkills.flatMap((skill) => skill.prerequisites.map((source) => {
-    const dockerVerified = state.careerSkills.find((item) => item.id === "docker")?.status === "verified";
-    const justUnlocked = dockerVerified && (skill.id === "cicd" || skill.id === "terraform") && skill.status === "available";
+    const sourceStatus = state.careerSkills.find((item) => item.id === source)?.status;
+    const activeEdge = personalized
+      ? (sourceStatus === "verified" || sourceStatus === "completed") && (skill.status === "available" || skill.status === "in-progress")
+      : state.careerSkills.find((item) => item.id === "docker")?.status === "verified" && (skill.id === "cicd" || skill.id === "terraform") && skill.status === "available";
     return {
       id: `${source}-${skill.id}`,
       source,
       target: skill.id,
       type: "smoothstep",
-      className: justUnlocked ? "pathway-unlock-edge" : undefined,
-      markerEnd: { type: MarkerType.ArrowClosed, color: justUnlocked ? "#74f6fb" : "#576168" },
-      style: { stroke: justUnlocked ? "#74f6fb" : "#465059", strokeWidth: justUnlocked ? 1.8 : 1.3 },
+      className: activeEdge ? "pathway-unlock-edge" : undefined,
+      markerEnd: { type: MarkerType.ArrowClosed, color: activeEdge ? "#74f6fb" : "#576168" },
+      style: { stroke: activeEdge ? "#74f6fb" : "#465059", strokeWidth: activeEdge ? 1.8 : 1.3, transition: "stroke 250ms ease, stroke-width 250ms ease" },
     };
-  })), [state.careerSkills]);
+  })), [state.careerSkills, personalized]);
 
-  return (
-    <Card className="overflow-hidden rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
-      <div className="flex items-center justify-between border-b border-border/75 px-4 py-3.5 sm:px-5">
-        <div><p className="text-[0.72rem] font-medium text-foreground">DevOps Engineer pathway</p><p className="mt-1 text-[0.62rem] text-muted-foreground">Prerequisites · evidence · readiness</p></div>
-        <span className="hidden items-center gap-2 text-[0.61rem] text-muted-foreground sm:flex"><span className="size-1.5 rounded-full bg-success" />Verified <span className="ml-2 size-1.5 rounded-full bg-primary" />In progress <span className="ml-2 size-1.5 rounded-full bg-pathway" />Available</span>
+  return <Card className="overflow-hidden rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
+    <div className="flex items-center justify-between border-b border-border/75 px-4 py-3.5 sm:px-5">
+      <div><p className="text-sm font-medium text-foreground">{state.student.targetRole} pathway</p><p className="mt-1 text-xs text-muted-foreground">{personalized ? "Assessment scores · prerequisites · learning time" : "Prerequisites · evidence · readiness"}</p></div>
+      <span className="hidden items-center gap-2 text-xs text-muted-foreground lg:flex"><span className="size-1.5 rounded-full bg-success" />Verified or completed <span className="ml-2 size-1.5 rounded-full bg-primary" />In progress <span className="ml-2 size-1.5 rounded-full bg-pathway" />Available</span>
+    </div>
+    <CardContent className="p-0">
+      <div className={`hidden ${personalized ? "h-[1020px] lg:block" : "h-[950px] md:block"}`}>
+        <ReactFlow nodes={nodes as Node[]} edges={edges} nodeTypes={nodeTypes} defaultEdgeOptions={defaultEdgeOptions} fitView fitViewOptions={{ padding: 0.08 }} minZoom={0.55} maxZoom={1.25} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} proOptions={{ hideAttribution: true }} aria-label="DevOps career prerequisite path">
+          <Background color="#343c42" gap={22} size={1} />
+          <Controls position="bottom-right" showInteractive={false} className="!overflow-hidden !rounded-xl !border !border-border !bg-background/80 !shadow-none [&>button]:!border-border [&>button]:!bg-background [&>button]:!text-muted-foreground [&>button:hover]:!text-foreground" />
+        </ReactFlow>
       </div>
-      <CardContent className="p-0">
-        <div className="hidden h-[650px] md:block">
-          <ReactFlow
-            nodes={nodes as Node[]}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            defaultEdgeOptions={defaultEdgeOptions}
-            fitView
-            fitViewOptions={{ padding: 0.14 }}
-            minZoom={0.55}
-            maxZoom={1.25}
-            nodesDraggable={false}
-            nodesConnectable={false}
-            elementsSelectable={false}
-            proOptions={{ hideAttribution: true }}
-            aria-label="DevOps career prerequisite path"
-          >
-            <Background color="#343c42" gap={22} size={1} />
-            <Controls position="bottom-right" showInteractive={false} className="!overflow-hidden !rounded-xl !border !border-border !bg-background/80 !shadow-none [&>button]:!border-border [&>button]:!bg-background [&>button]:!text-muted-foreground [&>button:hover]:!text-foreground" />
-          </ReactFlow>
-        </div>
-        <div className="space-y-2.5 p-4 md:hidden" aria-label="DevOps career pathway">
-          {state.careerSkills.map((skill, index) => <div key={skill.id} className="relative">
-            {index > 0 && <div className="absolute -top-3 left-[1.05rem] h-3 w-px bg-border" aria-hidden="true" />}
-            <div className={`flex items-center gap-3 rounded-[14px] border p-3 ${skill.status === "in-progress" ? "border-primary/25 bg-primary/[0.035]" : "border-border/80 bg-background/45"}`}>
-              <span className={`grid size-8 shrink-0 place-items-center rounded-[10px] border text-xs font-mono ${skill.status === "verified" ? "border-success/20 bg-success/[0.06] text-success" : skill.status === "in-progress" ? "border-primary/20 bg-primary/[0.06] text-primary" : skill.status === "available" ? "border-pathway/20 bg-pathway/[0.06] text-pathway" : "border-border text-muted-foreground"}`}>{String(index + 1).padStart(2, "0")}</span>
-              <div className="min-w-0 flex-1"><p className="truncate text-[0.73rem] font-medium text-foreground">{skill.name}</p><p className="mt-0.5 text-[0.62rem] capitalize text-muted-foreground">{skill.status.replaceAll("-", " ")} · {skill.proficiency}%</p></div>
-              {skill.status === "in-progress" && <button type="button" onClick={() => completeSkill(skill.id)} className="rounded-lg border border-primary/20 px-2.5 py-1.5 text-[0.6rem] text-primary transition-colors hover:bg-primary/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Verify</button>}
-            </div>
-          </div>)}
-          <p className="pt-1 text-[0.62rem] leading-5 text-muted-foreground">Each step opens when its required skills are verified. Status labels stay visible without relying on color.</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+      <ol className={`space-y-3 p-4 ${personalized ? "lg:hidden" : "md:hidden"}`} aria-label="DevOps career pathway">
+        {cards.map((data, index) => <li key={data.skill.id} className="relative">
+          {index > 0 && <div className="absolute -top-3 left-6 h-3 w-px bg-border" aria-hidden="true" />}
+          <CareerSkillCard {...data} compact />
+        </li>)}
+      </ol>
+    </CardContent>
+  </Card>;
 }

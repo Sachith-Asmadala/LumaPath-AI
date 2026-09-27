@@ -51,7 +51,7 @@ export function dashboardMetrics(state: DemoState) {
   const scheduled = state.planBlocks.filter((block) => block.taskId && !block.isFocusBlock);
   const completed = new Set(state.tasks.filter((task) => task.status === "completed").map((task) => task.id));
   const milestoneTotal = state.careerSkills.reduce((sum, skill) => sum + milestoneWeight(skill), 0);
-  const milestoneCompleted = state.careerSkills.reduce((sum, skill) => sum + (skill.status === "verified" ? milestoneWeight(skill) : 0), 0);
+  const milestoneCompleted = state.careerSkills.reduce((sum, skill) => sum + (skill.status === "verified" || skill.status === "completed" ? milestoneWeight(skill) : 0), 0);
   return {
     completedTasks: completed.size,
     totalTasks: state.tasks.length,

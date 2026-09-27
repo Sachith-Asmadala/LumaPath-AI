@@ -10,6 +10,7 @@ const riskStyles: Record<RiskLevel, string> = {
 
 const skillStyles: Record<SkillStatus, string> = {
   verified: "border-success/20 bg-success/8 text-success",
+  completed: "border-success/20 bg-success/8 text-success",
   "in-progress": "border-primary/25 bg-primary/8 text-primary",
   available: "border-pathway/25 bg-pathway/8 text-pathway",
   locked: "border-border bg-muted/40 text-muted-foreground",

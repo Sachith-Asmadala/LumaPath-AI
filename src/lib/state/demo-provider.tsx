@@ -7,6 +7,7 @@ import { demoDataAdapter } from "../demo-data/adapter";
 import { canCompleteOnboarding, onboardingStorageKey, readCompletedOnboarding, studentFromOnboarding } from "../demo-data/onboarding";
 import { baselineStorageKey, readBaselineAssessment, scoreBaselineAssessment } from "../domain/baseline-assessment";
 import { generateSkillGap } from "../domain/skill-gap";
+import { buildDevOpsRoadmap } from "../domain/personalized-roadmap";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
 import { raiseReadiness } from "../domain/readiness";
@@ -43,13 +44,16 @@ function unlockDownstream(skills: CareerSkill[], completedId: string): CareerSki
   );
   for (const skill of updated) {
     if (skill.status !== "locked" || !skill.prerequisites.includes(completedId)) continue;
-    const prerequisitesMet = skill.prerequisites.every((id) => updated.find((item) => item.id === id)?.status === "verified");
+    const prerequisitesMet = skill.prerequisites.every((id) => {
+      const status = updated.find((item) => item.id === id)?.status;
+      return status === "verified" || status === "completed";
+    });
     if (prerequisitesMet) {
       skill.status = "available";
     }
   }
   // Introductory Terraform work opens with verified Docker and available Cloud foundations.
-  if (completedId === "docker") {
+  if (completedId === "docker" && !skills.some((skill) => skill.id === "networking")) {
     const terraform = updated.find((skill) => skill.id === "terraform");
     if (terraform?.status === "locked" && terraform.prerequisites.every((id) => updated.some((skill) => skill.id === id && ["verified", "available"].includes(skill.status)))) terraform.status = "available";
   }
@@ -73,14 +77,28 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       return { ...state, student: studentFromOnboarding(state.student, state.onboarding), onboarding: { ...state.onboarding, completed: true } };
     case "hydrate-onboarding":
       return { ...state, student: studentFromOnboarding(state.student, action.onboarding), onboarding: action.onboarding };
-    case "set-assessment":
-      return { ...state, assessment: action.result, skillGap: generateSkillGap(action.result) };
+    case "set-assessment": {
+      const skillGap = generateSkillGap(action.result);
+      return {
+        ...state,
+        assessment: action.result,
+        skillGap,
+        careerSkills: state.onboarding.careerGoal === "DevOps Engineer"
+          ? buildDevOpsRoadmap(action.result, state.assessment ? state.careerSkills : [], state.onboarding.weeklyLearningHours, skillGap.recommendedSkill)
+          : state.careerSkills,
+      };
+    }
     case "capacity-stage":
       return adaptCapacityStage(state, action.capacity, action.stage);
     case "recover-database":
       return recoverDatabase(state);
-    case "reset":
-      return { ...demoDataAdapter.reset(), student: state.student, onboarding: state.onboarding, assessment: state.assessment, skillGap: state.skillGap };
+    case "reset": {
+      const fresh = demoDataAdapter.reset();
+      return { ...fresh, student: state.student, onboarding: state.onboarding, assessment: state.assessment, skillGap: state.skillGap,
+        careerSkills: state.assessment && state.onboarding.careerGoal === "DevOps Engineer"
+          ? buildDevOpsRoadmap(state.assessment, [], state.onboarding.weeklyLearningHours, state.skillGap?.recommendedSkill ?? null)
+          : fresh.careerSkills };
+    }
     case "patch":
       return { ...state, ...action.patch };
     case "simulation":

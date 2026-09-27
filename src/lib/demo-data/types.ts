@@ -1,7 +1,7 @@
 export type TaskCategory = "Academic" | "Career" | "Personal" | "Internship" | "AI Recommended";
 export type TaskStatus = "upcoming" | "in-progress" | "completed" | "missed";
 export type RiskLevel = "critical" | "high" | "moderate" | "low";
-export type SkillStatus = "verified" | "in-progress" | "available" | "locked" | "gap";
+export type SkillStatus = "verified" | "completed" | "in-progress" | "available" | "locked" | "gap";
 export type EvidenceStatus = "self-reported" | "submitted" | "verified" | "expired" | "needs-review";
 export type IntelligenceStatus = "new" | "saved" | "dismissed" | "planned" | "not-relevant";
 export type SimulationKind = "capacity" | "replan" | "recovery" | "generate" | null;
@@ -121,6 +121,8 @@ export interface CareerSkill {
   name: string;
   status: SkillStatus;
   proficiency: number;
+  targetScore?: number;
+  estimatedWeeks?: number;
   prerequisites: string[];
   description: string;
 }
