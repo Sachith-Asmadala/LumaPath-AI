@@ -10,24 +10,49 @@ LumaPath AI is an adaptive Student Success and Career Readiness platform that co
 
 ## Contents
 
-- [Overview](#overview)
-- [The Problem](#the-problem)
-- [The Solution](#the-solution)
-- [Core Product Promise](#core-product-promise)
-- [hackX 11.0 Prototype](#hackx-110-prototype)
-- [Prototype Demo Flow](#prototype-demo-flow)
-- [Full Product Vision](#full-product-vision)
-- [AI and Decision Intelligence](#ai-and-decision-intelligence)
-- [System Architecture](#system-architecture)
-- [Target Tech Stack](#target-tech-stack)
-- [Security and Responsible Support](#security-and-responsible-support)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Current Development Status](#current-development-status)
-- [Roadmap](#roadmap)
-- [Team](#team)
-- [Future Vision](#future-vision)
-- [License](#license)
+- [LumaPath AI](#lumapath-ai)
+  - [Contents](#contents)
+  - [Overview](#overview)
+  - [The Problem](#the-problem)
+  - [The Solution](#the-solution)
+  - [Core Product Promise](#core-product-promise)
+  - [hackX 11.0 Prototype](#hackx-110-prototype)
+    - [Prototype Scope](#prototype-scope)
+    - [Prototype Status](#prototype-status)
+  - [Prototype Demo Flow](#prototype-demo-flow)
+  - [Full Product Vision](#full-product-vision)
+    - [Academic Success](#academic-success)
+    - [AI Planning](#ai-planning)
+    - [Student Wellness and Capacity](#student-wellness-and-capacity)
+    - [Productivity](#productivity)
+    - [Career Growth](#career-growth)
+    - [AI Mentor and Learning](#ai-mentor-and-learning)
+    - [Career Intelligence](#career-intelligence)
+    - [Analytics and Notifications](#analytics-and-notifications)
+    - [Integrations and Platform](#integrations-and-platform)
+  - [AI and Decision Intelligence](#ai-and-decision-intelligence)
+  - [System Architecture](#system-architecture)
+    - [Competition Prototype Architecture](#competition-prototype-architecture)
+    - [Target Production Architecture](#target-production-architecture)
+    - [Target Data Strategy](#target-data-strategy)
+  - [Target Tech Stack](#target-tech-stack)
+    - [Engineering Direction](#engineering-direction)
+  - [Security and Responsible Support](#security-and-responsible-support)
+  - [Getting Started](#getting-started)
+  - [Project Structure](#project-structure)
+  - [Current Development Status](#current-development-status)
+  - [Roadmap](#roadmap)
+    - [Milestone 1 — Competition Foundation](#milestone-1--competition-foundation)
+    - [Milestone 2 — Core Decision Loop](#milestone-2--core-decision-loop)
+    - [Milestone 3 — Career Readiness](#milestone-3--career-readiness)
+    - [Milestone 4 — Broader Student Platform](#milestone-4--broader-student-platform)
+    - [Milestone 5 — Scale and Operations](#milestone-5--scale-and-operations)
+  - [Team](#team)
+  - [Future Vision](#future-vision)
+  - [License](#license)
+- [LumaPath AI](#lumapath-ai-1)
+  - [Run locally](#run-locally)
+  - [Checks](#checks)
 
 ## Overview
 
@@ -438,3 +463,36 @@ The architecture should evolve with validated user needs. Microservices, multipl
 ## License
 
 No license file has been added yet. Until a license is selected and committed, normal copyright restrictions apply. The team can evaluate the MIT License or another suitable license in a future update.
+
+# LumaPath AI
+
+LumaPath helps students connect academic deadlines, an adaptive day plan, and career readiness. The current app uses a deterministic local student scenario; changes made in the UI reset when the page is reloaded.
+
+## Run locally
+
+Use Node.js 20.20.2 or newer and npm. This repository has a `package-lock.json` and uses npm as its package manager.
+
+```bash
+npm ci
+npm run dev
+```
+
+Open the URL printed by Next.js. It is usually <http://localhost:3000>; if that port is busy, Next.js prints another port such as 3001.
+
+The `pnpm` command installed on some Macs may require a newer Node.js version. With Node 20 and Homebrew pnpm 11, `node:sqlite` fails before the app starts. Use `npm run dev` for this repository. If you choose to use pnpm in another project, install a pnpm version compatible with your Node.js version.
+
+The app is on Next.js 15. Its development output goes to `.next-dev`, while production builds go to `.next`, so `npm run build` can run without deleting files used by a live development server. If a server started before this change still reports a missing `_buildManifest.js.tmp` file, stop that server and start `npm run dev` again. Run only one development server for this checkout at a time.
+
+The PostCSS override in `package.json` patches the version nested under Next.js 15; `npm audit` now reports zero vulnerabilities without a major Next.js upgrade.
+
+## Checks
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run test:e2e
+npm run build
+```
+
+The browser tests require a one-time `npx playwright install chromium`. See [the dashboard review notes](docs/dashboard-review.md) for the connected Overview flow and its demo limitations.
