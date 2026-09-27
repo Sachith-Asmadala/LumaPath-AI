@@ -205,7 +205,7 @@ export function createDemoState(): DemoState {
     skillGap: null,
     selectedResourceBySkill: {},
     selectedFreePathBySkill: {},
-    scheduledFreePathBySkill: {},
+    scheduledPathBySkill: {},
     capacity: { ...defaultCapacity },
     recoveryPending: false,
     tasks: demoTasks.map((task) => ({ ...task, careerSkillIds: [...task.careerSkillIds] })),

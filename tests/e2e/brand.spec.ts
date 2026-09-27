@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { seedExistingStudent } from "./seed-existing-student";
+
+test.beforeEach(async ({ page }) => seedExistingStudent(page));
 
 test("brand follows theme and sidebar state without a reload", async ({ page }) => {
   await page.goto("/settings");

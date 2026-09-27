@@ -21,9 +21,9 @@ export default function FreeLearningPathPage() {
   const skill = state.careerSkills.find((item) => item.id === skillId);
   const path = freePathForSkill(skillId);
   const ready = state.onboarding.completed && Boolean(state.assessment);
-  const eligible = skill?.status === "available" || skill?.status === "in-progress" || (skill?.status === "verified" && Boolean(state.scheduledFreePathBySkill[skillId]));
+  const eligible = skill?.status === "available" || skill?.status === "in-progress" || (skill?.status === "verified" && state.scheduledPathBySkill[skillId] === path?.id);
   const added = path && state.selectedFreePathBySkill[skillId] === path.id;
-  const scheduled = path && state.scheduledFreePathBySkill[skillId] === path.id;
+  const scheduled = path && state.scheduledPathBySkill[skillId] === path.id;
   const completed = selectLearningPathCompletion(state, skillId)?.pathComplete;
 
   const addToPlan = async () => {

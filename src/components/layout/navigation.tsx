@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Activity, BriefcaseBusiness, CalendarDays, ChartNoAxesCombined, CheckSquare2, Compass, LayoutDashboard, Mic2, Network, Settings2, Sparkles, ShieldCheck } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
@@ -50,9 +50,11 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
 function WorkspaceContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const reduceMotion = useReducedMotion();
   const { isMobile, setOpenMobile } = useSidebar();
-  const { resetDemo } = useDemo();
+  const { state, resetDemo } = useDemo();
+  const resetJourney = () => { resetDemo(); router.replace("/onboarding"); };
   const [commandOpen, setCommandOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
   const activeRoute = primaryLinks.find((link) => link.href === pathname)?.label ?? (pathname === "/settings" ? "Settings" : "Overview");
@@ -108,13 +110,13 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
         </SidebarContent>
         <SidebarFooter className="gap-2 border-t border-sidebar-border px-3 py-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
           <Button asChild variant="ghost" className="h-11 justify-start gap-2.5 px-2.5 text-muted-foreground hover:text-foreground md:h-9 group-data-[collapsible=icon]:hidden"><Link href="/settings"><Settings2 className="size-4" aria-hidden="true" />Settings</Link></Button>
-          <Button onClick={resetDemo} variant="ghost" className="h-11 justify-start px-2.5 text-[0.7rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground md:h-8 group-data-[collapsible=icon]:hidden" title="Restore deterministic demo data">Demo Reset</Button>
+          <Button onClick={resetJourney} variant="ghost" className="h-11 justify-start px-2.5 text-[0.7rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground md:h-8 group-data-[collapsible=icon]:hidden" title="Restart the student journey">Demo Reset</Button>
           <Separator className="bg-sidebar-border" />
           <div className="flex items-center gap-2.5 overflow-hidden px-1.5 py-1 group-data-[collapsible=icon]:px-0">
-            <Avatar className="size-8 rounded-xl border border-white/10 bg-[#25292d]"><AvatarFallback className="rounded-xl bg-transparent text-xs font-semibold text-primary">S</AvatarFallback></Avatar>
+            <Avatar className="size-8 rounded-xl border border-white/10 bg-[#25292d]"><AvatarFallback className="rounded-xl bg-transparent text-xs font-semibold text-primary">{state.student.initials}</AvatarFallback></Avatar>
             <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-              <p className="truncate text-xs font-medium text-foreground">Sachith</p>
-              <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">Computer Science</p>
+              <p className="truncate text-xs font-medium text-foreground">{state.student.name}</p>
+              <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">{state.onboarding.degree}</p>
             </div>
             <BriefcaseBusiness className="ml-auto size-3.5 shrink-0 text-muted-foreground group-data-[collapsible=icon]:hidden" aria-hidden="true" />
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Clock3, GraduationCap, Sparkles, Target } from "lucide-react";
@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { canCompleteOnboarding, moduleNames } from "@/lib/demo-data/onboarding";
 import type { CareerGoal, LearningBudget, LearningStyle, StudentGoal } from "@/lib/demo-data/types";
 import { useDemo } from "@/lib/state/demo-provider";
+import { nextStudentJourneyRoute } from "@/lib/domain/student-journey";
 
 const steps = [
   { label: "Basic Profile", shortLabel: "Profile", icon: GraduationCap },
@@ -34,6 +35,9 @@ export default function OnboardingPage() {
   const { state, onboardingReady, updateOnboarding, completeOnboarding } = useDemo();
   const [step, setStep] = useState(0);
   const draft = state.onboarding;
+  useEffect(() => {
+    if (onboardingReady && draft.completed) router.replace(nextStudentJourneyRoute(state));
+  }, [onboardingReady, draft.completed, router, state]);
   const profileReady = Boolean(draft.name.trim() && draft.university.trim() && draft.degree.trim() && draft.academicYear && draft.semester && moduleNames(draft.currentModules).length);
   const stepReady = step === 0 ? profileReady : step === 1 ? draft.careerGoal === "DevOps Engineer" : canCompleteOnboarding(draft);
 
@@ -43,7 +47,7 @@ export default function OnboardingPage() {
     if (completeOnboarding()) router.push("/assessment");
   };
 
-  if (!onboardingReady) return <Loading />;
+  if (!onboardingReady || draft.completed) return <Loading />;
 
   return (
     <main className="relative min-h-dvh overflow-x-hidden bg-background px-4 py-6 sm:px-6 sm:py-10">

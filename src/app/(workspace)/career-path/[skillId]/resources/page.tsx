@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { ArrowLeft, CheckCircle2, ExternalLink, GraduationCap } from "lucide-react";
 import Loading from "@/app/loading";
 import { Button } from "@/components/ui/button";
@@ -18,12 +19,23 @@ function demoCost(resource: LearningResource) {
 
 export default function LearningResourcesPage() {
   const { skillId } = useParams<{ skillId: string }>();
-  const { state, onboardingReady, chooseResource } = useDemo();
+  const router = useRouter();
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleError, setScheduleError] = useState(false);
+  const { state, onboardingReady, chooseResource, scheduleSelectedResource } = useDemo();
   const skill = state.careerSkills.find((item) => item.id === skillId);
   const ready = state.onboarding.completed && Boolean(state.assessment);
   const eligible = skill?.status === "available" || skill?.status === "in-progress";
   const recommendations = skill && ready && eligible ? recommendLearningResources(skill, state.onboarding) : [];
   const freePath = skill && ready && eligible ? freePathForSkill(skill.id) : undefined;
+  const scheduleChosen = async (resourceId: string) => {
+    setScheduling(true);
+    setScheduleError(false);
+    const success = await scheduleSelectedResource(skillId, resourceId);
+    setScheduling(false);
+    if (success) router.push("/planner");
+    else setScheduleError(true);
+  };
 
   if (!onboardingReady) return <Loading />;
 
@@ -66,7 +78,9 @@ export default function LearningResourcesPage() {
             <div className="mt-auto pt-6">
               {label === "Best Free/Open Learning Path" && freePath
                 ? <Button asChild className="h-11 w-full rounded-xl px-4 text-sm font-semibold"><Link href={`/career-path/${skill.id}/free-path`}>Explore Structured Free Path</Link></Button>
-                : <Button type="button" onClick={() => chooseResource(skill.id, resource.id)} disabled={chosen} className="h-11 w-full rounded-xl px-4 text-sm font-semibold">{chosen ? <><CheckCircle2 className="size-4" aria-hidden="true" />Path Chosen</> : "Choose This Path"}</Button>}
+                : <Button type="button" onClick={() => chooseResource(skill.id, resource.id)} disabled={chosen || Boolean(state.scheduledPathBySkill[skill.id])} className="h-11 w-full rounded-xl px-4 text-sm font-semibold">{chosen ? <><CheckCircle2 className="size-4" aria-hidden="true" />Path Chosen</> : "Choose This Path"}</Button>}
+              {chosen && state.scheduledPathBySkill[skill.id] === resource.id && <Button asChild variant="outline" className="mt-3 h-11 w-full rounded-xl text-sm"><Link href="/planner">Open Planner</Link></Button>}
+              {chosen && !state.scheduledPathBySkill[skill.id] && <Button type="button" onClick={() => scheduleChosen(resource.id)} disabled={scheduling} variant="outline" className="mt-3 h-11 w-full rounded-xl text-sm">{scheduling ? "Scheduling…" : "Add to My Plan"}</Button>}
               <a href={resource.url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Explore provider<ExternalLink className="size-4" aria-hidden="true" /></a>
             </div>
           </Card>;
@@ -74,6 +88,7 @@ export default function LearningResourcesPage() {
       </div> : <Card className="rounded-[20px] border-border/80 bg-surface-raised p-6"><h2 className="font-heading text-lg font-semibold text-foreground">No local matches yet</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">The demo catalog has no resource for this skill that fits your current level, budget, language, and four-week learning window.</p></Card>}
       {recommendations.length > 0 && !recommendations.some((item) => item.label === "Best Credential Option") && <p className="mt-4 text-sm text-muted-foreground">No certificate option in the local catalog fits your current filters.</p>}
       {state.selectedResourceBySkill[skill.id] && <p role="status" className="mt-5 text-sm text-success">Your chosen {skill.name} path is saved in this demo session.</p>}
+      {scheduleError && <p role="alert" className="mt-3 text-sm text-warning">There is not enough capacity to schedule this path yet. Increase your availability or capacity and try again.</p>}
       {state.selectedFreePathBySkill[skill.id] && <p role="status" className="mt-5 text-sm text-success">Your structured $0 {skill.name} path is in your learning plan.</p>}
     </>}
   </main>;

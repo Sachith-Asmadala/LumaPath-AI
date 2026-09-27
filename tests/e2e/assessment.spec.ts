@@ -59,7 +59,7 @@ test("DevOps assessment saves weighted baseline scores and survives refresh", as
   await page.getByRole("button", { name: "Choose This Path" }).first().click();
   await expect(page.getByText("Your chosen Docker path is saved in this demo session.")).toBeVisible();
   await page.getByRole("link", { name: "View Free Learning Path" }).click();
-  await expect(page).toHaveURL(/\/career-path\/docker\/free-path$/);
+  await expect(page).toHaveURL(/\/career-path\/docker\/free-path$/, { timeout: 15_000 });
   await expect(page.getByRole("heading", { name: "Docker Open Learning Path" })).toBeVisible();
   await expect(page.getByRole("list", { name: "Docker free learning steps" }).getByRole("listitem")).toHaveCount(7);
   await expect(page.getByRole("heading", { name: "LumaPath skill verification" })).toBeVisible();

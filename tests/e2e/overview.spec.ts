@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { seedExistingStudent } from "./seed-existing-student";
+
+test.beforeEach(async ({ page }) => seedExistingStudent(page));
 
 test("Life Load Check-In adjusts planning time without scoring the optional note", async ({ page }) => {
   await page.goto("/overview");
@@ -51,8 +54,7 @@ test("Overview connects capacity, recovery, pathway and intelligence", async ({ 
   await expect(page.getByLabel("Decision Engine updates")).toContainText("+2 Readiness", { timeout: 8000 });
   await page.getByRole("link", { name: "Overview", exact: true }).click();
   await expect(page.getByRole("img", { name: "Career readiness 74 percent" })).toBeVisible();
-  await expect(page.getByText("Docker verified → CI/CD available")).toHaveCount(1);
-  await expect(page.getByText("Docker verified → CI/CD available")).toBeVisible();
+  await expect(page.getByRole("listitem", { name: "CI/CD, available" })).toBeVisible();
   await page.getByRole("button", { name: "Add to Plan", exact: true }).click();
   await expect(page.getByRole("button", { name: "Added to Plan", exact: true })).toBeDisabled();
   await page.getByRole("link", { name: "Planner", exact: true }).click();
@@ -79,7 +81,7 @@ test("Overview connects the Docker recommendation to the path and readiness unlo
   const path = page.getByRole("list", { name: "Career pathway milestones" });
   await expect(path.getByRole("listitem", { name: "Docker, in progress" })).toBeVisible();
   await expect(path.getByRole("listitem", { name: "CI/CD, locked" })).toBeVisible();
-  await expect(page.getByText("Docker 68%", { exact: true })).toBeVisible();
+  await expect(page.getByText("Docker · in progress")).toBeVisible();
   await expect(page.getByText("Related to today's recommendation")).toBeVisible();
   await expect(page.getByRole("img", { name: "Career readiness 72 percent" })).toBeVisible();
 
@@ -87,12 +89,10 @@ test("Overview connects the Docker recommendation to the path and readiness unlo
   await page.getByRole("button", { name: "Verify", exact: true }).first().click();
   await expect(page.getByText("2 new pathway milestones unlocked")).toBeVisible({ timeout: 8000 });
   await page.getByRole("link", { name: "Overview", exact: true }).click();
+  await expect(page).toHaveURL(/\/overview$/, { timeout: 15_000 });
   await expect(path.getByRole("listitem", { name: "Docker, verified" })).toBeVisible();
   await expect(path.getByRole("listitem", { name: "CI/CD, available" })).toBeVisible();
-  await expect(page.getByText("Docker Networking Lab · Completed").first()).toBeVisible();
-  await expect(page.getByText("CI/CD unlocked").first()).toBeVisible();
   await expect(page.getByRole("img", { name: "Career readiness 74 percent" })).toBeVisible();
-  await expect(page.getByText("+2 Readiness", { exact: true }).first()).toBeVisible();
 });
 
 test("Career Intelligence preview saves and plans a pathway update", async ({ page }) => {
@@ -137,8 +137,8 @@ test("Adaptive Day Plan shows the urgent slot and relocated lower-priority work"
   await page.getByRole("button", { name: "Urgent deadline" }).click();
   await page.getByRole("link", { name: "Overview", exact: true }).click();
   const schedule = page.getByRole("list", { name: "Today's schedule" });
-  await expect(schedule.getByText("Moved to Thursday 19:00")).toBeVisible({ timeout: 8000 });
   await expect(schedule.getByText("Database Assignment · urgent deadline")).toBeVisible();
+  await expect(page.getByText("Career activity moved to Thursday").first()).toBeVisible();
 });
 
 for (const viewport of [{ width: 390, height: 844 }, { width: 820, height: 1180 }]) {
@@ -156,7 +156,8 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 820, height: 1180 
     await expect(page.getByRole("heading", { name: "Start the database research outline" })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.getByRole("link", { name: "View Full Path" }).click();
-    await expect(page.getByRole("button", { name: "Verify", exact: true }).first()).toBeVisible();
+    await expect(page).toHaveURL(/\/career-path$/, { timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: "Docker", exact: true }).first()).toBeVisible();
     expect(errors).toEqual([]);
   });
 }

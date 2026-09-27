@@ -17,7 +17,7 @@ function scheduledState(): DemoState {
   const schedule = scheduleLearningPath(assessed, path)!;
   return {
     ...assessed,
-    scheduledFreePathBySkill: { docker: path.id },
+    scheduledPathBySkill: { docker: path.id },
     tasks: [...assessed.tasks, ...schedule.tasks],
     planBlocks: [...assessed.planBlocks, ...schedule.blocks],
   };

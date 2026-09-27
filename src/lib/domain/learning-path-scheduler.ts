@@ -1,5 +1,6 @@
 import { scenarioAt, scenarioDate } from "../demo-data/scenario";
-import type { FreeLearningPath } from "../demo-data/free-learning-paths";
+import type { FreeLearningPath, FreePathStep } from "../demo-data/free-learning-paths";
+import type { LearningResource } from "../demo-data/resources";
 import type { DemoState, PlanBlock, Task } from "../demo-data/types";
 import { availableCapacity } from "./dashboard";
 import { endAtMinutes } from "./planner";
@@ -15,7 +16,16 @@ function isCareerLearning(block: PlanBlock): boolean {
 }
 
 /** Append-only scheduling: existing work keeps its exact start and end times. */
-export function scheduleLearningPath(state: DemoState, path: FreeLearningPath): { tasks: Task[]; blocks: PlanBlock[] } | null {
+export type SchedulableLearningPath = Pick<FreeLearningPath, "id" | "skillId" | "durationHours"> & { steps: readonly Pick<FreePathStep, "id" | "title" | "durationHours" | "outcome">[] };
+
+export function resourceLearningPath(resource: LearningResource): SchedulableLearningPath {
+  return {
+    id: resource.id, skillId: resource.skill, durationHours: resource.durationHours,
+    steps: [{ id: "course", title: resource.title, durationHours: resource.durationHours, outcome: `${resource.provider} learning path · demo catalog` }],
+  };
+}
+
+export function scheduleLearningPath(state: DemoState, path: SchedulableLearningPath): { tasks: Task[]; blocks: PlanBlock[] } | null {
   const weeklyLimit = Math.floor(state.onboarding.weeklyLearningHours * 60 / 30) * 30;
   const dailyLimit = Math.floor(Math.min(120, availableCapacity(state.capacity)) / 30) * 30;
   if (weeklyLimit < 30 || dailyLimit < 30) return null;

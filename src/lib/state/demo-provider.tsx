@@ -3,17 +3,18 @@
 import { scenarioAt, scenarioDate } from "../demo-data/scenario";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
-import { demoDataAdapter } from "../demo-data/adapter";
+import { demoDataAdapter, demoStateStorageKey, readStoredDemoState, storeDemoState } from "../demo-data/adapter";
 import { canCompleteOnboarding, onboardingStorageKey, readCompletedOnboarding, studentFromOnboarding } from "../demo-data/onboarding";
 import { baselineStorageKey, readBaselineAssessment, scoreBaselineAssessment } from "../domain/baseline-assessment";
 import { generateSkillGap } from "../domain/skill-gap";
 import { buildDevOpsRoadmap } from "../domain/personalized-roadmap";
 import { recommendLearningResources } from "../domain/resource-recommender";
 import { freePathForSkill } from "../demo-data/free-learning-paths";
+import { learningResources } from "../demo-data/resources";
 import { hasHighLifeLoad, hasLifeLoadFactors } from "../domain/life-load";
 import { buildRecoveryCandidate, type RecoveryChoice } from "../domain/recovery-mode";
 import { scoreDockerReassessment, selectLearningPathCompletion, dockerReassessmentQuestions } from "../domain/skill-reassessment";
-import { scheduleLearningPath } from "../domain/learning-path-scheduler";
+import { resourceLearningPath, scheduleLearningPath } from "../domain/learning-path-scheduler";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
 import { raiseReadiness } from "../domain/readiness";
@@ -23,6 +24,7 @@ import { adaptCapacityStage, capacityStages, isLowCapacity, recoverDatabase } fr
 
 type SimulationPatch = Partial<DemoSimulation>;
 type DemoAction =
+  | { type: "hydrate-demo"; state: DemoState }
   | { type: "update-onboarding"; patch: Partial<OnboardingState> }
   | { type: "complete-onboarding" }
   | { type: "hydrate-onboarding"; onboarding: OnboardingState }
@@ -31,6 +33,7 @@ type DemoAction =
   | { type: "choose-resource"; skillId: string; resourceId: string }
   | { type: "add-free-path"; skillId: string; pathId: string }
   | { type: "schedule-free-path"; skillId: string; pathId: string }
+  | { type: "schedule-resource"; skillId: string; resourceId: string }
   | { type: "capacity-stage"; capacity: StudentCapacity; stage: number }
   | { type: "begin-recovery"; capacity: StudentCapacity }
   | { type: "keep-recovery-plan" }
@@ -83,6 +86,8 @@ function makeNotification(state: DemoState, notification: Omit<DemoState["notifi
 
 export function demoReducer(state: DemoState, action: DemoAction): DemoState {
   switch (action.type) {
+    case "hydrate-demo":
+      return action.state;
     case "update-onboarding":
       return { ...state, onboarding: { ...state.onboarding, ...action.patch, completed: false } };
     case "complete-onboarding":
@@ -92,6 +97,9 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       return { ...state, student: studentFromOnboarding(state.student, action.onboarding), onboarding: action.onboarding };
     case "set-assessment": {
       const skillGap = generateSkillGap(action.result);
+      const scheduledIds = Object.values(state.scheduledPathBySkill);
+      const staleTaskIds = new Set(state.tasks.filter((task) => scheduledIds.some((id) => task.id.startsWith(`learning-${id}-`))).map((task) => task.id));
+      const tasks = state.tasks.filter((task) => !staleTaskIds.has(task.id));
       return {
         ...state,
         assessment: action.result,
@@ -99,6 +107,11 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
         skillGap,
         selectedResourceBySkill: {},
         selectedFreePathBySkill: {},
+        scheduledPathBySkill: {},
+        tasks,
+        planBlocks: state.planBlocks.filter((block) => !block.taskId || !staleTaskIds.has(block.taskId)),
+        completedTaskCount: Math.max(0, state.completedTaskCount - state.tasks.filter((task) => staleTaskIds.has(task.id) && task.status === "completed").length),
+        activeAction: staleTaskIds.has(state.activeAction.taskId) ? buildNextBestAction(tasks.find((task) => task.status !== "completed") ?? tasks[0]) : state.activeAction,
         careerSkills: state.onboarding.careerGoal === "DevOps Engineer"
           ? buildDevOpsRoadmap(action.result, state.assessment ? state.careerSkills : [], state.onboarding.weeklyLearningHours, skillGap.recommendedSkill)
           : state.careerSkills,
@@ -107,7 +120,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
     case "choose-resource": {
       if (!state.onboarding.completed || !state.assessment) return state;
       const skill = state.careerSkills.find((item) => item.id === action.skillId);
-      if (!skill || (skill.status !== "available" && skill.status !== "in-progress")) return state;
+      if (!skill || state.scheduledPathBySkill[skill.id] || (skill.status !== "available" && skill.status !== "in-progress")) return state;
       if (!recommendLearningResources(skill, state.onboarding).some((item) => item.resource.id === action.resourceId)) return state;
       return {
         ...state,
@@ -120,7 +133,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       if (!state.onboarding.completed || !state.assessment) return state;
       const skill = state.careerSkills.find((item) => item.id === action.skillId);
       const path = freePathForSkill(action.skillId);
-      if (!skill || (skill.status !== "available" && skill.status !== "in-progress") || path?.id !== action.pathId) return state;
+      if (!skill || state.scheduledPathBySkill[skill.id] || (skill.status !== "available" && skill.status !== "in-progress") || path?.id !== action.pathId) return state;
       return {
         ...state,
         selectedFreePathBySkill: { ...state.selectedFreePathBySkill, [skill.id]: path.id },
@@ -129,7 +142,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       };
     }
     case "schedule-free-path": {
-      if (state.selectedFreePathBySkill[action.skillId] !== action.pathId || state.scheduledFreePathBySkill[action.skillId] === action.pathId) return state;
+      if (state.selectedFreePathBySkill[action.skillId] !== action.pathId || state.scheduledPathBySkill[action.skillId]) return state;
       const path = freePathForSkill(action.skillId);
       if (!path || path.id !== action.pathId) return state;
       const schedule = scheduleLearningPath(state, path);
@@ -138,7 +151,20 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
         ...state,
         tasks: [...state.tasks, ...schedule.tasks],
         planBlocks: [...state.planBlocks, ...schedule.blocks],
-        scheduledFreePathBySkill: { ...state.scheduledFreePathBySkill, [action.skillId]: action.pathId },
+        scheduledPathBySkill: { ...state.scheduledPathBySkill, [action.skillId]: action.pathId },
+      };
+    }
+    case "schedule-resource": {
+      if (state.selectedResourceBySkill[action.skillId] !== action.resourceId || state.scheduledPathBySkill[action.skillId]) return state;
+      const resource = learningResources.find((item) => item.id === action.resourceId && item.skill === action.skillId);
+      if (!resource) return state;
+      const schedule = scheduleLearningPath(state, resourceLearningPath(resource));
+      if (!schedule) return state;
+      return {
+        ...state,
+        tasks: [...state.tasks, ...schedule.tasks],
+        planBlocks: [...state.planBlocks, ...schedule.blocks],
+        scheduledPathBySkill: { ...state.scheduledPathBySkill, [action.skillId]: resource.id },
       };
     }
     case "submit-docker-reassessment": {
@@ -188,11 +214,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
     case "recover-database":
       return recoverDatabase(state);
     case "reset": {
-      const fresh = demoDataAdapter.reset();
-      return { ...fresh, student: state.student, onboarding: state.onboarding, assessment: state.assessment, skillGap: state.skillGap,
-        careerSkills: state.assessment && state.onboarding.careerGoal === "DevOps Engineer"
-          ? buildDevOpsRoadmap(state.assessment, [], state.onboarding.weeklyLearningHours, state.skillGap?.recommendedSkill ?? null)
-          : fresh.careerSkills };
+      return demoDataAdapter.reset();
     }
     case "patch":
       return { ...state, ...action.patch };
@@ -232,7 +254,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       const tasks = state.tasks.map((item) => item.id === action.taskId
         ? { ...item, progress, status: hasFinishedTask ? "completed" as const : item.status, riskScore: hasFinishedTask ? 0 : Math.max(0, item.riskScore - 12) }
         : item);
-      const dockerNeedsAssessment = task.id === "docker-lab" && Boolean(state.scheduledFreePathBySkill.docker);
+      const dockerNeedsAssessment = task.id === "docker-lab" && state.scheduledPathBySkill.docker === freePathForSkill("docker")?.id;
       const readiness = task.category === "Career" && !dockerNeedsAssessment ? raiseReadiness(state.readiness, "technical", 2) : state.readiness;
       const careerSkills = task.id === "docker-lab" && hasFinishedTask && !dockerNeedsAssessment
         ? unlockDownstream(state.careerSkills, "docker")
@@ -264,7 +286,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       let readiness = state.readiness;
       let evidence = state.evidence;
       let notificationState = state.notifications;
-      if (task.id === "docker-lab" && !state.scheduledFreePathBySkill.docker && !careerSkills.some((skill) => skill.id === "docker" && skill.status === "verified")) {
+      if (task.id === "docker-lab" && state.scheduledPathBySkill.docker !== freePathForSkill("docker")?.id && !careerSkills.some((skill) => skill.id === "docker" && skill.status === "verified")) {
         careerSkills = unlockDownstream(careerSkills, "docker");
         readiness = raiseReadiness(readiness, "technical", 2);
         evidence = evidence.map((item) => item.id === "docker-assessment" ? { ...item, status: "verified", confidence: 91, verifiedAt: scenarioDate(0) } : item);
@@ -287,7 +309,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
     case "complete-skill": {
       const target = state.careerSkills.find((skill) => skill.id === action.skillId);
       if (!target) return state;
-      if (target.id === "docker" && state.scheduledFreePathBySkill.docker) return state;
+      if (target.id === "docker" && state.scheduledPathBySkill.docker === freePathForSkill("docker")?.id) return state;
       if (action.stage === "verify") {
         if (target.status !== "in-progress") return state;
         return { ...state, careerSkills: state.careerSkills.map((skill) => skill.id === target.id ? { ...skill, status: "verified", proficiency: 100 } : skill) };
@@ -318,7 +340,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       };
     }
     case "verify-evidence": {
-      if (action.evidenceId === "docker-assessment" && state.scheduledFreePathBySkill.docker && !state.skillReassessments.docker?.passed) return state;
+      if (action.evidenceId === "docker-assessment" && state.scheduledPathBySkill.docker === freePathForSkill("docker")?.id && !state.skillReassessments.docker?.passed) return state;
       if (!state.evidence.some((item) => item.id === action.evidenceId && item.status !== "verified")) return state;
       const evidence = state.evidence.map((item) => item.id === action.evidenceId ? { ...item, status: "verified" as const, confidence: Math.max(item.confidence, 91), verifiedAt: scenarioDate(0) } : item);
       const verifiedItem = evidence.find((item) => item.id === action.evidenceId);
@@ -397,6 +419,7 @@ interface DemoContextValue {
   chooseResource: (skillId: string, resourceId: string) => boolean;
   addFreePath: (skillId: string, pathId: string) => boolean;
   scheduleFreePath: (skillId: string, pathId: string) => Promise<boolean>;
+  scheduleSelectedResource: (skillId: string, resourceId: string) => Promise<boolean>;
   resetDemo: () => void;
   updateCapacity: (capacity: StudentCapacity) => Promise<void>;
   keepCurrentPlan: () => void;
@@ -436,18 +459,26 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const running = useRef(false);
 
   useEffect(() => {
+    const stored = readStoredDemoState();
+    if (stored) {
+      dispatch({ type: "hydrate-demo", state: stored });
+      setOnboardingReady(true);
+      return;
+    }
     const saved = readCompletedOnboarding();
     if (saved) dispatch({ type: "hydrate-onboarding", onboarding: saved });
-    const assessment = readBaselineAssessment();
+    const assessment = saved ? readBaselineAssessment() : null;
     if (assessment) dispatch({ type: "set-assessment", result: assessment });
     setOnboardingReady(true);
   }, []);
 
+  useEffect(() => {
+    if (onboardingReady && state.onboarding.completed) storeDemoState(state);
+  }, [onboardingReady, state]);
+
   const updateOnboarding = useCallback((patch: Partial<OnboardingState>) => dispatch({ type: "update-onboarding", patch }), []);
   const completeOnboarding = useCallback(() => {
     if (!canCompleteOnboarding(state.onboarding)) return false;
-    const completed = { ...state.onboarding, completed: true };
-    try { window.localStorage.setItem(onboardingStorageKey, JSON.stringify(completed)); } catch { /* In-memory demo still works. */ }
     dispatch({ type: "complete-onboarding" });
     return true;
   }, [state.onboarding]);
@@ -456,7 +487,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     if (!state.onboarding.completed || state.onboarding.careerGoal !== "DevOps Engineer") return false;
     const result = scoreBaselineAssessment(answers);
     if (!result) return false;
-    try { window.localStorage.setItem(baselineStorageKey, JSON.stringify(result)); } catch { /* In-memory demo still works. */ }
     dispatch({ type: "set-assessment", result });
     return true;
   }, [state.onboarding.completed, state.onboarding.careerGoal]);
@@ -488,6 +518,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const resetDemo = useCallback(() => {
     runId.current += 1;
     running.current = false;
+    try {
+      window.localStorage.removeItem(demoStateStorageKey);
+      window.localStorage.removeItem(onboardingStorageKey);
+      window.localStorage.removeItem(baselineStorageKey);
+    } catch { /* The in-memory demo still resets. */ }
     dispatch({ type: "reset" });
   }, []);
 
@@ -509,12 +544,25 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const scheduleFreePath = useCallback(async (skillId: string, pathId: string) => {
-    if (running.current || state.selectedFreePathBySkill[skillId] !== pathId || state.scheduledFreePathBySkill[skillId] === pathId) return false;
+    if (running.current || state.selectedFreePathBySkill[skillId] !== pathId || state.scheduledPathBySkill[skillId]) return false;
     const path = freePathForSkill(skillId);
     if (!path || path.id !== pathId || !scheduleLearningPath(state, path)) return false;
     const steps = ["Learning path added", "Capacity checked", "Academic deadlines protected", "Career learning scheduled"];
     await showSteps("learning-path", steps, () => {
       dispatch({ type: "schedule-free-path", skillId, pathId });
+      dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Learning path scheduled", result: steps, announcement: steps.join(" → ") } });
+    });
+    return true;
+  }, [showSteps, state]);
+
+  const scheduleSelectedResource = useCallback(async (skillId: string, resourceId: string) => {
+    if (running.current || state.selectedResourceBySkill[skillId] !== resourceId || state.scheduledPathBySkill[skillId]) return false;
+    const resource = learningResources.find((item) => item.id === resourceId && item.skill === skillId);
+    if (!resource) return false;
+    if (!scheduleLearningPath(state, resourceLearningPath(resource))) return false;
+    const steps = ["Learning path added", "Capacity checked", "Academic deadlines protected", "Career learning scheduled"];
+    await showSteps("learning-path", steps, () => {
+      dispatch({ type: "schedule-resource", skillId, resourceId });
       dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Learning path scheduled", result: steps, announcement: steps.join(" → ") } });
     });
     return true;
@@ -603,12 +651,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const selectAlternative = useCallback((taskId: string) => dispatch({ type: "select-action", taskId }), []);
   const completeSkill = useCallback(async (skillId: string) => {
     const skill = state.careerSkills.find((item) => item.id === skillId);
-    if (!skill || skill.status !== "in-progress" || (skillId === "docker" && state.scheduledFreePathBySkill.docker)) return;
+    if (!skill || skill.status !== "in-progress" || (skillId === "docker" && state.scheduledPathBySkill.docker === freePathForSkill("docker")?.id)) return;
     const stages = ["verify", "unlock", "finish"] as const;
     await showSteps("replan", [`${skill.name} verified`, "Unlocking pathway prerequisites", "Updating DevOps Readiness"], () => {
       dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Pathway updated", result: [], announcement: `${skill.name} verified → pathway milestones unlocked → +2 Readiness` } });
     }, (index) => dispatch({ type: "complete-skill", skillId, stage: stages[index] }));
-  }, [showSteps, state.careerSkills, state.scheduledFreePathBySkill.docker]);
+  }, [showSteps, state.careerSkills, state.scheduledPathBySkill.docker]);
   const verifyEvidence = useCallback((evidenceId: string) => dispatch({ type: "verify-evidence", evidenceId }), []);
   const addIntelligenceItemToPlan = useCallback((itemId: string) => dispatch({ type: "plan-intelligence", itemId }), []);
   const addOpportunityPreparation = useCallback(() => dispatch({ type: "add-opportunity-preparation" }), []);
@@ -638,6 +686,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     chooseResource,
     addFreePath,
     scheduleFreePath,
+    scheduleSelectedResource,
     resetDemo,
     updateCapacity,
     keepCurrentPlan,
@@ -660,7 +709,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, resetDemo, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

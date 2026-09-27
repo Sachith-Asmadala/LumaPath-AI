@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { seedExistingStudent } from "./seed-existing-student";
+
+test.beforeEach(async ({ page }) => seedExistingStudent(page));
 
 test("the seeded student can move from capacity to plan, pathway, and evidence", async ({ page }) => {
   await page.goto("/overview");

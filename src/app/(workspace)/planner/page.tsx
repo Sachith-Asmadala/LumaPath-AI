@@ -5,8 +5,9 @@ import { scenarioWeekLabel } from "@/lib/demo-data/scenario";
 import { scenarioAt } from "@/lib/demo-data/scenario";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CalendarDays, Plus, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, CalendarDays, Plus, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -52,6 +53,7 @@ export default function PlannerPage() {
           <div className="flex flex-wrap gap-2"><Button variant="outline" disabled={busy} onClick={() => replanWeek()} className="h-11 rounded-[13px] border-border/80 bg-transparent px-3 text-xs sm:h-10 sm:text-[0.7rem]"><CalendarDays className={`size-3.5 ${busy ? "animate-pulse motion-reduce:animate-none" : ""}`} />Re-plan week</Button><Button variant="outline" disabled={busy} onClick={() => generatePlan()} className="h-11 rounded-[13px] border-primary/20 bg-primary/[0.035] px-3 text-xs text-primary sm:h-10 sm:text-[0.7rem]"><Sparkles className={`size-3.5 ${busy ? "animate-pulse motion-reduce:animate-none" : ""}`} />{state.simulation.kind === "generate" ? state.simulation.step ?? "Generating…" : "Generate plan"}</Button><Button onClick={openNew} className="h-11 rounded-[13px] px-4 text-xs font-semibold sm:h-10"><Plus className="size-4" />Add task</Button></div>
         </div>
       </Reveal>
+      {Object.keys(state.scheduledPathBySkill).length > 0 && <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-success/25 bg-success/[0.05] px-4 py-3"><p className="text-sm text-foreground">Your learning path is scheduled alongside your academic work.</p><Button asChild className="h-11 gap-2 rounded-xl"><Link href="/overview">Continue to Overview<ArrowRight className="size-4" aria-hidden="true" /></Link></Button></div>}
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <Card className="flex flex-col gap-1 rounded-[16px] border-border/75 bg-white/[0.02] px-4 py-3 shadow-none sm:flex-row sm:items-center sm:gap-3"><span className="grid size-8 place-items-center rounded-[10px] border border-primary/15 bg-primary/[0.05] text-primary"><Sparkles className="size-4" /></span><div><p className="text-[0.7rem] font-medium text-foreground">Adaptive schedule</p><p className="mt-0.5 text-[0.62rem] text-muted-foreground">Conflicts surfaced before the plan shifts.</p></div></Card>
         <Card className="flex flex-col gap-1 rounded-[16px] border-border/75 bg-white/[0.02] px-4 py-3 shadow-none sm:flex-row sm:items-center sm:gap-3"><span className="grid size-8 place-items-center rounded-[10px] border border-success/15 bg-success/[0.04] text-success"><ShieldCheck className="size-4" /></span><div><p className="text-[0.7rem] font-medium text-foreground">Deadline protection</p><p className="mt-0.5 text-[0.62rem] text-muted-foreground">Fixed lectures and focus blocks stay visible.</p></div></Card>

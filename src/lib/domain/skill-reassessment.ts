@@ -25,7 +25,7 @@ export function scoreDockerReassessment(answers: Record<string, string>): { scor
 /** Course and practice finish the path; project evidence remains an independent status. */
 export function selectLearningPathCompletion(state: DemoState, skillId: string) {
   const path = freePathForSkill(skillId);
-  if (!path || state.scheduledFreePathBySkill[skillId] !== path.id) return null;
+  if (!path || state.scheduledPathBySkill[skillId] !== path.id) return null;
   const completeStep = (stepId: string) => {
     const tasks = state.tasks.filter((task) => task.id.startsWith(`learning-${path.id}-${stepId}-`));
     return tasks.length > 0 && tasks.every((task) => task.status === "completed");

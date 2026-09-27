@@ -36,6 +36,6 @@ describe("student onboarding", () => {
     expect(completed.student.initials).toBe("AP");
     expect(completed.student.university).toBe("Colombo University");
     expect(completed.tasks).toEqual(initial.tasks);
-    expect(demoReducer(completed, { type: "reset" }).onboarding).toEqual(completed.onboarding);
+    expect(demoReducer(completed, { type: "reset" })).toEqual(createDemoState());
   });
 });
