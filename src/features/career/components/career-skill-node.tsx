@@ -14,7 +14,7 @@ export type CareerFlowNode = Node<CareerNodeData, "careerSkill">;
 
 export function CareerSkillCard({ skill, prerequisites, unlocks, recommended, personalized, compact = false }: CareerNodeData & { compact?: boolean }) {
   const reduced = useReducedMotion();
-  const { completeSkill } = useDemo();
+  const { state, completeSkill } = useDemo();
   const done = skill.status === "verified" || skill.status === "completed";
   const active = skill.status === "in-progress";
   const available = skill.status === "available";
@@ -31,6 +31,7 @@ export function CareerSkillCard({ skill, prerequisites, unlocks, recommended, pe
       <span className={`grid size-9 shrink-0 place-items-center rounded-[11px] border ${done ? "border-success/20 bg-success/[0.06] text-success" : active || recommended ? "border-primary/20 bg-primary/[0.06] text-primary" : available ? "border-pathway/20 bg-pathway/[0.06] text-pathway" : "border-border bg-background/65 text-muted-foreground"}`}><Icon className="size-4" aria-hidden="true" /></span>
       <div className="flex flex-wrap justify-end gap-1.5">
         {recommended && <Badge variant="outline" className="border-primary/30 bg-primary/[0.08] px-2 py-1 text-[0.66rem] text-primary">Recommended next</Badge>}
+        {state.selectedFreePathBySkill[skill.id] && <Badge variant="outline" className="border-success/30 bg-success/[0.08] px-2 py-1 text-[0.66rem] text-success">Free path added</Badge>}
         <Badge variant="outline" className={`rounded-full px-2 py-1 text-[0.66rem] capitalize ${done ? "border-success/20 text-success" : active ? "border-primary/20 text-primary" : available ? "border-pathway/20 text-pathway" : "border-border text-muted-foreground"}`}>{skill.status.replaceAll("-", " ")}</Badge>
       </div>
     </div>

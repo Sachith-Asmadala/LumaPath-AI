@@ -196,6 +196,7 @@ export interface DemoState {
   assessment: BaselineAssessmentResult | null;
   skillGap: SkillGapData | null;
   selectedResourceBySkill: Record<string, string>;
+  selectedFreePathBySkill: Record<string, string>;
   capacity: StudentCapacity;
   tasks: Task[];
   planBlocks: PlanBlock[];

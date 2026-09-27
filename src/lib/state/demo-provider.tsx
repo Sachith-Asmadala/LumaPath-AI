@@ -9,6 +9,7 @@ import { baselineStorageKey, readBaselineAssessment, scoreBaselineAssessment } f
 import { generateSkillGap } from "../domain/skill-gap";
 import { buildDevOpsRoadmap } from "../domain/personalized-roadmap";
 import { recommendLearningResources } from "../domain/resource-recommender";
+import { freePathForSkill } from "../demo-data/free-learning-paths";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
 import { raiseReadiness } from "../domain/readiness";
@@ -23,6 +24,7 @@ type DemoAction =
   | { type: "hydrate-onboarding"; onboarding: OnboardingState }
   | { type: "set-assessment"; result: BaselineAssessmentResult }
   | { type: "choose-resource"; skillId: string; resourceId: string }
+  | { type: "add-free-path"; skillId: string; pathId: string }
   | { type: "capacity-stage"; capacity: StudentCapacity; stage: number }
   | { type: "recover-database" }
   | { type: "reset" }
@@ -86,6 +88,7 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
         assessment: action.result,
         skillGap,
         selectedResourceBySkill: {},
+        selectedFreePathBySkill: {},
         careerSkills: state.onboarding.careerGoal === "DevOps Engineer"
           ? buildDevOpsRoadmap(action.result, state.assessment ? state.careerSkills : [], state.onboarding.weeklyLearningHours, skillGap.recommendedSkill)
           : state.careerSkills,
@@ -99,6 +102,19 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       return {
         ...state,
         selectedResourceBySkill: { ...state.selectedResourceBySkill, [skill.id]: action.resourceId },
+        selectedFreePathBySkill: Object.fromEntries(Object.entries(state.selectedFreePathBySkill).filter(([id]) => id !== skill.id)),
+        careerSkills: state.careerSkills.map((item) => item.id === skill.id && item.status === "available" ? { ...item, status: "in-progress" as const } : item),
+      };
+    }
+    case "add-free-path": {
+      if (!state.onboarding.completed || !state.assessment) return state;
+      const skill = state.careerSkills.find((item) => item.id === action.skillId);
+      const path = freePathForSkill(action.skillId);
+      if (!skill || (skill.status !== "available" && skill.status !== "in-progress") || path?.id !== action.pathId) return state;
+      return {
+        ...state,
+        selectedFreePathBySkill: { ...state.selectedFreePathBySkill, [skill.id]: path.id },
+        selectedResourceBySkill: Object.fromEntries(Object.entries(state.selectedResourceBySkill).filter(([id]) => id !== skill.id)),
         careerSkills: state.careerSkills.map((item) => item.id === skill.id && item.status === "available" ? { ...item, status: "in-progress" as const } : item),
       };
     }
@@ -310,6 +326,7 @@ interface DemoContextValue {
   completeOnboarding: () => boolean;
   submitAssessment: (answers: Record<string, string>) => boolean;
   chooseResource: (skillId: string, resourceId: string) => boolean;
+  addFreePath: (skillId: string, pathId: string) => boolean;
   resetDemo: () => void;
   updateCapacity: (capacity: StudentCapacity) => Promise<void>;
   addUrgentDeadline: () => Promise<void>;
@@ -380,6 +397,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "choose-resource", skillId, resourceId });
     return true;
   }, [state.assessment, state.careerSkills, state.onboarding]);
+
+  const addFreePath = useCallback((skillId: string, pathId: string) => {
+    if (!state.onboarding.completed || !state.assessment) return false;
+    const skill = state.careerSkills.find((item) => item.id === skillId);
+    if (!skill || (skill.status !== "available" && skill.status !== "in-progress") || freePathForSkill(skillId)?.id !== pathId) return false;
+    dispatch({ type: "add-free-path", skillId, pathId });
+    return true;
+  }, [state.assessment, state.careerSkills, state.onboarding.completed]);
 
   const resetDemo = useCallback(() => {
     runId.current += 1;
@@ -499,6 +524,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     completeOnboarding,
     submitAssessment,
     chooseResource,
+    addFreePath,
     resetDemo,
     updateCapacity,
     addUrgentDeadline,
@@ -519,7 +545,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, chooseResource, resetDemo, updateCapacity, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, chooseResource, addFreePath, resetDemo, updateCapacity, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

@@ -58,7 +58,17 @@ test("DevOps assessment saves weighted baseline scores and survives refresh", as
   await expect(page.getByText("No certificate option in the local catalog fits your current filters.")).toBeVisible();
   await page.getByRole("button", { name: "Choose This Path" }).first().click();
   await expect(page.getByText("Your chosen Docker path is saved in this demo session.")).toBeVisible();
+  await page.getByRole("link", { name: "View Free Learning Path" }).click();
+  await expect(page).toHaveURL(/\/career-path\/docker\/free-path$/);
+  await expect(page.getByRole("heading", { name: "Docker Open Learning Path" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Docker free learning steps" }).getByRole("listitem")).toHaveCount(7);
+  await expect(page.getByRole("heading", { name: "LumaPath skill verification" })).toBeVisible();
+  await page.getByRole("button", { name: "Add Free Path to My Plan" }).click();
+  await expect(page.getByText("The free path is saved in your learning plan. No calendar blocks were added.")).toBeVisible();
+  await page.getByRole("main").getByRole("link", { name: "Learning Resources" }).click();
+  await expect(page.getByText("Your structured $0 Docker path is in your learning plan.")).toBeVisible();
   await page.getByRole("main").getByRole("link", { name: "Career Path" }).click();
+  await expect(page.getByText("Free path added").first()).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
   const mobileRoadmap = page.getByRole("list", { name: "DevOps career pathway" });

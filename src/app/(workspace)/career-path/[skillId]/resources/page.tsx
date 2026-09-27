@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { levelFromScore, recommendLearningResources } from "@/lib/domain/resource-recommender";
 import type { LearningResource } from "@/lib/demo-data/resources";
+import { freePathForSkill, freePathWeeks } from "@/lib/demo-data/free-learning-paths";
 import { useDemo } from "@/lib/state/demo-provider";
 
 function demoCost(resource: LearningResource) {
@@ -22,6 +23,7 @@ export default function LearningResourcesPage() {
   const ready = state.onboarding.completed && Boolean(state.assessment);
   const eligible = skill?.status === "available" || skill?.status === "in-progress";
   const recommendations = skill && ready && eligible ? recommendLearningResources(skill, state.onboarding) : [];
+  const freePath = skill && ready && eligible ? freePathForSkill(skill.id) : undefined;
 
   if (!onboardingReady) return <Loading />;
 
@@ -40,6 +42,10 @@ export default function LearningResourcesPage() {
       <div className="mb-6 rounded-xl border border-warning/25 bg-warning/[0.06] px-4 py-3 text-sm leading-6 text-foreground/85">
         Prototype catalog: resource titles, durations, certificate flags, and prices are illustrative demo data. Prices are not live quotes. Provider links open discovery pages or official documentation.
       </div>
+      {freePath && <Card className="mb-6 flex flex-col gap-3 rounded-[20px] border-success/25 bg-success/[0.055] p-5 shadow-none sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div><p className="type-eyebrow text-success">{state.onboarding.budget === "free only" ? "Built for your free-only budget" : "Open learning option"}</p><h2 className="mt-1 font-heading text-xl font-semibold text-foreground">{freePath.title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">A complete $0 path through official docs, selected video learning, a free lab, a portfolio project, and verification. {freePath.durationHours} hours · about {freePathWeeks(freePath, state.onboarding.weeklyLearningHours)} weeks at your pace.</p></div>
+        <Button asChild className="h-11 shrink-0 rounded-xl px-4 text-sm font-semibold"><Link href={`/career-path/${skill.id}/free-path`}>View Free Learning Path</Link></Button>
+      </Card>}
 
       {recommendations.length ? <div className="grid gap-4 lg:grid-cols-3">
         {recommendations.map(({ label, resource, matchScore, reasons }) => {
@@ -58,7 +64,9 @@ export default function LearningResourcesPage() {
             <h3 className="mt-5 text-sm font-semibold text-foreground">Why this fits you</h3>
             <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-5 text-muted-foreground">{reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul>
             <div className="mt-auto pt-6">
-              <Button type="button" onClick={() => chooseResource(skill.id, resource.id)} disabled={chosen} className="h-11 w-full rounded-xl px-4 text-sm font-semibold">{chosen ? <><CheckCircle2 className="size-4" aria-hidden="true" />Path Chosen</> : "Choose This Path"}</Button>
+              {label === "Best Free/Open Learning Path" && freePath
+                ? <Button asChild className="h-11 w-full rounded-xl px-4 text-sm font-semibold"><Link href={`/career-path/${skill.id}/free-path`}>Explore Structured Free Path</Link></Button>
+                : <Button type="button" onClick={() => chooseResource(skill.id, resource.id)} disabled={chosen} className="h-11 w-full rounded-xl px-4 text-sm font-semibold">{chosen ? <><CheckCircle2 className="size-4" aria-hidden="true" />Path Chosen</> : "Choose This Path"}</Button>}
               <a href={resource.url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Explore provider<ExternalLink className="size-4" aria-hidden="true" /></a>
             </div>
           </Card>;
@@ -66,6 +74,7 @@ export default function LearningResourcesPage() {
       </div> : <Card className="rounded-[20px] border-border/80 bg-surface-raised p-6"><h2 className="font-heading text-lg font-semibold text-foreground">No local matches yet</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">The demo catalog has no resource for this skill that fits your current level, budget, language, and four-week learning window.</p></Card>}
       {recommendations.length > 0 && !recommendations.some((item) => item.label === "Best Credential Option") && <p className="mt-4 text-sm text-muted-foreground">No certificate option in the local catalog fits your current filters.</p>}
       {state.selectedResourceBySkill[skill.id] && <p role="status" className="mt-5 text-sm text-success">Your chosen {skill.name} path is saved in this demo session.</p>}
+      {state.selectedFreePathBySkill[skill.id] && <p role="status" className="mt-5 text-sm text-success">Your structured $0 {skill.name} path is in your learning plan.</p>}
     </>}
   </main>;
 }
