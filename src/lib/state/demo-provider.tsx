@@ -8,6 +8,7 @@ import { canCompleteOnboarding, onboardingStorageKey, readCompletedOnboarding, s
 import { baselineStorageKey, readBaselineAssessment, scoreBaselineAssessment } from "../domain/baseline-assessment";
 import { generateSkillGap } from "../domain/skill-gap";
 import { buildDevOpsRoadmap } from "../domain/personalized-roadmap";
+import { recommendLearningResources } from "../domain/resource-recommender";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
 import { raiseReadiness } from "../domain/readiness";
@@ -21,6 +22,7 @@ type DemoAction =
   | { type: "complete-onboarding" }
   | { type: "hydrate-onboarding"; onboarding: OnboardingState }
   | { type: "set-assessment"; result: BaselineAssessmentResult }
+  | { type: "choose-resource"; skillId: string; resourceId: string }
   | { type: "capacity-stage"; capacity: StudentCapacity; stage: number }
   | { type: "recover-database" }
   | { type: "reset" }
@@ -83,9 +85,21 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
         ...state,
         assessment: action.result,
         skillGap,
+        selectedResourceBySkill: {},
         careerSkills: state.onboarding.careerGoal === "DevOps Engineer"
           ? buildDevOpsRoadmap(action.result, state.assessment ? state.careerSkills : [], state.onboarding.weeklyLearningHours, skillGap.recommendedSkill)
           : state.careerSkills,
+      };
+    }
+    case "choose-resource": {
+      if (!state.onboarding.completed || !state.assessment) return state;
+      const skill = state.careerSkills.find((item) => item.id === action.skillId);
+      if (!skill || (skill.status !== "available" && skill.status !== "in-progress")) return state;
+      if (!recommendLearningResources(skill, state.onboarding).some((item) => item.resource.id === action.resourceId)) return state;
+      return {
+        ...state,
+        selectedResourceBySkill: { ...state.selectedResourceBySkill, [skill.id]: action.resourceId },
+        careerSkills: state.careerSkills.map((item) => item.id === skill.id && item.status === "available" ? { ...item, status: "in-progress" as const } : item),
       };
     }
     case "capacity-stage":
@@ -295,6 +309,7 @@ interface DemoContextValue {
   updateOnboarding: (patch: Partial<OnboardingState>) => void;
   completeOnboarding: () => boolean;
   submitAssessment: (answers: Record<string, string>) => boolean;
+  chooseResource: (skillId: string, resourceId: string) => boolean;
   resetDemo: () => void;
   updateCapacity: (capacity: StudentCapacity) => Promise<void>;
   addUrgentDeadline: () => Promise<void>;
@@ -356,6 +371,15 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "set-assessment", result });
     return true;
   }, [state.onboarding.completed, state.onboarding.careerGoal]);
+
+  const chooseResource = useCallback((skillId: string, resourceId: string) => {
+    if (!state.onboarding.completed || !state.assessment) return false;
+    const skill = state.careerSkills.find((item) => item.id === skillId);
+    if (!skill || (skill.status !== "available" && skill.status !== "in-progress")) return false;
+    if (!recommendLearningResources(skill, state.onboarding).some((item) => item.resource.id === resourceId)) return false;
+    dispatch({ type: "choose-resource", skillId, resourceId });
+    return true;
+  }, [state.assessment, state.careerSkills, state.onboarding]);
 
   const resetDemo = useCallback(() => {
     runId.current += 1;
@@ -474,6 +498,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     updateOnboarding,
     completeOnboarding,
     submitAssessment,
+    chooseResource,
     resetDemo,
     updateCapacity,
     addUrgentDeadline,
@@ -494,7 +519,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, resetDemo, updateCapacity, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, chooseResource, resetDemo, updateCapacity, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

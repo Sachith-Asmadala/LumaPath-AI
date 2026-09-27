@@ -195,6 +195,7 @@ export interface DemoState {
   onboarding: OnboardingState;
   assessment: BaselineAssessmentResult | null;
   skillGap: SkillGapData | null;
+  selectedResourceBySkill: Record<string, string>;
   capacity: StudentCapacity;
   tasks: Task[];
   planBlocks: PlanBlock[];

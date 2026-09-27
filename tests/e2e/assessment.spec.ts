@@ -50,8 +50,15 @@ test("DevOps assessment saves weighted baseline scores and survives refresh", as
   await expect(docker.getByText("75%")).toBeVisible();
   await expect(docker.getByText("2 weeks")).toBeVisible();
   await expect(docker.getByText("CI/CD")).toBeVisible();
-  await docker.getByRole("button", { name: "Find Learning Resources" }).click();
-  await expect(docker.getByText("Resource selection is coming next.")).toBeVisible();
+  await docker.getByRole("link", { name: "Find Learning Resources" }).click();
+  await expect(page).toHaveURL(/\/career-path\/docker\/resources$/);
+  await expect(page.getByRole("heading", { name: "Find learning resources for Docker" })).toBeVisible();
+  await expect(page.getByText("Best Overall")).toBeVisible();
+  await expect(page.getByText("Best Free/Open Learning Path")).toBeVisible();
+  await expect(page.getByText("No certificate option in the local catalog fits your current filters.")).toBeVisible();
+  await page.getByRole("button", { name: "Choose This Path" }).first().click();
+  await expect(page.getByText("Your chosen Docker path is saved in this demo session.")).toBeVisible();
+  await page.getByRole("main").getByRole("link", { name: "Career Path" }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
   const mobileRoadmap = page.getByRole("list", { name: "DevOps career pathway" });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { CheckCircle2, Circle, LockKeyhole, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
@@ -15,7 +15,6 @@ export type CareerFlowNode = Node<CareerNodeData, "careerSkill">;
 export function CareerSkillCard({ skill, prerequisites, unlocks, recommended, personalized, compact = false }: CareerNodeData & { compact?: boolean }) {
   const reduced = useReducedMotion();
   const { completeSkill } = useDemo();
-  const [showResourceNote, setShowResourceNote] = useState(false);
   const done = skill.status === "verified" || skill.status === "completed";
   const active = skill.status === "in-progress";
   const available = skill.status === "available";
@@ -44,10 +43,7 @@ export function CareerSkillCard({ skill, prerequisites, unlocks, recommended, pe
         <div><dt className="text-[0.68rem] text-muted-foreground">Estimated</dt><dd className="mt-0.5 whitespace-nowrap text-xs font-semibold text-foreground">{skill.estimatedWeeks} {skill.estimatedWeeks === 1 ? "week" : "weeks"}</dd></div>
       </dl>
       <div className="mt-3 space-y-1 text-xs leading-5"><p><span className="text-muted-foreground">Prerequisite:</span> <span className="text-foreground">{prerequisites.join(", ") || "None"}</span></p><p><span className="text-muted-foreground">Unlocks:</span> <span className="text-foreground">{unlocks.join(", ") || "Final milestone"}</span></p></div>
-      {(available || active) && <div className="mt-3">
-        <Button type="button" variant="outline" onClick={() => setShowResourceNote((current) => !current)} className="nodrag nopan h-9 w-full rounded-lg px-2 text-xs">Find Learning Resources</Button>
-        {showResourceNote && <p role="status" className="mt-2 text-xs leading-5 text-muted-foreground">Resource selection is coming next.</p>}
-      </div>}
+      {(available || active) && <Button asChild variant="outline" className="nodrag nopan mt-3 h-9 w-full rounded-lg px-2 text-xs"><Link href={`/career-path/${skill.id}/resources`}>Find Learning Resources</Link></Button>}
     </> : <>
       <div className="mt-3 flex items-center justify-between gap-2"><span className="text-xs text-muted-foreground">{skill.proficiency}% proficiency</span>{active && <Button size="sm" onClick={() => completeSkill(skill.id)} className="nodrag nopan h-8 rounded-[9px] px-2 text-xs"><CheckCircle2 className="size-3" />Verify</Button>}</div>
       {skill.status === "locked" && prerequisites.length > 0 && <p className="mt-2 text-xs text-muted-foreground">Needs {prerequisites.join(" + ")}</p>}

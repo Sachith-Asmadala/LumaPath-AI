@@ -202,6 +202,7 @@ export function createDemoState(): DemoState {
     onboarding: { ...defaultOnboarding, preferredLearning: [] },
     assessment: null,
     skillGap: null,
+    selectedResourceBySkill: {},
     capacity: { ...defaultCapacity },
     tasks: demoTasks.map((task) => ({ ...task, careerSkillIds: [...task.careerSkillIds] })),
     planBlocks: demoPlanBlocks.map((block) => ({ ...block })),

@@ -34,7 +34,7 @@ export default function CareerPathPage() {
       </div>
       {!personalized && unlocked.length > 1 && <Reveal><div className="mb-4 flex items-center gap-2 rounded-[13px] border border-primary/15 bg-primary/[0.035] px-3.5 py-3 text-[0.72rem] text-foreground"><Sparkles className="size-4 text-primary" />{unlocked.length} new pathway milestones unlocked<span className="ml-auto hidden text-[0.62rem] text-muted-foreground sm:inline">Docker verification updated your next steps</span></div></Reveal>}
       <CareerPathGraph />
-      <p className="mt-3 text-xs text-muted-foreground">{personalized ? "Learning resources will connect to available steps in the next stage." : "Verify your current milestone to update pathway evidence and readiness."}</p>
+      <p className="mt-3 text-xs text-muted-foreground">{personalized ? "Open an available skill to compare local demo learning paths. Resource prices are illustrative." : "Verify your current milestone to update pathway evidence and readiness."}</p>
     </div>
   );
 }
