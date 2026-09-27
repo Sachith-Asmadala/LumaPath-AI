@@ -10,7 +10,8 @@ import { generateSkillGap } from "../domain/skill-gap";
 import { buildDevOpsRoadmap } from "../domain/personalized-roadmap";
 import { recommendLearningResources } from "../domain/resource-recommender";
 import { freePathForSkill } from "../demo-data/free-learning-paths";
-import { hasLifeLoadFactors } from "../domain/life-load";
+import { hasHighLifeLoad, hasLifeLoadFactors } from "../domain/life-load";
+import { buildRecoveryCandidate, type RecoveryChoice } from "../domain/recovery-mode";
 import { scheduleLearningPath } from "../domain/learning-path-scheduler";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
@@ -29,6 +30,9 @@ type DemoAction =
   | { type: "add-free-path"; skillId: string; pathId: string }
   | { type: "schedule-free-path"; skillId: string; pathId: string }
   | { type: "capacity-stage"; capacity: StudentCapacity; stage: number }
+  | { type: "begin-recovery"; capacity: StudentCapacity }
+  | { type: "keep-recovery-plan" }
+  | { type: "apply-recovery-choice"; choice: RecoveryChoice }
   | { type: "recover-database" }
   | { type: "reset" }
   | { type: "patch"; patch: Partial<DemoState> }
@@ -135,7 +139,14 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       };
     }
     case "capacity-stage":
-      return adaptCapacityStage(state, action.capacity, action.stage);
+      return action.stage === 0 ? { ...adaptCapacityStage(state, action.capacity, action.stage), recoveryPending: false } : adaptCapacityStage(state, action.capacity, action.stage);
+    case "begin-recovery":
+      return { ...state, capacity: action.capacity, recoveryPending: true, simulation: { kind: null, step: null, message: null, result: [], announcement: "" } };
+    case "keep-recovery-plan":
+      return { ...state, recoveryPending: false, simulation: { kind: null, step: null, message: "Current plan kept", result: [], announcement: "Current plan kept. No schedule blocks were changed." } };
+    case "apply-recovery-choice":
+      if (!state.recoveryPending || action.choice === "keep") return state;
+      return { ...buildRecoveryCandidate(state, action.choice), recoveryPending: false };
     case "recover-database":
       return recoverDatabase(state);
     case "reset": {
@@ -346,6 +357,8 @@ interface DemoContextValue {
   scheduleFreePath: (skillId: string, pathId: string) => Promise<boolean>;
   resetDemo: () => void;
   updateCapacity: (capacity: StudentCapacity) => Promise<void>;
+  keepCurrentPlan: () => void;
+  applyRecoveryChoice: (choice: RecoveryChoice) => Promise<boolean>;
   addUrgentDeadline: () => Promise<void>;
   applyRecoveryPlan: () => Promise<void>;
   generatePlan: () => Promise<void>;
@@ -459,11 +472,30 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [showSteps, state]);
 
   const updateCapacity = useCallback(async (capacity: StudentCapacity) => {
+    if (hasHighLifeLoad(capacity)) {
+      dispatch({ type: "begin-recovery", capacity });
+      return;
+    }
     await showSteps("capacity", capacityStages, () => {
       const lifeLoad = hasLifeLoadFactors(capacity);
       dispatch({ type: "simulation", patch: { kind: null, step: null, message: lifeLoad ? "Life load plan adapted" : "Plan adapted", result: ["Capacity updated", "Risk recalculated", "Schedule optimized", "Next action updated"], announcement: lifeLoad ? isLowCapacity(capacity) ? "You reported limited capacity today, so LumaPath protected your urgent work and moved lower-risk activities." : "Your reported commitments reduced today's planning time. LumaPath updated the plan around your priorities." : "Plan adapted. Your risk, schedule and next action now reflect your capacity." } });
     }, (stage) => dispatch({ type: "capacity-stage", capacity, stage }));
   }, [showSteps]);
+
+  const keepCurrentPlan = useCallback(() => {
+    if (!running.current) dispatch({ type: "keep-recovery-plan" });
+  }, []);
+  const applyRecoveryChoice = useCallback(async (choice: RecoveryChoice) => {
+    if (!state.recoveryPending || choice === "keep" || running.current) return false;
+    const labels: Record<Exclude<RecoveryChoice, "keep">, string> = {
+      critical: "Critical deadlines protected", lighter: "Lighter day planned", career: "Career learning rescheduled", recommended: "Recommended recovery applied",
+    };
+    await showSteps("recovery", ["Checking deadlines", "Reviewing available time", "Updating planner", "Recalculating next action"], () => {
+      dispatch({ type: "apply-recovery-choice", choice });
+      dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Recovery mode applied", result: [labels[choice]], announcement: `${labels[choice]}. Your planner, deadline risk, and next action have been updated.` } });
+    });
+    return true;
+  }, [showSteps, state.recoveryPending]);
 
   const addUrgentDeadline = useCallback(async () => {
     if (running.current) return;
@@ -558,6 +590,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     scheduleFreePath,
     resetDemo,
     updateCapacity,
+    keepCurrentPlan,
+    applyRecoveryChoice,
     addUrgentDeadline,
     applyRecoveryPlan,
     generatePlan,
@@ -576,7 +610,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, chooseResource, addFreePath, scheduleFreePath, resetDemo, updateCapacity, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, chooseResource, addFreePath, scheduleFreePath, resetDemo, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

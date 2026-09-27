@@ -12,8 +12,19 @@ test("Life Load Check-In adjusts planning time without scoring the optional note
   await page.getByRole("textbox", { name: "Anything else affecting your day?" }).fill("I need to help my family tonight.");
   await expect(page.getByText("45m available · low energy · low focus · heavy workload")).toBeVisible();
   await page.getByRole("button", { name: "Update the plan with this capacity" }).click();
+  const recovery = page.getByRole("region", { name: "Recovery Mode" });
+  await expect(recovery.getByText("Today looks heavier than usual.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Complete Docker Networking Lab" })).toBeVisible();
+  for (const label of ["Protect only critical deadlines", "Give me a lighter day", "Keep my current plan", "Reschedule career learning", "Show recommended recovery plan"]) await expect(recovery.getByRole("button", { name: label })).toBeVisible();
+  await recovery.getByRole("button", { name: "Show recommended recovery plan" }).click();
+  const preview = recovery.getByLabel("Recovery schedule preview");
+  await expect(preview.getByText("Before", { exact: true })).toBeVisible();
+  await expect(preview.getByText("After", { exact: true })).toBeVisible();
+  await expect(preview.getByText("Database Assignment").first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Complete Docker Networking Lab" })).toBeVisible();
+  await preview.getByRole("button", { name: "Apply Recovery Plan" }).click();
   await expect(page.getByRole("heading", { name: "Start the database research outline" })).toBeVisible({ timeout: 8000 });
-  await expect(page.getByText("You reported limited capacity today, so LumaPath protected your urgent work and moved lower-risk activities.").first()).toBeVisible();
+  await expect(page.getByLabel("Decision Engine updates")).toBeVisible();
 });
 
 test("Overview connects capacity, recovery, pathway and intelligence", async ({ page }) => {

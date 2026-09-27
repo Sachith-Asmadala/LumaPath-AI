@@ -205,6 +205,7 @@ export interface DemoState {
   selectedFreePathBySkill: Record<string, string>;
   scheduledFreePathBySkill: Record<string, string>;
   capacity: StudentCapacity;
+  recoveryPending: boolean;
   tasks: Task[];
   planBlocks: PlanBlock[];
   activeAction: NextBestAction;

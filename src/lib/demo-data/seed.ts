@@ -206,6 +206,7 @@ export function createDemoState(): DemoState {
     selectedFreePathBySkill: {},
     scheduledFreePathBySkill: {},
     capacity: { ...defaultCapacity },
+    recoveryPending: false,
     tasks: demoTasks.map((task) => ({ ...task, careerSkillIds: [...task.careerSkillIds] })),
     planBlocks: demoPlanBlocks.map((block) => ({ ...block })),
     activeAction: {

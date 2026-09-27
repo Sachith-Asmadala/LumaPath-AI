@@ -11,6 +11,7 @@ import { useDemo } from "@/lib/state/demo-provider";
 import type { StudentCapacity } from "@/lib/demo-data/types";
 import type { LifeLoadFactor, LifeLoadImpact } from "@/lib/demo-data/types";
 import { lifeLoadFactorOptions, lifeLoadImpacts } from "@/lib/domain/life-load";
+import { RecoveryMode } from "./recovery-mode";
 
 const timeOptions = [90, 120, 150, 180, 270, 300, 360];
 import { capacityPresets, capacityStages, availableCapacity, isLowCapacity } from "@/lib/domain/dashboard";
@@ -110,6 +111,7 @@ export function CapacityCheckIn() {
           <RefreshCw className={`size-3.5 ${busy ? "animate-spin motion-reduce:animate-none" : ""}`} aria-hidden="true" />{busy ? state.simulation.step ?? "Updating your plan…" : "Update My Plan"}
         </MotionButton>
         {busy && <div className="rounded-xl border border-primary/15 bg-primary/[0.035] p-3 text-xs"><p className="mb-2 font-medium text-primary">LumaPath is adapting your day</p><ol className="space-y-1.5">{capacityStages.map((step, index) => { const current = capacityStages.indexOf(state.simulation.step ?? ""); return <li key={step} className={`flex items-center gap-2 transition-colors duration-200 motion-reduce:transition-none ${index <= current + 1 ? "text-foreground" : "text-muted-foreground"}`}><span aria-hidden="true" className={`grid size-4 shrink-0 place-items-center rounded-full text-[0.67rem] ${index <= current ? "bg-primary/15 text-primary" : index === current + 1 ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}>{index <= current ? "✓" : index === current + 1 ? "●" : "○"}</span>{step}</li>; })}</ol></div>}
+        {state.recoveryPending && <RecoveryMode />}
         {state.simulation.message === "Life load plan adapted" && <p role="status" className="rounded-xl border border-primary/15 bg-primary/[0.035] px-3 py-2.5 text-sm leading-5 text-foreground">{state.simulation.announcement}</p>}
         <p className="sr-only" aria-live="polite">{state.simulation.announcement}</p>
       </CardContent>

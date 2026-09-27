@@ -18,3 +18,7 @@ export function planningCapacityMinutes(capacity: StudentCapacity): number {
 export function hasLifeLoadFactors(capacity: StudentCapacity): boolean {
   return Object.keys(capacity.lifeLoadFactors ?? {}).length > 0;
 }
+
+export function hasHighLifeLoad(capacity: StudentCapacity): boolean {
+  return Object.values(capacity.lifeLoadFactors ?? {}).some((impact) => impact === "High");
+}
