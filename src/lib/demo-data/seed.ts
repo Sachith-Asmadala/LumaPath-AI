@@ -201,6 +201,7 @@ export function createDemoState(): DemoState {
     student: { ...demoStudent },
     onboarding: { ...defaultOnboarding, preferredLearning: [] },
     assessment: null,
+    skillReassessments: {},
     skillGap: null,
     selectedResourceBySkill: {},
     selectedFreePathBySkill: {},

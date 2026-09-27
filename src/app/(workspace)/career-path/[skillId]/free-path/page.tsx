@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { freePathForSkill, freePathWeeks } from "@/lib/demo-data/free-learning-paths";
 import { useDemo } from "@/lib/state/demo-provider";
+import { LearningPathCompletionCard } from "@/features/career/components/learning-path-completion";
+import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
 
 export default function FreeLearningPathPage() {
   const { skillId } = useParams<{ skillId: string }>();
@@ -19,9 +21,10 @@ export default function FreeLearningPathPage() {
   const skill = state.careerSkills.find((item) => item.id === skillId);
   const path = freePathForSkill(skillId);
   const ready = state.onboarding.completed && Boolean(state.assessment);
-  const eligible = skill?.status === "available" || skill?.status === "in-progress";
+  const eligible = skill?.status === "available" || skill?.status === "in-progress" || (skill?.status === "verified" && Boolean(state.scheduledFreePathBySkill[skillId]));
   const added = path && state.selectedFreePathBySkill[skillId] === path.id;
   const scheduled = path && state.scheduledFreePathBySkill[skillId] === path.id;
+  const completed = selectLearningPathCompletion(state, skillId)?.pathComplete;
 
   const addToPlan = async () => {
     if (!path || scheduling) return;
@@ -43,6 +46,8 @@ export default function FreeLearningPathPage() {
       <Button asChild className="mt-4 h-11 rounded-xl px-4"><Link href={!ready ? "/assessment" : "/career-path"}>{!ready ? "Continue assessment" : "Back to roadmap"}</Link></Button>
     </Card> : <>
       <div className="mb-7"><p className="type-eyebrow mb-2 text-success">Open learning · {skill.name}</p><h1 className="font-heading text-[clamp(1.8rem,4vw,2.6rem)] font-semibold leading-tight tracking-[-0.04em] text-foreground">{path.title}</h1><p className="mt-3 max-w-[70ch] text-sm leading-6 text-muted-foreground">A complete path built from official documentation, selected YouTube learning, free practice, and work you can show. Every source in this path is free to access.</p></div>
+
+      {completed && <div className="mb-7"><LearningPathCompletionCard skillId={skillId} /></div>}
 
       <div className="mb-7 grid gap-3 sm:grid-cols-3">
         <Card className="rounded-2xl border-success/25 bg-success/[0.055] p-5"><p className="text-sm text-muted-foreground">Cost</p><p className="mt-1 font-heading text-3xl font-semibold text-foreground">$0</p></Card>

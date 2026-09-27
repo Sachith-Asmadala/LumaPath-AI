@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useDemo } from "@/lib/state/demo-provider";
 import type { CareerSkill } from "@/lib/demo-data/types";
+import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
 
 type CareerNodeData = { skill: CareerSkill; prerequisites: string[]; unlocks: string[]; recommended: boolean; personalized: boolean };
 export type CareerFlowNode = Node<CareerNodeData, "careerSkill">;
@@ -18,6 +19,8 @@ export function CareerSkillCard({ skill, prerequisites, unlocks, recommended, pe
   const done = skill.status === "verified" || skill.status === "completed";
   const active = skill.status === "in-progress";
   const available = skill.status === "available";
+  const completion = selectLearningPathCompletion(state, skill.id);
+  const scheduledPath = Boolean(completion);
   const Icon = done ? CheckCircle2 : skill.status === "locked" ? LockKeyhole : active ? Sparkles : Circle;
   const border = recommended ? "border-primary/60 bg-primary/[0.055]" : done ? "border-success/25 bg-surface-raised" : active ? "border-primary/35 bg-surface-raised" : available ? "border-pathway/30 bg-surface-raised" : "border-border bg-surface-raised";
 
@@ -44,9 +47,9 @@ export function CareerSkillCard({ skill, prerequisites, unlocks, recommended, pe
         <div><dt className="text-[0.68rem] text-muted-foreground">Estimated</dt><dd className="mt-0.5 whitespace-nowrap text-xs font-semibold text-foreground">{skill.estimatedWeeks} {skill.estimatedWeeks === 1 ? "week" : "weeks"}</dd></div>
       </dl>
       <div className="mt-3 space-y-1 text-xs leading-5"><p><span className="text-muted-foreground">Prerequisite:</span> <span className="text-foreground">{prerequisites.join(", ") || "None"}</span></p><p><span className="text-muted-foreground">Unlocks:</span> <span className="text-foreground">{unlocks.join(", ") || "Final milestone"}</span></p></div>
-      {(available || active) && <Button asChild variant="outline" className="nodrag nopan mt-3 h-9 w-full rounded-lg px-2 text-xs"><Link href={`/career-path/${skill.id}/resources`}>Find Learning Resources</Link></Button>}
+      {(available || active) && <Button asChild variant="outline" className="nodrag nopan mt-3 h-9 w-full rounded-lg px-2 text-xs"><Link href={completion?.pathComplete && skill.id === "docker" ? "/career-path/docker/verify" : `/career-path/${skill.id}/resources`}>{completion?.pathComplete && skill.id === "docker" ? "Verify My Skill" : "Find Learning Resources"}</Link></Button>}
     </> : <>
-      <div className="mt-3 flex items-center justify-between gap-2"><span className="text-xs text-muted-foreground">{skill.proficiency}% proficiency</span>{active && <Button size="sm" onClick={() => completeSkill(skill.id)} className="nodrag nopan h-8 rounded-[9px] px-2 text-xs"><CheckCircle2 className="size-3" />Verify</Button>}</div>
+      <div className="mt-3 flex items-center justify-between gap-2"><span className="text-xs text-muted-foreground">{skill.proficiency}% proficiency</span>{active && (scheduledPath ? completion?.pathComplete ? <Button asChild size="sm" className="nodrag nopan h-8 rounded-[9px] px-2 text-xs"><Link href="/career-path/docker/verify">Verify My Skill</Link></Button> : <span className="text-[0.62rem] text-muted-foreground">Finish learning path</span> : <Button size="sm" onClick={() => completeSkill(skill.id)} className="nodrag nopan h-8 rounded-[9px] px-2 text-xs"><CheckCircle2 className="size-3" />Verify</Button>)}</div>
       {skill.status === "locked" && prerequisites.length > 0 && <p className="mt-2 text-xs text-muted-foreground">Needs {prerequisites.join(" + ")}</p>}
     </>}
   </motion.div>;

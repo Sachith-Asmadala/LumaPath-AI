@@ -38,6 +38,18 @@ export interface BaselineAssessmentResult {
   totalQuestions: number;
 }
 
+export interface SkillReassessmentResult {
+  answers: Record<string, string>;
+  previousScore: number;
+  newScore: number;
+  correctCount: number;
+  totalQuestions: number;
+  threshold: number;
+  passed: boolean;
+  readinessBefore: number;
+  readinessAfter: number;
+}
+
 export type SkillGapLevel = "strong" | "improve" | "gap";
 
 export interface SkillGapData {
@@ -200,6 +212,7 @@ export interface DemoState {
   student: StudentProfile;
   onboarding: OnboardingState;
   assessment: BaselineAssessmentResult | null;
+  skillReassessments: Record<string, SkillReassessmentResult>;
   skillGap: SkillGapData | null;
   selectedResourceBySkill: Record<string, string>;
   selectedFreePathBySkill: Record<string, string>;

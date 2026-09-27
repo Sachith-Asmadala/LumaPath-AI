@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CheckCheck, CircleHelp, FileBadge2, Link2, ShieldCheck, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -9,6 +10,7 @@ import { AnimatedProgress } from "@/components/motion/animated";
 import { EvidenceBadge, SkillBadge } from "@/components/shared/status-badge";
 import { calculateEvidenceConfidence, describeEvidenceConfidence } from "@/lib/domain/evidence";
 import { useDemo } from "@/lib/state/demo-provider";
+import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
 import { toast } from "sonner";
 
 const sourceIcon = (source: string) => source.includes("Repository") ? Link2 : source.includes("Certificate") ? FileBadge2 : source.includes("Assessment") ? CheckCheck : CircleHelp;
@@ -17,6 +19,7 @@ export function EvidencePassport() {
   const { state, verifyEvidence } = useDemo();
   const reduceMotion = useReducedMotion();
   const skills = state.careerSkills.filter((skill) => state.evidence.some((item) => item.skillId === skill.id));
+  const dockerPath = selectLearningPathCompletion(state, "docker");
   const verify = (id: string, label: string) => {
     verifyEvidence(id);
     toast.success("Evidence verified", { description: `${label} added to your confidence score.` });
@@ -48,7 +51,7 @@ export function EvidencePassport() {
                       const Icon = sourceIcon(item.source);
                       return <motion.div layout key={item.id} transition={{ duration: reduceMotion ? 0.12 : 0.2 }} className="flex flex-wrap items-center justify-between gap-3 rounded-[11px] border border-border/55 bg-background/45 px-3 py-2.5">
                         <div className="flex min-w-0 items-center gap-2.5"><span className="grid size-7 shrink-0 place-items-center rounded-[9px] border border-border/70 bg-surface-raised text-muted-foreground"><Icon className="size-3.5" /></span><span className="min-w-0"><span className="block truncate text-[0.66rem] font-medium text-foreground">{item.label}</span><span className="mt-0.5 block text-[0.59rem] text-muted-foreground">{item.source}{item.verifiedAt ? ` · verified ${item.verifiedAt}` : ` · confidence ${item.confidence}%`}</span></span></div>
-                        <div className="flex items-center gap-2"><EvidenceBadge status={item.status} />{item.status !== "verified" && <Button variant="outline" size="sm" onClick={() => verify(item.id, item.label)} className="h-7 rounded-[9px] border-success/15 px-2 text-[0.58rem] text-success hover:bg-success/[0.04]"><CheckCheck className="size-3" />Verify</Button>}</div>
+                        <div className="flex items-center gap-2"><EvidenceBadge status={item.status} />{item.status !== "verified" && (item.id === "docker-assessment" && dockerPath ? dockerPath.pathComplete ? <Button asChild variant="outline" size="sm" className="h-7 rounded-[9px] border-success/15 px-2 text-[0.58rem] text-success"><Link href="/career-path/docker/verify">Verify My Skill</Link></Button> : <span className="text-[0.6rem] text-muted-foreground">Finish path first</span> : <Button variant="outline" size="sm" onClick={() => verify(item.id, item.label)} className="h-7 rounded-[9px] border-success/15 px-2 text-[0.58rem] text-success hover:bg-success/[0.04]"><CheckCheck className="size-3" />Verify</Button>)}</div>
                       </motion.div>;
                     })}
                   </div>
