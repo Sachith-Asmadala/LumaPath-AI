@@ -1,10 +1,10 @@
-export type TaskCategory = "Academic" | "Career" | "Personal" | "Internship" | "AI Recommended";
+export type TaskCategory = "Academic" | "Career" | "career-learning" | "Personal" | "Internship" | "AI Recommended";
 export type TaskStatus = "upcoming" | "in-progress" | "completed" | "missed";
 export type RiskLevel = "critical" | "high" | "moderate" | "low";
 export type SkillStatus = "verified" | "completed" | "in-progress" | "available" | "locked" | "gap";
 export type EvidenceStatus = "self-reported" | "submitted" | "verified" | "expired" | "needs-review";
 export type IntelligenceStatus = "new" | "saved" | "dismissed" | "planned" | "not-relevant";
-export type SimulationKind = "capacity" | "replan" | "recovery" | "generate" | null;
+export type SimulationKind = "capacity" | "replan" | "recovery" | "generate" | "learning-path" | null;
 export type CareerGoal = "DevOps Engineer" | "Backend Engineer" | "AI Engineer" | "Cloud Engineer" | "Cybersecurity Engineer";
 export type LearningBudget = "free only" | "under $20/month" | "flexible";
 export type LearningStyle = "video" | "hands-on" | "reading" | "projects";
@@ -74,6 +74,7 @@ export interface Task {
   progress: number;
   difficulty: number;
   careerSkillIds: string[];
+  skill?: string;
   riskScore: number;
   careerRelevance: number;
   description: string;
@@ -197,6 +198,7 @@ export interface DemoState {
   skillGap: SkillGapData | null;
   selectedResourceBySkill: Record<string, string>;
   selectedFreePathBySkill: Record<string, string>;
+  scheduledFreePathBySkill: Record<string, string>;
   capacity: StudentCapacity;
   tasks: Task[];
   planBlocks: PlanBlock[];

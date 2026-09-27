@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { ArrowLeft, CheckCircle2, ExternalLink, ListChecks } from "lucide-react";
 import Loading from "@/app/loading";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,26 @@ import { useDemo } from "@/lib/state/demo-provider";
 
 export default function FreeLearningPathPage() {
   const { skillId } = useParams<{ skillId: string }>();
-  const { state, onboardingReady, addFreePath } = useDemo();
+  const router = useRouter();
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleError, setScheduleError] = useState(false);
+  const { state, onboardingReady, addFreePath, scheduleFreePath } = useDemo();
   const skill = state.careerSkills.find((item) => item.id === skillId);
   const path = freePathForSkill(skillId);
   const ready = state.onboarding.completed && Boolean(state.assessment);
   const eligible = skill?.status === "available" || skill?.status === "in-progress";
   const added = path && state.selectedFreePathBySkill[skillId] === path.id;
+  const scheduled = path && state.scheduledFreePathBySkill[skillId] === path.id;
+
+  const addToPlan = async () => {
+    if (!path || scheduling) return;
+    setScheduling(true);
+    setScheduleError(false);
+    const success = await scheduleFreePath(skillId, path.id);
+    setScheduling(false);
+    if (success) router.push("/planner");
+    else setScheduleError(true);
+  };
 
   if (!onboardingReady) return <Loading />;
 
@@ -51,9 +66,11 @@ export default function FreeLearningPathPage() {
 
       <Card className="mt-7 rounded-2xl border-primary/25 bg-primary/[0.055] p-5 sm:p-6">
         <h2 className="font-heading text-lg font-semibold text-foreground">Ready to start this $0 path?</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">Add the steps to your learning plan. You can schedule study time later.</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">Save the path, then add study sessions to your planner around your academic work.</p>
         <Button type="button" onClick={() => addFreePath(skill.id, path.id)} disabled={Boolean(added)} className="mt-4 h-11 gap-2 rounded-xl px-5 text-sm font-semibold">{added ? <><CheckCircle2 className="size-4" aria-hidden="true" />Free Path Added</> : "Add Free Path to My Plan"}</Button>
-        {added && <p role="status" className="mt-3 text-sm text-success">The free path is saved in your learning plan. No calendar blocks were added.</p>}
+        {added && !scheduled && <div className="mt-3"><p role="status" className="text-sm text-success">The free path is saved in your learning plan. No calendar blocks were added.</p><Button type="button" onClick={addToPlan} disabled={scheduling} className="mt-3 h-11 rounded-xl px-5 text-sm font-semibold">{scheduling ? "Scheduling…" : "Add to My Plan"}</Button></div>}
+        {scheduled && <Button asChild className="mt-3 h-11 rounded-xl px-5 text-sm font-semibold"><Link href="/planner">Open Planner</Link></Button>}
+        {scheduleError && <p role="alert" className="mt-3 text-sm text-warning">There is not enough capacity to schedule this path yet. Increase your availability or capacity and try again.</p>}
       </Card>
     </>}
   </main>;

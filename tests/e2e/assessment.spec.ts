@@ -21,7 +21,7 @@ test("DevOps assessment saves weighted baseline scores and survives refresh", as
   });
   await page.goto("/assessment");
   await expect(page.getByText("Question 1 of 12")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Next" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
 
   for (let index = 0; index < 12; index += 1) {
     await expect(page.getByText(`Question ${index + 1} of 12`)).toBeVisible();
@@ -30,7 +30,7 @@ test("DevOps assessment saves weighted baseline scores and survives refresh", as
     const choiceIndex = baselineQuestions[index].id === "docker-compose" || ["CI/CD", "Cloud"].includes(baselineQuestions[index].skill) ? 1 : 0;
     await question.getByRole("radio").nth(choiceIndex).press("Space");
     await expect(question.getByRole("radio").nth(choiceIndex)).toBeChecked();
-    await page.getByRole("button", { name: index === 11 ? "Submit Assessment" : "Next" }).click();
+    await page.getByRole("button", { name: index === 11 ? "Submit Assessment" : "Next", exact: true }).click();
   }
 
   await expect(page).toHaveURL(/\/assessment\/results$/);
@@ -65,6 +65,11 @@ test("DevOps assessment saves weighted baseline scores and survives refresh", as
   await expect(page.getByRole("heading", { name: "LumaPath skill verification" })).toBeVisible();
   await page.getByRole("button", { name: "Add Free Path to My Plan" }).click();
   await expect(page.getByText("The free path is saved in your learning plan. No calendar blocks were added.")).toBeVisible();
+  await page.getByRole("button", { name: "Add to My Plan" }).click();
+  await expect(page).toHaveURL(/\/planner$/);
+  await expect(page.locator(".fc-event").filter({ hasText: "Docker fundamentals" }).first()).toBeVisible();
+  await expect(page.getByText("Academic deadlines protected").first()).toBeVisible();
+  await page.goBack();
   await page.getByRole("main").getByRole("link", { name: "Learning Resources" }).click();
   await expect(page.getByText("Your structured $0 Docker path is in your learning plan.")).toBeVisible();
   await page.getByRole("main").getByRole("link", { name: "Career Path" }).click();

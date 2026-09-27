@@ -19,6 +19,7 @@ import type { PlanBlock } from "@/lib/demo-data/types";
 const categoryClass: Record<PlanBlock["category"], string> = {
   Academic: "planner-event-academic",
   Career: "planner-event-career",
+  "career-learning": "planner-event-career",
   Personal: "planner-event-personal",
   Internship: "planner-event-internship",
   "AI Recommended": "planner-event-recommended",
@@ -124,7 +125,7 @@ export function PlannerCalendar({ onEditTask }: { onEditTask: (block: PlanBlock)
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border/70 px-4 py-3 sm:px-5" aria-label="Task categories">
-            {(["Academic", "Career", "Personal", "Internship", "AI Recommended"] as const).map((category) => <span key={category} className="inline-flex items-center gap-1.5"><span className={`size-1.5 rounded-full ${category === "Academic" ? "bg-primary" : category === "Career" ? "bg-pathway" : category === "Internship" ? "bg-success" : category === "AI Recommended" ? "bg-primary/55" : "bg-muted-foreground"}`} /><span className="text-[0.61rem] text-muted-foreground">{category}</span></span>)}
+            {(["Academic", "Career", "career-learning", "Personal", "Internship", "AI Recommended"] as const).map((category) => <span key={category} className="inline-flex items-center gap-1.5"><span className={`size-1.5 rounded-full ${category === "Academic" ? "bg-primary" : category === "Career" || category === "career-learning" ? "bg-pathway" : category === "Internship" ? "bg-success" : category === "AI Recommended" ? "bg-primary/55" : "bg-muted-foreground"}`} /><span className="text-[0.61rem] text-muted-foreground">{category === "career-learning" ? "Career learning" : category}</span></span>)}
           </div>
           {mobile && <div className="flex items-center justify-between px-4 pt-3"><Button variant="ghost" size="icon-sm" aria-label="Previous day" onClick={() => navigate("prev")} className="size-11"><ChevronLeft className="size-4" /></Button><span className="text-xs text-muted-foreground">Day agenda</span><Button variant="ghost" size="icon-sm" aria-label="Next day" onClick={() => navigate("next")} className="size-11"><ChevronRight className="size-4" /></Button></div>}
           <div className="planner-calendar-wrap p-2 sm:p-4">

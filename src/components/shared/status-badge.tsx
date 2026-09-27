@@ -20,6 +20,7 @@ const skillStyles: Record<SkillStatus, string> = {
 const categoryStyles: Record<TaskCategory, string> = {
   Academic: "border-primary/18 bg-primary/7 text-primary",
   Career: "border-pathway/20 bg-pathway/8 text-pathway",
+  "career-learning": "border-pathway/20 bg-pathway/8 text-pathway",
   Personal: "border-border bg-muted text-muted-foreground",
   Internship: "border-success/20 bg-success/8 text-success",
   "AI Recommended": "border-primary/20 bg-primary/8 text-primary",

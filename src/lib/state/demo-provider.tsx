@@ -10,6 +10,7 @@ import { generateSkillGap } from "../domain/skill-gap";
 import { buildDevOpsRoadmap } from "../domain/personalized-roadmap";
 import { recommendLearningResources } from "../domain/resource-recommender";
 import { freePathForSkill } from "../demo-data/free-learning-paths";
+import { scheduleLearningPath } from "../domain/learning-path-scheduler";
 import { buildNextBestAction, riskLevel } from "../domain/priority";
 import { blocksAfterUrgentDeadline, endAtMinutes } from "../domain/planner";
 import { raiseReadiness } from "../domain/readiness";
@@ -25,6 +26,7 @@ type DemoAction =
   | { type: "set-assessment"; result: BaselineAssessmentResult }
   | { type: "choose-resource"; skillId: string; resourceId: string }
   | { type: "add-free-path"; skillId: string; pathId: string }
+  | { type: "schedule-free-path"; skillId: string; pathId: string }
   | { type: "capacity-stage"; capacity: StudentCapacity; stage: number }
   | { type: "recover-database" }
   | { type: "reset" }
@@ -116,6 +118,19 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
         selectedFreePathBySkill: { ...state.selectedFreePathBySkill, [skill.id]: path.id },
         selectedResourceBySkill: Object.fromEntries(Object.entries(state.selectedResourceBySkill).filter(([id]) => id !== skill.id)),
         careerSkills: state.careerSkills.map((item) => item.id === skill.id && item.status === "available" ? { ...item, status: "in-progress" as const } : item),
+      };
+    }
+    case "schedule-free-path": {
+      if (state.selectedFreePathBySkill[action.skillId] !== action.pathId || state.scheduledFreePathBySkill[action.skillId] === action.pathId) return state;
+      const path = freePathForSkill(action.skillId);
+      if (!path || path.id !== action.pathId) return state;
+      const schedule = scheduleLearningPath(state, path);
+      if (!schedule) return state;
+      return {
+        ...state,
+        tasks: [...state.tasks, ...schedule.tasks],
+        planBlocks: [...state.planBlocks, ...schedule.blocks],
+        scheduledFreePathBySkill: { ...state.scheduledFreePathBySkill, [action.skillId]: action.pathId },
       };
     }
     case "capacity-stage":
@@ -327,6 +342,7 @@ interface DemoContextValue {
   submitAssessment: (answers: Record<string, string>) => boolean;
   chooseResource: (skillId: string, resourceId: string) => boolean;
   addFreePath: (skillId: string, pathId: string) => boolean;
+  scheduleFreePath: (skillId: string, pathId: string) => Promise<boolean>;
   resetDemo: () => void;
   updateCapacity: (capacity: StudentCapacity) => Promise<void>;
   addUrgentDeadline: () => Promise<void>;
@@ -429,6 +445,18 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     running.current = false;
   }, []);
 
+  const scheduleFreePath = useCallback(async (skillId: string, pathId: string) => {
+    if (running.current || state.selectedFreePathBySkill[skillId] !== pathId || state.scheduledFreePathBySkill[skillId] === pathId) return false;
+    const path = freePathForSkill(skillId);
+    if (!path || path.id !== pathId || !scheduleLearningPath(state, path)) return false;
+    const steps = ["Learning path added", "Capacity checked", "Academic deadlines protected", "Career learning scheduled"];
+    await showSteps("learning-path", steps, () => {
+      dispatch({ type: "schedule-free-path", skillId, pathId });
+      dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Learning path scheduled", result: steps, announcement: steps.join(" → ") } });
+    });
+    return true;
+  }, [showSteps, state]);
+
   const updateCapacity = useCallback(async (capacity: StudentCapacity) => {
     await showSteps("capacity", capacityStages, () => {
       dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Plan adapted", result: ["Capacity updated", "Risk recalculated", "Schedule optimized", "Next action updated"], announcement: "Plan adapted. Your risk, schedule and next action now reflect your capacity." } });
@@ -525,6 +553,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     submitAssessment,
     chooseResource,
     addFreePath,
+    scheduleFreePath,
     resetDemo,
     updateCapacity,
     addUrgentDeadline,
@@ -545,7 +574,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, chooseResource, addFreePath, resetDemo, updateCapacity, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, chooseResource, addFreePath, scheduleFreePath, resetDemo, updateCapacity, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
