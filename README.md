@@ -1,96 +1,46 @@
-# LumaPath AI
+<div align="center">
 
-> **Know what to do next. Stay on track. Build your future.**
+# 🌌 LumaPath AI
 
-LumaPath AI is an adaptive Student Success and Career Readiness platform that combines academic planning, personal capacity, skills, and career goals to help students decide what to do next and continuously adapt their path.
+### Know what to do next. Stay on track. Build your future.
+
+**Adaptive Student Success & Career Readiness Platform**
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/IT24103430/LumaPath-AI)
 
 **hackX 11.0 — ideaX Semi-Final Project**
 
-> **Development note:** this repository currently contains product and prototype documentation only. The application features and technical architecture described below are planned unless explicitly marked otherwise.
+</div>
 
-## Contents
+---
 
-- [LumaPath AI](#lumapath-ai)
-  - [Contents](#contents)
-  - [Overview](#overview)
-  - [The Problem](#the-problem)
-  - [The Solution](#the-solution)
-  - [Core Product Promise](#core-product-promise)
-  - [hackX 11.0 Prototype](#hackx-110-prototype)
-    - [Prototype Scope](#prototype-scope)
-    - [Prototype Status](#prototype-status)
-  - [Prototype Demo Flow](#prototype-demo-flow)
-  - [Full Product Vision](#full-product-vision)
-    - [Academic Success](#academic-success)
-    - [AI Planning](#ai-planning)
-    - [Student Wellness and Capacity](#student-wellness-and-capacity)
-    - [Productivity](#productivity)
-    - [Career Growth](#career-growth)
-    - [AI Mentor and Learning](#ai-mentor-and-learning)
-    - [Career Intelligence](#career-intelligence)
-    - [Analytics and Notifications](#analytics-and-notifications)
-    - [Integrations and Platform](#integrations-and-platform)
-  - [AI and Decision Intelligence](#ai-and-decision-intelligence)
-  - [System Architecture](#system-architecture)
-    - [Competition Prototype Architecture](#competition-prototype-architecture)
-    - [Target Production Architecture](#target-production-architecture)
-    - [Target Data Strategy](#target-data-strategy)
-  - [Target Tech Stack](#target-tech-stack)
-    - [Engineering Direction](#engineering-direction)
-  - [Security and Responsible Support](#security-and-responsible-support)
-  - [Getting Started](#getting-started)
-  - [Project Structure](#project-structure)
-  - [Current Development Status](#current-development-status)
-  - [Roadmap](#roadmap)
-    - [Milestone 1 — Competition Foundation](#milestone-1--competition-foundation)
-    - [Milestone 2 — Core Decision Loop](#milestone-2--core-decision-loop)
-    - [Milestone 3 — Career Readiness](#milestone-3--career-readiness)
-    - [Milestone 4 — Broader Student Platform](#milestone-4--broader-student-platform)
-    - [Milestone 5 — Scale and Operations](#milestone-5--scale-and-operations)
-  - [Team](#team)
-  - [Future Vision](#future-vision)
-  - [License](#license)
-- [LumaPath AI](#lumapath-ai-1)
-  - [Run locally](#run-locally)
-  - [Checks](#checks)
+## 🚀 Overview
 
-## Overview
+**LumaPath AI** is an adaptive student success and career-readiness platform designed to help university students answer one important question:
 
-LumaPath AI is envisioned as a student life operating system: one place for academic productivity, wellbeing and capacity awareness, task management, adaptive planning, AI mentoring, career development, and evidence-based skill progress.
+> **What should I do next?**
 
-The platform is intended to understand a student's:
+Students often need to manage academic deadlines, available study time, career preparation, skill development, learning resources, projects, and personal capacity across multiple disconnected systems.
 
-- academic workload and deadlines;
-- available time and current capacity;
-- skills and evidence of progress;
-- career goal and learning progress.
+LumaPath brings these signals together and uses structured decision logic to generate realistic priorities, adaptive schedules, career learning paths, and explainable recommendations.
 
-It can then help the student identify a realistic next action, understand why that action matters, and adjust the plan as circumstances change.
-
-## The Problem
-
-University students often manage coursework, deadlines, wellbeing, skill development, and internship preparation across disconnected tools. A static to-do list may show what is due, but it does not account for changing capacity, competing deadlines, career goals, or the evidence needed to demonstrate progress.
-
-This fragmentation makes it difficult to answer a simple but important question: **What should I do next?**
-
-## The Solution
-
-LumaPath brings academic and career context into one adaptive workflow. The intended product combines:
-
-- a personalised student profile;
-- academic tasks, goals, habits, and deadlines;
-- daily capacity, mood, and stress check-ins;
-- deadline risk and priority analysis;
-- weekly planning and automatic replanning;
-- career readiness, skill-gap analysis, and personalised pathways;
-- explainable AI guidance, reminders, and progress insights.
-
-## Core Product Promise
+The system focuses on connecting:
 
 ```text
-Student Context
-      ↓
-Tasks + Deadlines + Capacity + Skills + Career Goal
+Academic Work
+      +
+Deadlines
+      +
+Available Capacity
+      +
+Skills
+      +
+Career Goals
       ↓
 Risk & Priority Analysis
       ↓
@@ -98,423 +48,679 @@ Adaptive Planning
       ↓
 Next Best Action
       ↓
-AI Explanation
+Explainable Recommendations
       ↓
-Progress & Replanning
+Progress Tracking & Replanning
 ```
 
-The product is guided by one engineering principle:
+---
+
+## 🎯 Core Product Principle
+
+LumaPath follows a simple architecture philosophy:
 
 > **Rules decide. Optimisation schedules. AI explains.**
 
-- Structured logic determines priority, constraints, and deadline risk.
-- Planning logic creates realistic schedules from the student's time and capacity.
-- AI provides explanations, guidance, and personalised communication.
-- Critical scheduling decisions should remain traceable rather than being controlled blindly by a language model.
+- Structured logic determines priorities and deadline risks.
+- Scheduling logic generates realistic student plans.
+- Career logic identifies skill gaps and learning priorities.
+- The user can understand why recommendations were made.
+- Important planning decisions remain traceable.
 
-## hackX 11.0 Prototype
+---
 
-The current milestone is a focused prototype for the **hackX 11.0 ideaX Semi-Finals**, part of the Inter-University Startup Challenge. It is intended to demonstrate the central decision loop within the competition's short pitch-and-demo format, not the complete long-term platform.
+## ✨ Current Prototype Features
 
-### Prototype Scope
+### 📊 Student Dashboard
 
-- Student profile and career target
-- Task and deadline manager
-- Daily capacity check-in
-- Deadline risk detection
-- Next Best Action recommendation
-- AI weekly planning
-- Automatic plan rescheduling
-- Explainable recommendations
-- Career skill-gap analysis
-- Career readiness view
+The dashboard provides a central view of the student's current situation, including:
 
-Detailed scope boundaries and acceptance criteria are recorded in [docs/prototype-scope.md](docs/prototype-scope.md).
+- academic workload
+- upcoming deadlines
+- career readiness
+- daily priorities
+- capacity
+- deadline risk
+- Next Best Action
+- learning progress
+- weekly progress
 
-### Prototype Status
+### 🎯 Career Goal & Skill Roadmap
 
-| Feature | Status |
-| --- | --- |
-| Student Dashboard | Planned |
-| Student Profile | Planned |
-| Task Manager | Planned |
-| Capacity Check-In | Planned |
-| Deadline Risk | Planned |
-| Next Best Action | Planned |
-| Weekly Planner | Planned |
-| Automatic Replanning | Planned |
-| Skill-Gap Analysis | Planned |
-| Explainable Recommendations | Planned |
-| Career Readiness | Planned |
+The current prototype focuses on a **DevOps Engineer** career pathway.
 
-These statuses describe what is present in this repository. They should be updated only when the corresponding implementation is committed and verifiable.
+It includes:
 
-## Prototype Demo Flow
+- personalized DevOps roadmap
+- prerequisite-aware skill progression
+- skill-gap identification
+- career readiness tracking
+- learning stages
+- learning resources
+- project-based evidence
+- skill verification
 
-The proposed demo follows **Maya**, a student working toward a career as a DevOps Engineer:
+### 🧠 Baseline Assessment
 
-1. Maya's student profile and career target are shown.
-2. Her academic tasks and deadlines are loaded.
-3. Maya records her current available time and capacity.
-4. LumaPath identifies a deadline at risk.
-5. It recommends her Next Best Action.
-6. A realistic weekly plan is generated.
-7. An exam or deadline changes.
-8. LumaPath replans the affected work.
-9. An explanation shows why the priorities changed.
-10. The career view identifies Maya's next missing DevOps skill.
+Students can complete a technical knowledge assessment that helps LumaPath identify their current skill level.
 
-## Full Product Vision
+The prototype supports:
 
-The prototype is only the first decision loop. The complete product vision retains the broader academic, wellbeing, productivity, mentoring, and career capabilities below.
+- weighted assessment questions
+- category-based scores
+- assessment history
+- reassessment
+- preserved progress after retakes
+- skill-gap calculation
 
-**Legend:** **Prototype Core** is in the competition scope; **Planned** belongs to the broader product; **Advanced / Future** is a later-stage capability. These labels describe scope, not completed implementation.
+### 📚 Learning Workspace
 
-### Academic Success
+The Learning workspace connects career learning with the rest of the student planning system.
 
-- **Prototype Core:** student dashboard and personalised profile
-- **Prototype Core:** academic tasks, deadlines, deadline alerts, and risk detection
-- **Prototype Core:** weekly study plan, Next Best Action, and automatic replanning
-- **Planned:** academic details, daily goals, study goals, and learning guidance
-- **Planned:** focus-session and study-progress tracking
-- **Advanced / Future:** university LMS and calendar integrations
+Students can:
 
-### AI Planning
+- access recommended learning resources
+- follow free learning paths
+- bookmark learning resources
+- complete learning stages
+- connect learning tasks to the planner
+- submit project evidence
+- complete knowledge checks
+- view completed learning
 
-- **Prototype Core:** priority recommendations based on deadlines and capacity
-- **Prototype Core:** explainable recommendations and plan changes
-- **Planned:** personalised improvement plans and learning recommendations
-- **Planned:** smart reminders and motivational support
-- **Advanced / Future:** recommendation optimisation informed by long-term outcomes
+### 🗓️ Adaptive Planner
 
-### Student Wellness and Capacity
+The planner combines academic work and career development.
 
-- **Prototype Core:** daily capacity check-in
-- **Planned:** mood and stress tracking
-- **Planned:** daily journaling and reflection history
-- **Planned:** burnout signals and emotional trend analysis
-- **Planned:** safety-aware supportive guidance
-- **Advanced / Future:** counsellor or authorised support dashboards with appropriate consent and safeguards
+Features include:
 
-### Productivity
+- task scheduling
+- academic deadlines
+- career-learning tasks
+- weekly planning
+- agenda view
+- capacity-aware planning
+- automatic schedule adjustment
+- flexible task movement
+- deadline protection
 
-- **Prototype Core:** task and plan management
-- **Planned:** goal tracking and productivity summaries
-- **Planned:** habits, habit streaks, and focus sessions
-- **Planned:** study planning and productivity coaching
-- **Planned:** event-driven notifications and nudges
+### ⚡ Next Best Action
 
-### Career Growth
+LumaPath analyzes student context and recommends the most useful next action.
 
-- **Prototype Core:** career target, readiness view, and skill-gap analysis
-- **Prototype Core:** personalised career pathway and next skill recommendation
-- **Planned:** internship preparation and skill roadmaps
-- **Planned:** resume/CV tracking and improvement support
-- **Planned:** interview preparation and coding-challenge planning
-- **Planned:** portfolio development and evidence-based skill progress
-- **Planned:** GitHub progress tracking and LinkedIn growth tracking
+The recommendation can consider:
 
-### AI Mentor and Learning
+- deadline urgency
+- available capacity
+- academic importance
+- task flexibility
+- career progress
+- learning continuity
+- skill gaps
 
-- **Planned:** conversational AI mentor
-- **Planned:** academic, productivity, and career guidance
-- **Planned:** context-aware memory and personalised recommendations
-- **Planned:** internship and resume guidance
-- **Planned:** emotional support guidance within clearly defined safety boundaries
-- **Advanced / Future:** retrieval-augmented guidance using approved student context
+### ⚠️ Deadline Risk Detection
 
-### Career Intelligence
+LumaPath evaluates academic tasks to identify situations where the current schedule may put a deadline at risk.
 
-- **Planned:** career-readiness scoring with transparent contributing factors
-- **Planned:** skill demand and pathway insights
-- **Planned:** learning-resource recommendations
-- **Advanced / Future:** labour-market and internship intelligence from trusted data sources
+The system can use that information to:
 
-### Analytics and Notifications
+- prioritize urgent academic work
+- protect important deadlines
+- move flexible work
+- generate explanations
+- trigger automatic replanning
 
-- **Planned:** productivity and learning-progress insights
-- **Planned:** mood, stress, and behavioural trend views
-- **Planned:** deadline, study, career, and habit reminders
-- **Planned:** AI-generated encouragement with user controls
-- **Advanced / Future:** privacy-aware institutional insights using aggregated data
+### 🔄 Automatic Replanning
 
-### Integrations and Platform
+Plans can adapt when the student's situation changes.
 
-- **Planned:** GitHub, calendar, email, and push-notification integrations
-- **Advanced / Future:** university LMS integration
-- **Advanced / Future:** team study groups and mobile applications
-- **Advanced / Future:** admin and counsellor experiences
-- **Advanced / Future:** premium SaaS capabilities and multi-region deployment
+Example triggers include:
 
-## AI and Decision Intelligence
+- deadline changes
+- new assignments
+- missed tasks
+- reduced available capacity
+- urgent academic work
 
-The initial decision design separates deterministic product logic from generative AI:
+The goal is not simply to move tasks, but to preserve realistic progress while protecting important deadlines.
 
-1. **Context:** collect explicit profile, workload, deadline, capacity, skill, and career-goal inputs.
-2. **Risk:** use auditable rules to flag deadline pressure and constraint conflicts.
-3. **Priority:** rank feasible actions using declared factors rather than hidden model judgment.
-4. **Plan:** allocate work into available time and recalculate when inputs change.
-5. **Explain:** use AI to turn the structured result into clear, personalised guidance.
-6. **Learn:** record outcomes and evidence so future recommendations can improve safely.
+### 🔋 Capacity Check-In
 
-Longer-term AI concepts include context memory, embeddings, vector search, RAG, response caching, prompt-injection defenses, and a safety layer. These are target capabilities; no AI provider or algorithm has been implemented in this repository.
+Students can provide information about their current available capacity.
 
-## System Architecture
+This helps LumaPath generate more realistic plans instead of assuming every day has the same available time and energy.
 
-### Competition Prototype Architecture
+### 🛟 Recovery Mode
 
-Because application development has not yet started, the prototype architecture remains intentionally technology-neutral:
+Recovery Mode helps adjust the workload when the student's available capacity decreases.
 
-```mermaid
-flowchart TD
-    S[Student] --> UI[Prototype Web Interface]
-    UI --> API[Backend API]
-    API --> CORE[Core Modules]
-    CORE --> PROFILE[Profiles]
-    CORE --> TASKS[Tasks]
-    CORE --> PLAN[Planning]
-    CORE --> RISK[Risk and Priority]
-    CORE --> CAREER[Career]
-    PROFILE --> DB[(Database)]
-    TASKS --> DB
-    PLAN --> DB
-    RISK --> DB
-    CAREER --> DB
-    API --> AI[AI Provider for Explanations]
+It prioritizes important work while allowing flexible tasks to move to safer times.
+
+### 🧭 Career Readiness
+
+The platform tracks career progress using observable learning and evidence signals.
+
+Career readiness can reflect:
+
+- assessed knowledge
+- verified skills
+- learning completion
+- submitted project evidence
+- roadmap progress
+
+### 🏆 Evidence Passport
+
+The Evidence Passport allows students to keep track of evidence connected to their career development.
+
+Examples include:
+
+- projects
+- completed learning
+- verified skills
+- external certificates
+- local learning records
+
+External credentials are treated as **self-reported information** in the current prototype.
+
+### 🎓 Skill Verification
+
+Learning progress can include:
+
+```text
+Learning
+   ↓
+Practice
+   ↓
+Project
+   ↓
+Assessment
+   ↓
+Verification
 ```
 
-The first implementation should stay modular but small: one web application, one backend boundary, one database, and an optional AI provider for explanations.
+Local completion records require the appropriate learning and assessment requirements to be completed.
 
-### Target Production Architecture
+### 🧘 Student Capacity & Life Load
 
-The long-term architecture may evolve into independently deployable services once real scale and team needs justify that complexity.
+The prototype includes optional capacity and Life Load information.
 
-```mermaid
-flowchart LR
-    U[Student] --> FE[Web or Mobile Client]
-    FE --> GW[API Gateway]
-    GW --> AUTH[Auth Service]
-    GW --> USER[User and Profile Service]
-    GW --> AI[AI Mentor Service]
-    GW --> WELL[Wellness and Journal Service]
-    GW --> PROD[Productivity and Planning Service]
-    GW --> CAREER[Career Service]
-    GW --> ANALYTICS[Analytics Service]
-    GW --> NOTIF[Notification Service]
+This information remains within the browser-based prototype state.
 
-    AUTH --> PG[(PostgreSQL)]
-    USER --> PG
-    PROD --> PG
-    CAREER --> PG
-    AI --> MONGO[(MongoDB)]
-    WELL --> MONGO
-    GW --> REDIS[(Redis)]
-    AI --> VECTOR[(Vector Database)]
-    AI --> LLM[AI Provider]
-    PROD --> BUS[Kafka or RabbitMQ]
-    CAREER --> BUS
-    WELL --> BUS
-    BUS --> ANALYTICS
-    BUS --> NOTIF
+LumaPath is **not a medical system** and does not provide medical diagnosis.
+
+### 🔔 Notifications & Intelligence
+
+The workspace contains contextual information and notifications related to:
+
+- deadlines
+- learning
+- career progress
+- planning
+- changing priorities
+
+### 🤖 Context-Aware Assistant
+
+The prototype includes contextual guidance based on structured student state.
+
+The assistant can provide explanations related to:
+
+- planning
+- priorities
+- career development
+- learning
+- capacity
+
+The current prototype does not require an external AI API.
+
+---
+
+## 🎬 Competition Demo Flow
+
+A typical competition demo can follow this journey:
+
+```text
+Student Profile
+      ↓
+Career Goal
+      ↓
+Baseline Assessment
+      ↓
+Skill Gap Analysis
+      ↓
+Career Roadmap
+      ↓
+Academic Tasks
+      ↓
+Capacity Check-In
+      ↓
+Deadline Risk
+      ↓
+Next Best Action
+      ↓
+Adaptive Weekly Plan
+      ↓
+Situation Changes
+      ↓
+Automatic Replanning
+      ↓
+Explanation of Changes
+      ↓
+Career Learning Progress
 ```
 
-This is a **target architecture**, not the current repository structure. Possible service responsibilities include authentication, profiles, AI mentoring, journaling, productivity and planning, career readiness, analytics, notifications, and external integrations.
+This demonstrates the main value of LumaPath:
 
-### Target Data Strategy
+> **Academic survival and career development should not compete with each other — they should be planned together.**
 
-- **PostgreSQL:** users, profiles, goals, habits, tasks, plans, skills, career pathways, notifications, roles, and permissions
-- **MongoDB:** flexible journal entries, mood logs, conversation history, and summaries where document storage is justified
-- **Redis:** sessions, rate limits, short-lived plan data, and response caching
-- **Vector database:** approved context embeddings and retrieval data for future RAG features
+---
 
-The prototype should begin with the smallest data store that meets its needs rather than introducing every planned database.
+## 🧱 Technology Stack
 
-## Target Tech Stack
+### Frontend
 
-No framework or dependency has been installed yet. The original technical direction is retained here as a candidate stack to validate before implementation.
+- **Next.js 15**
+- **React 19**
+- **TypeScript**
+- **Tailwind CSS 4**
+- **shadcn/ui**
+- **Radix UI**
+- **Lucide React**
 
-| Area | Target / Candidate Technologies | Current State |
-| --- | --- | --- |
-| Frontend | Next.js, TypeScript, Tailwind CSS, Framer Motion, Zustand or Redux | Not started |
-| Backend | Node.js, NestJS, REST, DTO validation, OpenAPI | Not started |
-| Data | PostgreSQL; later MongoDB, Redis, and a vector database where justified | Not started |
-| Messaging | Kafka or RabbitMQ for later event-driven workflows | Not started |
-| AI | Provider API, RAG, embeddings, context memory, safety layer | Not started |
-| Delivery | Docker, Docker Compose, GitHub Actions, Nginx | Not started |
-| Scale | Kubernetes and cloud deployment on an evaluated provider | Future target |
-| Observability | Prometheus, Grafana, ELK, OpenTelemetry | Future target |
+### UI & Interaction
 
-Potential production metrics include API latency, error rates, planning and AI response time, AI token usage, message-consumer lag, query performance, cache hit rate, and notification delivery rate.
+- **Motion**
+- **Sonner**
+- **cmdk**
+- **next-themes**
 
-### Engineering Direction
+### Visualization
 
-As the system grows, it may apply SOLID, DRY, KISS, clean or hexagonal architecture, domain-driven design, repository and service-layer patterns, dependency injection, CQRS where useful, and event-driven integration. Distributed-system concerns such as retries, circuit breakers, graceful degradation, horizontal scaling, load balancing, eventual consistency, observability, and fault tolerance belong to later phases—not the initial prototype.
+- **Recharts**
+- **React Flow / XYFlow**
+- **FullCalendar**
 
-## Security and Responsible Support
+### Testing
 
-Planned security controls include:
+- **Vitest**
+- **Playwright**
+- **ESLint**
+- **TypeScript type checking**
 
-- secure authentication, password hashing, session or token rotation, and role-based access;
-- input validation, request sanitisation, rate limiting, and audit logging;
-- HTTPS/TLS, protected environment variables, secrets management, and encryption practices;
-- explicit consent and strong access controls for journal, mood, stress, and career data;
-- prompt-injection defenses and controlled context retrieval for AI features;
-- transparent recommendation factors and user control over reminders and personalisation.
+### Deployment
 
-LumaPath is intended to provide supportive guidance only. It must not present itself as a replacement for medical, psychological, academic, legal, or professional counselling services. Crisis handling and escalation require dedicated safety design before wellness AI is released.
+- **GitHub**
+- **Vercel**
 
-## Getting Started
+---
 
-Clone the documentation repository:
+## 🏗️ Current Architecture
+
+The competition prototype intentionally uses a lightweight browser-local architecture.
+
+```text
+┌───────────────────────────────┐
+│          Next.js App          │
+│                               │
+│  Dashboard                    │
+│  Planner                      │
+│  Tasks                        │
+│  Learning                     │
+│  Career Roadmap               │
+│  Evidence                     │
+│  Analytics                    │
+└───────────────┬───────────────┘
+                │
+                ▼
+┌───────────────────────────────┐
+│   Shared Application State    │
+│   React Context + Reducer     │
+└───────────────┬───────────────┘
+                │
+                ▼
+┌───────────────────────────────┐
+│        Browser Storage        │
+│         localStorage          │
+└───────────────────────────────┘
+```
+
+### Current Prototype Limitations
+
+The current competition prototype:
+
+- is browser-local
+- is designed primarily for a single student
+- currently focuses on the DevOps career pathway
+- does not have a production backend
+- does not have user account authentication
+- does not have a production database
+- does not process payments
+- does not provide real premium subscriptions
+- does not provide publicly verifiable certificates
+- does not depend on an external AI API
+
+These are deliberate prototype boundaries rather than production security claims.
+
+---
+
+## 📁 Project Structure
+
+```text
+LumaPath-AI/
+│
+├── public/
+│   └── brand/
+│
+├── src/
+│   ├── app/
+│   │   ├── assessment/
+│   │   ├── login/
+│   │   ├── onboarding/
+│   │   ├── register/
+│   │   └── (workspace)/
+│   │       ├── analytics/
+│   │       ├── career-path/
+│   │       ├── evidence/
+│   │       ├── focus/
+│   │       ├── intelligence/
+│   │       ├── learning/
+│   │       ├── overview/
+│   │       ├── planner/
+│   │       ├── plans/
+│   │       ├── settings/
+│   │       ├── skills/
+│   │       └── tasks/
+│   │
+│   ├── components/
+│   ├── features/
+│   └── lib/
+│
+├── tests/
+│   └── e2e/
+│
+├── docs/
+├── package.json
+├── next.config.ts
+├── tsconfig.json
+└── README.md
+```
+
+---
+
+## 💻 Run Locally
+
+### Requirements
+
+Make sure you have:
+
+- Node.js 20+
+- npm
+- Git
+
+Check:
+
+```bash
+node --version
+npm --version
+git --version
+```
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/IT24103430/LumaPath-AI.git
 cd LumaPath-AI
 ```
 
-The browser-local prototype is runnable: use `npm ci`, then `npm run dev`. Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` for checks. Run `npm run test:e2e` for the Playwright journeys. No database, backend credentials, or Docker setup is required. See [the integration report](docs/prototype-integration.md) for current capabilities and limitations.
-
-## Project Structure
-
-The current repository is deliberately small:
-
-```text
-LumaPath-AI/
-├── docs/
-│   └── prototype-scope.md
-└── README.md
-```
-
-The earlier multi-application, infrastructure, Kubernetes, Terraform, and CI/CD layouts remain possible future directions, but those directories do not exist yet.
-
-## Current Development Status
-
-| Area | Status | Evidence in Repository |
-| --- | --- | --- |
-| Product vision | Documented | This README |
-| hackX prototype scope | Documented | `docs/prototype-scope.md` |
-| Prototype user flow | Documented | This README and scope document |
-| Frontend | Planned | No application code yet |
-| Backend and APIs | Planned | No application code yet |
-| Database | Planned | No schema or configuration yet |
-| AI integration | Planned | No provider integration yet |
-| Authentication | Planned beyond initial prototype | No implementation yet |
-| Testing and CI/CD | Planned | No test or workflow configuration yet |
-| Deployment and observability | Advanced / Future | No infrastructure configuration yet |
-
-## Roadmap
-
-### Milestone 1 — Competition Foundation
-
-- [x] Clarify the full product vision and focused prototype scope
-- [x] Document the demo story and honest implementation status
-- [ ] Confirm the prototype technology stack
-- [ ] Create the minimal application foundation
-- [ ] Add a representative demo data set for Maya
-
-### Milestone 2 — Core Decision Loop
-
-- [ ] Build the student profile and dashboard
-- [ ] Build task and deadline management
-- [ ] Add capacity check-in and deadline-risk rules
-- [ ] Implement Next Best Action ranking
-- [ ] Generate and replan a weekly schedule
-- [ ] Explain recommendation factors clearly
-
-### Milestone 3 — Career Readiness
-
-- [ ] Model career targets, skills, and evidence
-- [ ] Add skill-gap analysis and a personalised pathway
-- [ ] Show career-readiness progress without unsupported claims
-
-### Milestone 4 — Broader Student Platform
-
-- [ ] Add goals, habits, focus sessions, mood, stress, and journaling
-- [ ] Add AI mentor, resume/CV, interview, internship, and learning support
-- [ ] Add GitHub, calendar, notification, and other approved integrations
-- [ ] Validate privacy, accessibility, safety, and recommendation quality
-
-### Milestone 5 — Scale and Operations
-
-- [ ] Introduce service separation only where operationally justified
-- [ ] Add caching, messaging, and specialised data stores as needed
-- [ ] Add containerisation, CI/CD, monitoring, logging, and tracing
-- [ ] Evaluate Kubernetes and multi-region deployment when scale requires them
-
-## Team
-
-| Team Member | Role |
-| --- | --- |
-| [Sachith Asmadala](https://github.com/Sachith-02) | Team Member |
-| Dasun Weliange | Team Member |
-| Sudesh Sumanawansha | Team Member |
-| Buddi Jayasundara | Team Member |
-
-Roles will be updated as responsibilities are confirmed.
-
-Repository: [github.com/IT24103430/LumaPath-AI](https://github.com/IT24103430/LumaPath-AI)
-
-## Future Vision
-
-LumaPath AI aims to grow from a focused planning prototype into a trusted student-success platform connecting academic action, personal wellbeing, and career development. Future opportunities include mobile apps, team study groups, authorised counsellor and institutional experiences, richer career intelligence, a responsible recommendation engine, cloud deployment, and sustainable SaaS offerings.
-
-The architecture should evolve with validated user needs. Microservices, multiple databases, event streaming, and Kubernetes are options for future scale—not measures of prototype success.
-
-## License
-
-No license file has been added yet. Until a license is selected and committed, normal copyright restrictions apply. The team can evaluate the MIT License or another suitable license in a future update.
-
-# LumaPath AI
-
-LumaPath helps students connect academic deadlines, an adaptive day plan, and career readiness. The current app uses a deterministic local student scenario. After onboarding, shared student progress is saved in this browser and survives reloads; Demo Reset starts a fresh journey.
-
-## Run locally
-
-Use Node.js 20.20.2 or newer and npm. This repository has a `package-lock.json` and uses npm as its package manager.
+### Install Dependencies
 
 ```bash
-npm ci
+npm install
+```
+
+### Start Development Server
+
+```bash
 npm run dev
 ```
 
-Open the URL printed by Next.js. It is usually <http://localhost:3000>; if that port is busy, Next.js prints another port such as 3001.
+Open:
 
-The `pnpm` command installed on some Macs may require a newer Node.js version. With Node 20 and Homebrew pnpm 11, `node:sqlite` fails before the app starts. Use `npm run dev` for this repository. If you choose to use pnpm in another project, install a pnpm version compatible with your Node.js version.
+```text
+http://localhost:3000
+```
 
-The app is on Next.js 15. Its development output goes to `.next-dev`, while production builds go to `.next`, so `npm run build` can run without deleting files used by a live development server. If a server started before this change still reports a missing `_buildManifest.js.tmp` file, stop that server and start `npm run dev` again. Run only one development server for this checkout at a time.
+---
 
-The PostCSS override in `package.json` patches the version nested under Next.js 15; `npm audit` now reports zero vulnerabilities without a major Next.js upgrade.
+## 🧪 Project Checks
 
-## Checks
+### Production Build
 
 ```bash
-npm run lint
-npm run typecheck
-npm test
-npm run test:e2e
 npm run build
 ```
 
-The browser tests require a one-time `npx playwright install chromium`. See [the dashboard review notes](docs/dashboard-review.md) for the connected Overview flow and its demo limitations.
+### TypeScript Check
 
-## Workspace controls
+```bash
+npm run typecheck
+```
 
-- **Overview:** quick links to add tasks, import deadlines, and view the schedule.
-- **Tasks:** search, category filters, risk/deadline/duration sorting, and direct focus sessions.
-- **Planner:** calendar and chronological agenda views share the same editable blocks.
-- **Career Path and Skills:** map/card views, current versus target scores, and prerequisite-aware next steps.
-- **Evidence:** search sources and browse verified or pending work without changing confidence calculations.
-- **Intelligence:** Discover, Saved, and In your plan collections; dismiss with Undo.
-- **Analytics:** planned academic/career hours with an accessible data table.
-- **Focus:** capacity-aware duration choices, start/pause/reset, and explicit demo session completion.
-- **Settings:** light, dark, and device theme previews.
+### ESLint
 
-Controls support keyboard navigation. Motion respects the device’s reduced-motion setting; mobile controls have larger tap targets. All learning and planning interactions continue to use the shared demo store.
+```bash
+npm run lint
+```
 
-## Connected learning prototype
+### Unit Tests
 
-The existing shared demo state now supports resumable onboarding and baseline answers, optional knowledge/interests/certificate preferences, all nine DevOps open learning paths, and a **Learning** workspace connected to planner tasks. Students can save resources, set a career goal, submit project links, retake skill checks, and review assessment history.
+```bash
+npm test
+```
 
-The **Evidence Passport** accepts self-reported external certificates and downloadable local completion records. Internal records require finished learning stages, a project submission, and a passing knowledge check. They are not accredited or publicly verified credentials. **Settings** can clear private check-in notes/factors without moving scheduled tasks. **Plans** is an honest Free/Premium product preview; no paid entitlement or billing is simulated.
+### End-to-End Tests
 
-See [the implementation report](docs/prototype-integration.md) for scope, files, state changes, verification and limitations. No backend, database, new package dependency, or environment variable is required.
+```bash
+npm run test:e2e
+```
+
+---
+
+## 🌐 Deploying with Vercel
+
+LumaPath is designed to deploy directly from the GitHub `main` branch.
+
+### Vercel Configuration
+
+```text
+Framework Preset : Next.js
+Root Directory   : ./
+Build Command    : npm run build
+Install Command  : npm install
+Production Branch: main
+```
+
+After GitHub and Vercel are connected:
+
+```bash
+git add .
+git commit -m "Update LumaPath"
+git push origin main
+```
+
+A push to `main` can automatically trigger a new production deployment.
+
+---
+
+## 🔀 Recommended Git Workflow
+
+```text
+Feature / Prototype Branch
+          ↓
+      Development
+          ↓
+        Testing
+          ↓
+   Pull Request / Merge
+          ↓
+         main
+          ↓
+       GitHub
+          ↓
+        Vercel
+          ↓
+ Production Deployment
+```
+
+---
+
+## 🏷️ Releases
+
+Stable versions of LumaPath can be published using GitHub Releases.
+
+Versioning follows semantic versioning:
+
+```text
+v1.0.0
+v1.0.1
+v1.1.0
+v2.0.0
+```
+
+Example:
+
+```bash
+git checkout main
+git pull origin main
+git tag -a v1.0.0 -m "LumaPath AI v1.0.0"
+git push origin v1.0.0
+```
+
+Using GitHub CLI:
+
+```bash
+gh release create v1.0.0 \
+  --repo IT24103430/LumaPath-AI \
+  --title "LumaPath AI v1.0.0" \
+  --generate-notes
+```
+
+---
+
+## 📦 GitHub Packages
+
+LumaPath can also publish Docker images through **GitHub Container Registry (GHCR)**.
+
+Example package:
+
+```text
+ghcr.io/it24103430/lumapath-ai
+```
+
+Example version tags:
+
+```text
+ghcr.io/it24103430/lumapath-ai:1.0.0
+ghcr.io/it24103430/lumapath-ai:1.0
+ghcr.io/it24103430/lumapath-ai:latest
+```
+
+GitHub Actions can automatically build and publish the container whenever a release tag is pushed.
+
+```text
+Push Version Tag
+       ↓
+GitHub Actions
+       ↓
+Docker Build
+       ↓
+GitHub Container Registry
+       ↓
+GitHub Packages
+```
+
+---
+
+## 🔐 Security & Responsible Design
+
+The current version is a competition prototype.
+
+Important design boundaries include:
+
+- no production authentication claims
+- no sensitive production database
+- no payment processing
+- no medical diagnosis
+- no accredited certificate claims
+- no fabricated public verification
+- no external credentials required for the current prototype
+- browser-local prototype data
+
+A production version would require proper:
+
+- authentication
+- authorization
+- backend APIs
+- database isolation
+- encryption
+- audit logging
+- secrets management
+- privacy controls
+- server-side validation
+
+---
+
+## 🗺️ Future Development
+
+Potential production extensions include:
+
+- multi-user authentication
+- production backend APIs
+- cloud database
+- university LMS integrations
+- calendar integrations
+- real notification services
+- broader career pathways
+- internship intelligence
+- advanced recommendation systems
+- secure user data synchronization
+- public portfolio integrations
+- production-grade analytics
+- AI-assisted explanations using approved student context
+
+---
+
+## 📌 Repository
+
+**GitHub**
+
+https://github.com/IT24103430/LumaPath-AI
+
+---
+
+## 👨‍💻 Development
+
+LumaPath AI is being developed as a student innovation project focused on combining:
+
+**Academic Planning + Student Capacity + Career Readiness**
+
+into one adaptive decision-support experience.
+
+---
+
+## 📄 License
+
+This project is currently developed for educational, research, demonstration, and competition purposes.
+
+Copyright © 2026 LumaPath AI.
+
+---
+
+<div align="center">
+
+### LumaPath AI
+
+**Know what to do next. Stay on track. Build your future.**
+
+⭐ If you find the project interesting, consider starring the repository.
+
+</div>
