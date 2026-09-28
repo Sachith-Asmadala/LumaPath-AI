@@ -13,7 +13,7 @@ type BrandLogoProps = {
 };
 
 export function BrandLogo({ size = "md", variant = "auto", iconOnly = false, className, decorative = false, priority = false }: BrandLogoProps) {
-  if (iconOnly) return <BrandIcon size={size === "sm" ? 24 : size === "lg" ? 40 : 32} className={className} decorative={decorative} unoptimized priority={priority} />;
+  if (iconOnly) return <BrandIcon size={size === "sm" ? 24 : size === "lg" ? 40 : 32} className={className} decorative={decorative} priority={priority} />;
 
   const width = brand.logoWidths[size];
   const image = (src: string, themeClass?: string) => <Image src={src} alt={decorative ? "" : brand.name} aria-hidden={decorative || undefined} width={1448} height={1086} unoptimized priority={priority} className={cn("h-auto shrink-0 object-contain", themeClass, className)} style={{ width }} />;
