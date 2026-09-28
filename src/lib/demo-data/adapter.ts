@@ -12,7 +12,7 @@ export function readStoredDemoState(): DemoState | null {
       && Array.isArray(state.careerSkills) && Array.isArray(state.evidence) && Boolean(state.readiness)
       && Boolean(state.selectedResourceBySkill) && Boolean(state.selectedFreePathBySkill)
       && Boolean(state.scheduledPathBySkill) && Boolean(state.skillReassessments)
-      ? state : null;
+      ? { ...state, assessmentHistory: state.assessmentHistory ?? [], assessmentDraft: state.assessmentDraft ?? { answers: {}, index: 0 }, resourceBookmarks: state.resourceBookmarks ?? [], completionRecords: state.completionRecords ?? [], learningGoal: state.learningGoal ?? null } : null;
   } catch {
     return null;
   }

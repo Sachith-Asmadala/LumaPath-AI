@@ -15,6 +15,7 @@ const iconById = {
   certifications: GraduationCap,
   interview: MessageCircleMore,
   applications: BriefcaseBusiness,
+  coverage: Code2, projects: BriefcaseBusiness, learning: GraduationCap,
 } as const;
 
 export function CareerReadinessCard() {
@@ -42,9 +43,9 @@ export function CareerReadinessCard() {
         <div className="flex items-center gap-4">
           <ScoreRing value={state.readiness.score} size={116} stroke={7} animateOnMount />
           <div className="min-w-0 flex-1">
-            <p className="font-heading text-sm font-semibold text-foreground">On Track</p>
+            <p className="font-heading text-sm font-semibold text-foreground">{state.assessment ? "Your measured progress" : "Sample student scenario"}</p>
             <p className="mt-1 text-[0.67rem] text-muted-foreground">Building toward DevOps Engineer</p>
-            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-success/15 bg-success/[0.05] px-2 py-1 text-[0.64rem] text-success"><ArrowUpRight className="size-3" />+{state.readiness.weeklyDelta}% this week</div>
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-success/15 bg-success/[0.05] px-2 py-1 text-[0.64rem] text-success"><ArrowUpRight className="size-3" />{state.readiness.weeklyDelta >= 0 ? "+" : ""}{state.readiness.weeklyDelta}% {state.assessment ? "since baseline" : "this week"}</div>
             <AnimatePresence>{delta > 0 && <motion.p key="readiness-gain" initial={{ opacity: 0, y: reduced ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduced ? 0 : -4 }} transition={{ duration: reduced ? 0.01 : 0.26 }} role="status" className="mt-2 inline-flex rounded-full border border-primary/20 bg-primary/[0.07] px-2 py-1 font-mono text-[0.61rem] text-primary">+{delta} Readiness</motion.p>}</AnimatePresence>
           </div>
         </div>

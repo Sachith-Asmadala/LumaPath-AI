@@ -1,5 +1,5 @@
 import { scenarioAt, scenarioDate } from "../demo-data/scenario";
-import type { FreeLearningPath, FreePathStep } from "../demo-data/free-learning-paths";
+import { freePathForSkill, type FreeLearningPath, type FreePathStep } from "../demo-data/free-learning-paths";
 import type { LearningResource } from "../demo-data/resources";
 import type { DemoState, PlanBlock, Task } from "../demo-data/types";
 import { availableCapacity } from "./dashboard";
@@ -20,8 +20,11 @@ export type SchedulableLearningPath = Pick<FreeLearningPath, "id" | "skillId" | 
 
 export function resourceLearningPath(resource: LearningResource): SchedulableLearningPath {
   return {
-    id: resource.id, skillId: resource.skill, durationHours: resource.durationHours,
-    steps: [{ id: "course", title: resource.title, durationHours: resource.durationHours, outcome: `${resource.provider} learning path · demo catalog` }],
+    id: resource.id, skillId: resource.skill, durationHours: resource.durationHours + 4,
+    steps: [{ id: "course", title: resource.title, durationHours: resource.durationHours, outcome: `${resource.provider} learning path · estimated study time` },
+      { id: "lab", title: "Practice what you learned", durationHours: 1, outcome: freePathForSkill(resource.skill)?.steps.find((step) => step.id === "lab")?.outcome ?? "Practice the skills covered in this course." },
+      { id: "project", title: "Build your portfolio evidence", durationHours: 2, outcome: freePathForSkill(resource.skill)?.steps.find((step) => step.id === "project")?.outcome ?? "Document a practical project." },
+      { id: "verification", title: "LumaPath skill verification", durationHours: 1, outcome: "Take the local knowledge check after completing your study and practice." }],
   };
 }
 
@@ -74,7 +77,7 @@ export function scheduleLearningPath(state: DemoState, path: SchedulableLearning
           part += 1;
           const id = `learning-${path.id}-${step.id}-${part}`;
           const title = `${step.title}${step.durationHours * 60 > budget ? ` · Part ${part}` : ""}`;
-          tasks.push({ id, title, category: "career-learning", status: "upcoming", estimatedMinutes: budget, progress: 0, difficulty: 2, careerSkillIds: [path.skillId], skill: state.careerSkills.find((item) => item.id === path.skillId)?.name ?? path.skillId, riskScore: 20, careerRelevance: 90, description: step.outcome });
+          tasks.push({ id, title, learningPathId: path.id, learningStepId: step.id, category: "career-learning", status: "upcoming", estimatedMinutes: budget, progress: 0, difficulty: 2, careerSkillIds: [path.skillId], skill: state.careerSkills.find((item) => item.id === path.skillId)?.name ?? path.skillId, riskScore: 20, careerRelevance: 90, description: step.outcome });
           blocks.push({ id: `block-${id}`, taskId: id, title, category: "career-learning", startAt, endAt });
           lastEnd = endMs;
           remaining -= budget;

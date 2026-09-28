@@ -198,6 +198,7 @@ export const demoNotifications: Notification[] = [
 
 export function createDemoState(): DemoState {
   return {
+    assessmentHistory: [], assessmentDraft: { answers: {}, index: 0 }, resourceBookmarks: [], completionRecords: [], learningGoal: null,
     student: { ...demoStudent },
     onboarding: { ...defaultOnboarding, preferredLearning: [] },
     assessment: null,

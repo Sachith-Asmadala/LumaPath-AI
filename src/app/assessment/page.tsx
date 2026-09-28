@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
@@ -14,9 +14,10 @@ import { useDemo } from "@/lib/state/demo-provider";
 export default function AssessmentPage() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const { state, onboardingReady, submitAssessment } = useDemo();
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const { state, onboardingReady, submitAssessment, learningAction } = useDemo();
+  const { index, answers } = state.assessmentDraft;
+  const setIndex = (value: number) => learningAction({ type: "assessment-draft", index: value, answers });
+  const setAnswers = (updater: (current: Record<string, string>) => Record<string, string>) => learningAction({ type: "assessment-draft", index, answers: updater(answers) });
   const question = baselineQuestions[index];
   const selected = answers[question.id];
   const lastQuestion = index === baselineQuestions.length - 1;
@@ -69,7 +70,7 @@ export default function AssessmentPage() {
           </AnimatePresence>
         </div>
         <div className="flex items-center justify-between gap-3 border-t border-border/75 px-5 py-5 sm:px-8">
-          <Button type="button" variant="ghost" onClick={() => setIndex((current) => current - 1)} disabled={index === 0} className="h-11 gap-2 px-3 text-sm"><ArrowLeft className="size-4" aria-hidden="true" />Back</Button>
+          <Button type="button" variant="ghost" onClick={() => setIndex(index - 1)} disabled={index === 0} className="h-11 gap-2 px-3 text-sm"><ArrowLeft className="size-4" aria-hidden="true" />Back</Button>
           <Button type="button" onClick={continueFlow} disabled={!selected} className="h-11 gap-2 rounded-xl px-5 text-sm font-semibold">{lastQuestion ? "Submit Assessment" : "Next"}<ArrowRight className="size-4" aria-hidden="true" /></Button>
         </div>
       </Card>

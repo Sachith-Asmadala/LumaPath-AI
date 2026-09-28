@@ -38,3 +38,14 @@ export function readCompletedOnboarding(): OnboardingState | null {
     return null;
   }
 }
+
+export const onboardingDraftStorageKey = "lumapath-onboarding-draft-v1";
+export function readOnboardingDraft(defaults: OnboardingState): OnboardingState | null {
+  try {
+    const raw = window.localStorage.getItem(onboardingDraftStorageKey);
+    if (!raw) return null;
+    const draft = JSON.parse(raw);
+    if (!draft || draft.completed || typeof draft.name !== "string" || !Array.isArray(draft.preferredLearning)) return null;
+    return { ...defaults, ...draft, draftStep: Math.min(2, Math.max(0, Number(draft.draftStep) || 0)), completed: false };
+  } catch { return null; }
+}

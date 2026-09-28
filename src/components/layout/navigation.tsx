@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Activity, ArrowUpRight, BriefcaseBusiness, CalendarDays, ChartNoAxesCombined, CheckSquare2, Compass, LayoutDashboard, Mic2, Network, Settings2, Sparkles, ShieldCheck } from "lucide-react";
+import { Activity, BookOpen, ArrowUpRight, BriefcaseBusiness, CalendarDays, ChartNoAxesCombined, CheckSquare2, Compass, LayoutDashboard, Mic2, Network, Settings2, Sparkles, ShieldCheck } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ const primaryLinks = [
   { label: "Skills", href: "/skills", icon: Compass },
   { label: "Evidence", href: "/evidence", icon: ShieldCheck },
   { label: "Intelligence", href: "/intelligence", icon: Activity },
+  { label: "Learning", href: "/learning", icon: BookOpen },
   { label: "Analytics", href: "/analytics", icon: ChartNoAxesCombined },
 ];
 
@@ -58,7 +59,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
   const resetJourney = () => { resetDemo(); router.replace("/onboarding"); };
   const [commandOpen, setCommandOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
-  const activeRoute = primaryLinks.find((link) => link.href === pathname || pathname.startsWith(`${link.href}/`))?.label ?? (pathname === "/settings" ? "Settings" : "Overview");
+  const activeRoute = primaryLinks.find((link) => link.href === pathname || pathname.startsWith(`${link.href}/`))?.label ?? (pathname === "/settings" ? "Settings" : pathname === "/plans" ? "Plans" : "Overview");
   const priorityCount = selectDeadlineRiskTasks(state).filter((task) => task.riskScore >= 70).length;
 
   return (

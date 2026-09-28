@@ -15,6 +15,8 @@ const commandItems = [
   { label: "Add career milestone", href: "/career-path", icon: Network, group: "Create" },
   { label: "Open career pathway", href: "/career-path", icon: Compass, group: "Navigate" },
   { label: "Start focus session", href: "/focus", icon: Timer, group: "Navigate" },
+  { label: "Continue learning", href: "/learning", icon: Compass, group: "Navigate" },
+  { label: "View Free and Premium plans", href: "/plans", icon: Sparkles, group: "Navigate" },
   { label: "Open intelligence feed", href: "/intelligence", icon: Activity, group: "Navigate" },
 ];
 

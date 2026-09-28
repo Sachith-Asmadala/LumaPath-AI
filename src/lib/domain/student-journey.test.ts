@@ -27,10 +27,10 @@ describe("student journey", () => {
     expect(nextStudentJourneyRoute(planned)).toBe("/overview");
     expect(demoReducer(planned, { type: "schedule-resource", skillId: "docker", resourceId: "docker-coursera-projects" })).toBe(planned);
     const retaken = demoReducer(planned, { type: "set-assessment", result: baseline });
-    expect(retaken.scheduledPathBySkill).toEqual({});
-    expect(retaken.selectedResourceBySkill).toEqual({});
-    expect(retaken.tasks).toEqual(assessed.tasks);
-    expect(retaken.planBlocks).toEqual(assessed.planBlocks);
-    expect(nextStudentJourneyRoute(retaken)).toBe("/assessment/results");
+    expect(retaken.scheduledPathBySkill).toEqual(planned.scheduledPathBySkill);
+    expect(retaken.selectedResourceBySkill).toEqual(planned.selectedResourceBySkill);
+    expect(retaken.tasks).toEqual(planned.tasks);
+    expect(retaken.planBlocks).toEqual(planned.planBlocks);
+    expect(nextStudentJourneyRoute(retaken)).toBe("/overview");
   });
 });

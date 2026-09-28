@@ -45,7 +45,7 @@ export default function FreeLearningPathPage() {
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{!ready ? "Complete onboarding and your baseline assessment first." : !eligible ? "This skill is not available in your roadmap yet." : "The prototype does not yet have a structured free path for this skill."}</p>
       <Button asChild className="mt-4 h-11 rounded-xl px-4"><Link href={!ready ? "/assessment" : "/career-path"}>{!ready ? "Continue assessment" : "Back to roadmap"}</Link></Button>
     </Card> : <>
-      <div className="mb-7"><p className="type-eyebrow mb-2 text-success">Open learning · {skill.name}</p><h1 className="font-heading text-[clamp(1.8rem,4vw,2.6rem)] font-semibold leading-tight tracking-[-0.04em] text-foreground">{path.title}</h1><p className="mt-3 max-w-[70ch] text-sm leading-6 text-muted-foreground">A complete path built from official documentation, selected YouTube learning, free practice, and work you can show. Every source in this path is free to access.</p></div>
+      <div className="mb-7"><p className="type-eyebrow mb-2 text-success">Open learning · {skill.name}</p><h1 className="font-heading text-[clamp(1.8rem,4vw,2.6rem)] font-semibold leading-tight tracking-[-0.04em] text-foreground">{path.title}</h1><p className="mt-3 max-w-[70ch] text-sm leading-6 text-muted-foreground">A complete path built from free learning material, practical exercises, and work you can show. Every source in this path is free to access.</p></div>
 
       {completed && <div className="mb-7"><LearningPathCompletionCard skillId={skillId} /></div>}
 
@@ -74,7 +74,7 @@ export default function FreeLearningPathPage() {
         <p className="mt-2 text-sm leading-6 text-muted-foreground">Save the path, then add study sessions to your planner around your academic work.</p>
         <Button type="button" onClick={() => addFreePath(skill.id, path.id)} disabled={Boolean(added)} className="mt-4 h-11 gap-2 rounded-xl px-5 text-sm font-semibold">{added ? <><CheckCircle2 className="size-4" aria-hidden="true" />Free Path Added</> : "Add Free Path to My Plan"}</Button>
         {added && !scheduled && <div className="mt-3"><p role="status" className="text-sm text-success">The free path is saved in your learning plan. No calendar blocks were added.</p><Button type="button" onClick={addToPlan} disabled={scheduling} className="mt-3 h-11 rounded-xl px-5 text-sm font-semibold">{scheduling ? "Scheduling…" : "Add to My Plan"}</Button></div>}
-        {scheduled && <Button asChild className="mt-3 h-11 rounded-xl px-5 text-sm font-semibold"><Link href="/planner">Open Planner</Link></Button>}
+        {scheduled && <Button asChild className="mt-3 h-11 rounded-xl px-5 text-sm font-semibold"><Link href={`/learning?skill=${skillId}`}>Continue Learning</Link></Button>}
         {scheduleError && <p role="alert" className="mt-3 text-sm text-warning">There is not enough capacity to schedule this path yet. Increase your availability or capacity and try again.</p>}
       </Card>
     </>}

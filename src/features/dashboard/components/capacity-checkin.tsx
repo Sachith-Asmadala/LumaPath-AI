@@ -11,6 +11,7 @@ import { useDemo } from "@/lib/state/demo-provider";
 import type { StudentCapacity } from "@/lib/demo-data/types";
 import type { LifeLoadFactor, LifeLoadImpact } from "@/lib/demo-data/types";
 import { lifeLoadFactorOptions, lifeLoadImpacts } from "@/lib/domain/life-load";
+import { contextualReply } from "@/lib/domain/contextual-reply";
 import { RecoveryMode } from "./recovery-mode";
 
 const timeOptions = [90, 120, 150, 180, 270, 300, 360];
@@ -103,9 +104,10 @@ export function CapacityCheckIn() {
               const impact = draft.lifeLoadFactors?.[factor];
               return <div key={factor} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/70 bg-background/45 px-3 py-2.5"><label className="flex min-h-8 min-w-0 flex-1 cursor-pointer items-center gap-2.5 text-sm text-foreground"><input type="checkbox" checked={Boolean(impact)} onChange={(event) => toggleFactor(factor, event.target.checked)} className="size-4 shrink-0 accent-primary" />{factor}</label>{impact && <div className="flex items-center gap-2"><label htmlFor={`impact-${factor}`} className="text-xs text-muted-foreground">Impact</label><Select value={impact} onValueChange={(value) => updateImpact(factor, value as LifeLoadImpact)}><SelectTrigger id={`impact-${factor}`} aria-label={`${factor} impact`} className="h-10 w-28 rounded-lg border-border/80 bg-background/65 text-sm"><SelectValue /></SelectTrigger><SelectContent>{lifeLoadImpacts.map((level) => <SelectItem key={level} value={level}>{level}</SelectItem>)}</SelectContent></Select></div>}</div>;
             })}</fieldset>
-            <Field><FieldLabel htmlFor="life-load-note" className="text-sm">Anything else affecting your day?</FieldLabel><textarea id="life-load-note" value={draft.lifeLoadNote ?? ""} onChange={(event) => update("lifeLoadNote", event.target.value)} maxLength={280} rows={3} placeholder="I need to help my family tonight." className="mt-2 w-full resize-y rounded-xl border border-border bg-background/65 px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring" /><p className="mt-1 text-xs text-muted-foreground">Optional context. This text does not change the capacity calculation.</p></Field>
+            <Field><FieldLabel htmlFor="life-load-note" className="text-sm">Anything else affecting your day?</FieldLabel><textarea id="life-load-note" value={draft.lifeLoadNote ?? ""} onChange={(event) => update("lifeLoadNote", event.target.value)} maxLength={280} rows={3} placeholder="I need to help my family tonight." className="mt-2 w-full resize-y rounded-xl border border-border bg-background/65 px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring" /><p className="mt-1 text-xs text-muted-foreground">Optional, stored only in this browser. Clear notes and factors in Settings. This text does not change the capacity calculation.</p></Field>
           </div>
         </details>
+        {/suicid|self.harm|kill myself|hurt myself|end my life|immediate danger|not safe right now/i.test(draft.lifeLoadNote ?? "") && <p role="status" className="rounded-xl border border-border p-3 text-sm leading-6">{contextualReply(draft.lifeLoadNote ?? "", "/overview", state)}</p>}
         {isLow && <p className="text-[0.62rem] text-warning">A smaller plan will protect your highest priority.</p>}
         <MotionButton onClick={submit} disabled={busy || state.simulation.kind !== null} className="h-9 w-full rounded-[12px] text-xs font-semibold" aria-label="Update the plan with this capacity">
           <RefreshCw className={`size-3.5 ${busy ? "animate-spin motion-reduce:animate-none" : ""}`} aria-hidden="true" />{busy ? state.simulation.step ?? "Updating your plan…" : "Update My Plan"}

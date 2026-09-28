@@ -1,4 +1,6 @@
-export type FreePathStepKind = "official documentation" | "selected YouTube learning" | "free lab" | "portfolio project" | "mini assessment";
+import { devOpsLearning } from "./devops-learning";
+
+export type FreePathStepKind = "guided course" | "official documentation" | "selected YouTube learning" | "free lab" | "portfolio project" | "mini assessment";
 
 export interface FreePathSource {
   label: string;
@@ -25,7 +27,7 @@ export interface FreeLearningPath {
   steps: readonly FreePathStep[];
 }
 
-export const freeLearningPaths: readonly FreeLearningPath[] = [
+const dockerPaths: readonly FreeLearningPath[] = [
   {
     id: "docker-open-path",
     skillId: "docker",
@@ -45,6 +47,18 @@ export const freeLearningPaths: readonly FreeLearningPath[] = [
     ],
   },
 ];
+
+
+export const freeLearningPaths: readonly FreeLearningPath[] = [...dockerPaths, ...devOpsLearning.map((item): FreeLearningPath => ({
+  id: `${item.skillId}-open-path`, skillId: item.skillId, title: `${item.name} Open Learning Path`, costUSD: 0, durationHours: 6,
+  skillsCovered: item.topics, evidenceEarned: ["Learning notes", "Project submission", "Local knowledge-check result"],
+  steps: [
+    { id: "fundamentals", title: `${item.name} fundamentals`, kind: "official documentation", durationHours: 2, outcome: `Explain ${item.topics.join(", ").toLowerCase()} using the linked learning material.`, sources: [{ label: `${item.provider} · ${item.name}`, url: item.url }] },
+    { id: "lab", title: `${item.name} practice`, kind: "free lab", durationHours: 1, outcome: item.practice, sources: [{ label: item.provider, url: item.url }] },
+    { id: "project", title: `${item.name} portfolio project`, kind: "portfolio project", durationHours: 2, outcome: item.project, sources: [] },
+    { id: "verification", title: `${item.name} knowledge check`, kind: "mini assessment", durationHours: 1, outcome: "Complete the local assessment after studying and practicing. Submit your project to earn a local completion record.", sources: [] },
+  ],
+}))];
 
 export function freePathForSkill(skillId: string): FreeLearningPath | undefined {
   return freeLearningPaths.find((path) => path.skillId === skillId);

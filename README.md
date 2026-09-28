@@ -372,7 +372,7 @@ git clone https://github.com/IT24103430/LumaPath-AI.git
 cd LumaPath-AI
 ```
 
-There are currently no application dependencies or run commands. Start with this README and the [prototype scope](docs/prototype-scope.md). Installation, environment-variable, database, and Docker instructions will be added only after runnable application code exists.
+The browser-local prototype is runnable: use `npm ci`, then `npm run dev`. Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` for checks. Run `npm run test:e2e` for the Playwright journeys. No database, backend credentials, or Docker setup is required. See [the integration report](docs/prototype-integration.md) for current capabilities and limitations.
 
 ## Project Structure
 
@@ -510,3 +510,11 @@ The browser tests require a one-time `npx playwright install chromium`. See [the
 - **Settings:** light, dark, and device theme previews.
 
 Controls support keyboard navigation. Motion respects the device’s reduced-motion setting; mobile controls have larger tap targets. All learning and planning interactions continue to use the shared demo store.
+
+## Connected learning prototype
+
+The existing shared demo state now supports resumable onboarding and baseline answers, optional knowledge/interests/certificate preferences, all nine DevOps open learning paths, and a **Learning** workspace connected to planner tasks. Students can save resources, set a career goal, submit project links, retake skill checks, and review assessment history.
+
+The **Evidence Passport** accepts self-reported external certificates and downloadable local completion records. Internal records require finished learning stages, a project submission, and a passing knowledge check. They are not accredited or publicly verified credentials. **Settings** can clear private check-in notes/factors without moving scheduled tasks. **Plans** is an honest Free/Premium product preview; no paid entitlement or billing is simulated.
+
+See [the implementation report](docs/prototype-integration.md) for scope, files, state changes, verification and limitations. No backend, database, new package dependency, or environment variable is required.

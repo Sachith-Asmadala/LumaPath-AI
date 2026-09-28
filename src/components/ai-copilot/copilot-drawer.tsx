@@ -6,20 +6,10 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { DemoState } from "@/lib/demo-data/types";
+import { contextualReply } from "@/lib/domain/contextual-reply";
 import { useDemo } from "@/lib/state/demo-provider";
 
 const suggestions = ["Why this priority?", "Rebuild my week", "Explain my skill gaps", "What should I study tonight?", "Why did this task move?", "How career-ready am I?"];
-
-function contextualReply(question: string, route: string, state: DemoState) {
-  if (question.toLowerCase().includes("priority")) return `${state.activeAction.title}: ${state.activeAction.rationale} Priority score: ${state.activeAction.score}/100. Open “Why this?” for the factor breakdown.`;
-  if (route.startsWith("/planner")) return `${state.planBlocks.filter((block) => block.previousStartAt && block.previousStartAt !== block.startAt).length} blocks have moved. Your plan includes ${state.planBlocks.length} blocks and reflects ${Math.max(0, state.capacity.availableMinutes - state.capacity.unexpectedCommitmentMinutes)} available minutes. ${state.activeAction.rationale}`;
-  if (route.startsWith("/career-path")) return "Docker comes before CI/CD because containerizing and networking an application is a prerequisite for designing reliable build and release pipelines. Completing it unlocks the next pathway step.";
-  if (route.startsWith("/skills")) return "Kubernetes is your largest gap. The seeded skills model estimates a potential +7 readiness points from a structured fundamentals path; this is a demo estimate, not a real assessment.";
-  if (question.toLowerCase().includes("career-ready")) return `Your current demo readiness score is ${state.readiness.score}%. Technical skills and verified project evidence are weighted alongside certifications, interview readiness, and applications.`;
-  if (question.toLowerCase().includes("database") || route === "/overview") return `${state.activeAction.title}: ${state.activeAction.rationale}`;
-  return "Your next action is selected from seeded deadline, career relevance, prerequisite, workload, and capacity signals. You can inspect its rule breakdown from the Next Best Action card.";
-}
 
 export function CopilotDrawer({ open, onOpenChange, route }: { open: boolean; onOpenChange: (open: boolean) => void; route: string }) {
   const { state } = useDemo();
@@ -62,7 +52,7 @@ export function CopilotDrawer({ open, onOpenChange, route }: { open: boolean; on
             <Input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Ask about your priorities…" aria-label="Ask Luma a question" className="h-9 border-0 bg-transparent px-0 text-xs shadow-none focus-visible:ring-0" />
             <Button type="submit" size="icon-sm" className="size-8 rounded-[10px]" disabled={!draft.trim()} aria-label="Send question"><ArrowUp className="size-4" /></Button>
           </div>
-          <p className="mt-2 px-1 text-[0.6rem] text-muted-foreground">Rules calculate priorities. Luma explains the seeded result.</p>
+          <p className="mt-2 px-1 text-[0.6rem] text-muted-foreground">Rules calculate priorities. Luma explains your local state; no external AI is used.</p>
         </form>
       </SheetContent>
     </Sheet>

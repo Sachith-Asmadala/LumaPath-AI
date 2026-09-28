@@ -9,14 +9,14 @@ const docker = { id: "docker", name: "Docker", proficiency: 44 };
 const preferences = { ...defaultOnboarding, completed: true, preferredLearning: ["hands-on" as const], budget: "flexible" as const, goal: "internship" as const, language: "English", weeklyLearningHours: 8 };
 
 describe("local learning resource recommender", () => {
-  it("uses assessment score for level and returns at most three unique ranked paths", () => {
+  it("uses assessment score for level and returns at most two unique ranked paths", () => {
     expect(levelFromScore(39)).toBe("beginner");
     expect(levelFromScore(40)).toBe("intermediate");
     expect(levelFromScore(70)).toBe("advanced");
     const first = recommendLearningResources(docker, preferences);
-    expect(first).toHaveLength(3);
-    expect(first.map((item) => item.label)).toEqual(["Best Overall", "Best Credential Option", "Best Free/Open Learning Path"]);
-    expect(new Set(first.map((item) => item.resource.id)).size).toBe(3);
+    expect(first).toHaveLength(2);
+    expect(first.map((item) => item.label)).toEqual(["Best Overall", "Best Credential Option"]);
+    expect(new Set(first.map((item) => item.resource.id)).size).toBe(2);
     expect(recommendLearningResources(docker, preferences)).toEqual(first);
     expect(first.every((item) => item.reasons.length >= 3)).toBe(true);
   });
