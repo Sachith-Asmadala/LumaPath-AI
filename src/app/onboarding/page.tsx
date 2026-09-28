@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Clock3, GraduationCap, Sparkles, Target } from "lucide-react";
@@ -33,8 +33,9 @@ export default function OnboardingPage() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const { state, onboardingReady, updateOnboarding, completeOnboarding } = useDemo();
-  const [step, setStep] = useState(0);
   const draft = state.onboarding;
+  const step = draft.draftStep ?? 0;
+  const setStep = (value: number) => updateOnboarding({ draftStep: value });
   useEffect(() => {
     if (onboardingReady && draft.completed) router.replace(nextStudentJourneyRoute(state));
   }, [onboardingReady, draft.completed, router, state]);
@@ -109,6 +110,7 @@ export default function OnboardingPage() {
                       </button>;
                     })}
                   </div>
+                  <details className="mt-5 rounded-xl border border-border p-4"><summary className="cursor-pointer text-sm font-medium">Your knowledge and interests (optional)</summary><p className="mt-3 text-xs leading-5 text-muted-foreground">Use this for context. Your assessment will determine skill scores.</p><div className="mt-4 grid gap-3 sm:grid-cols-2">{["Programming", "Linux", "Git", "Networking", "Docker", "Cloud"].map((skill) => <Field key={skill} id={`knowledge-${skill}`} label={skill}><select id={`knowledge-${skill}`} className={fieldClass} value={draft.knowledge?.[skill] ?? ""} onChange={(event) => updateOnboarding({ knowledge: { ...draft.knowledge, [skill]: event.target.value as "beginner" | "basic" | "intermediate" | "advanced" } })}><option value="">Not specified</option>{["beginner", "basic", "intermediate", "advanced"].map((level) => <option key={level} value={level}>{level}</option>)}</select></Field>)}</div><div className="mt-5"><ChoiceGroup label="What interests you?">{["Automation", "Cloud", "Coding", "Security", "Data", "Design"].map((interest) => <Choice key={interest} selected={Boolean(draft.interests?.includes(interest))} onClick={() => updateOnboarding({ interests: draft.interests?.includes(interest) ? draft.interests.filter((item) => item !== interest) : [...(draft.interests ?? []), interest] })}>{interest}</Choice>)}</ChoiceGroup></div></details>
                   <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-pathway/20 bg-pathway/[0.055] p-3 text-sm leading-5 text-foreground/85"><Sparkles className="mt-0.5 size-4 shrink-0 text-pathway" aria-hidden="true" />The DevOps path is fully supported in this prototype. More paths are on the way.</div>
                 </>}
                 {step === 2 && <>
@@ -120,6 +122,7 @@ export default function OnboardingPage() {
                     </div>
                     <ChoiceGroup label="Monthly learning budget">{budgets.map((budget) => <Choice key={budget} selected={draft.budget === budget} onClick={() => updateOnboarding({ budget })}>{budget}</Choice>)}</ChoiceGroup>
                     <ChoiceGroup label="Preferred learning formats" hint="Select one or more">{learningStyles.map((style) => <Choice key={style} selected={draft.preferredLearning.includes(style)} onClick={() => updateOnboarding({ preferredLearning: draft.preferredLearning.includes(style) ? draft.preferredLearning.filter((item) => item !== style) : [...draft.preferredLearning, style] })}>{style}</Choice>)}</ChoiceGroup>
+                    <ChoiceGroup label="Certificate importance">{(["required", "preferred", "not important"] as const).map((certificatePreference) => <Choice key={certificatePreference} selected={draft.certificatePreference === certificatePreference} onClick={() => updateOnboarding({ certificatePreference })}>{certificatePreference}</Choice>)}</ChoiceGroup>
                     <ChoiceGroup label="Main goal">{studentGoals.map((goal) => <Choice key={goal} selected={draft.goal === goal} onClick={() => updateOnboarding({ goal })}>{goal}</Choice>)}</ChoiceGroup>
                   </div>
                 </>}
@@ -132,7 +135,7 @@ export default function OnboardingPage() {
             <div className="flex items-center gap-3"><span className="hidden text-xs text-muted-foreground sm:inline">{stepReady ? "Ready to continue" : "Complete this step to continue"}</span><Button type="button" onClick={continueFlow} disabled={!stepReady} className="h-11 gap-2 rounded-xl px-5 text-sm font-semibold">{step === 2 ? "Assess My Starting Point" : "Continue"}<ArrowRight className="size-4" /></Button></div>
           </div>
         </Card>
-        <p className="mt-5 text-center text-xs text-muted-foreground">After completion, your choices stay in this browser for the demo.</p>
+        <p className="mt-5 text-center text-xs text-muted-foreground">Your draft is saved in this browser so you can return later.</p>
       </div>
     </main>
   );

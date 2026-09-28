@@ -14,6 +14,10 @@ export type LifeLoadImpact = "Low" | "Medium" | "High";
 
 export interface OnboardingState {
   completed: boolean;
+  draftStep?: number;
+  knowledge?: Record<string, "beginner" | "basic" | "intermediate" | "advanced">;
+  interests?: string[];
+  certificatePreference?: "required" | "preferred" | "not important";
   name: string;
   university: string;
   degree: string;
@@ -94,6 +98,10 @@ export interface Task {
   riskScore: number;
   careerRelevance: number;
   description: string;
+  startedAt?: string;
+  completedAt?: string;
+  learningPathId?: string;
+  learningStepId?: string;
   externalId?: string;
   source?: string;
   module?: string;
@@ -157,10 +165,16 @@ export interface SkillEvidence {
   status: EvidenceStatus;
   confidence: number;
   verifiedAt?: string;
+  kind?: "project" | "external-certificate";
+  url?: string;
+  provider?: string;
+  course?: string;
+  completedAt?: string;
+  credentialId?: string;
 }
 
 export interface ReadinessMetric {
-  id: "technical" | "evidence" | "certifications" | "interview" | "applications";
+  id: "technical" | "evidence" | "certifications" | "interview" | "applications" | "coverage" | "projects" | "learning";
   label: string;
   value: number;
   weight: number;
@@ -212,7 +226,37 @@ export interface DemoSimulation {
   announcement: string;
 }
 
+export interface AssessmentAttempt {
+  id: string;
+  kind: "baseline" | "skill";
+  skillId?: string;
+  careerGoal: CareerGoal;
+  completedAt: string;
+  answers: Record<string, string>;
+  score: number;
+  categoryScores: Record<string, number>;
+  questionIds: string[];
+}
+
+export interface CompletionRecord {
+  id: string;
+  studentName: string;
+  skillId: string;
+  pathId: string;
+  title: string;
+  completedAt: string;
+  assessmentAttemptId: string;
+  assessmentScore: number;
+  projectUrl: string;
+}
+
 export interface DemoState {
+  readinessStartingScore?: number;
+  assessmentHistory: AssessmentAttempt[];
+  assessmentDraft: { answers: Record<string, string>; index: number };
+  resourceBookmarks: string[];
+  completionRecords: CompletionRecord[];
+  learningGoal: { title: string; targetDate: string } | null;
   student: StudentProfile;
   onboarding: OnboardingState;
   assessment: BaselineAssessmentResult | null;

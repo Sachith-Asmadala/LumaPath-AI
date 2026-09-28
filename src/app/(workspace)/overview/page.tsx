@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { Plus, CalendarDays, ArrowDownToLine } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { AnimatedCard, Reveal } from "@/components/motion/animated";
 import styles from "./overview.module.css";
@@ -27,7 +30,7 @@ export default function OverviewRoute() {
   return (
     <div className={styles.dashboard}>
       <div className={styles.content}>
-        <Reveal className={styles.greeting}><DailyIntelligenceHeader name={state.student.name} /></Reveal>
+        <Reveal className={styles.greeting}><DailyIntelligenceHeader name={state.student.name} /><nav aria-label="Quick actions" className="mt-3 flex flex-wrap gap-2"><Button asChild variant="ghost" className="h-10 rounded-xl text-xs text-muted-foreground"><Link href="/planner?add=assignment"><Plus className="size-3.5" />Add task</Link></Button><Button asChild variant="ghost" className="h-10 rounded-xl text-xs text-muted-foreground"><Link href="/tasks/import/university-lms"><ArrowDownToLine className="size-3.5" />Import deadlines</Link></Button><Button asChild variant="ghost" className="h-10 rounded-xl text-xs text-muted-foreground"><Link href="/planner"><CalendarDays className="size-3.5" />View schedule</Link></Button><Button asChild variant="ghost" className="h-10 rounded-xl text-xs text-muted-foreground"><Link href="/learning">Continue learning</Link></Button></nav></Reveal>
         <DecisionPulse floating />
         <div className={`${styles.row} ${styles.mainRow}`}>
           <AnimatedCard delay={delay(0.04)} className={`${styles.panel} ${styles.hero}`}><NextBestActionCard onExplain={() => setExplanationOpen(true)} /></AnimatedCard>

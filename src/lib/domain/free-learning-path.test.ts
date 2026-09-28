@@ -15,7 +15,7 @@ const example: BaselineAssessmentResult = {
 describe("Docker free learning path", () => {
   it("has a complete $0 sequence with sources, practice, project, and verification", () => {
     const path = freePathForSkill("docker")!;
-    expect(freeLearningPaths).toHaveLength(1);
+    expect(freeLearningPaths).toHaveLength(9);
     expect(path.costUSD).toBe(0);
     expect(path.steps.map((step) => step.title)).toEqual([
       "Docker fundamentals", "Images and containers", "Networking and volumes", "Docker Compose",

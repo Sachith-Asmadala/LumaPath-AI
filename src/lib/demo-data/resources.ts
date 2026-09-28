@@ -1,8 +1,9 @@
+import { devOpsLearning } from "./devops-learning";
 import type { LearningStyle } from "./types";
 
 export type ResourceLevel = "beginner" | "intermediate" | "advanced";
 export type ResourceCostType = "free" | "one-time" | "subscription";
-export type ResourceProvider = "Coursera" | "Udemy" | "YouTube" | "Docker Docs";
+export type ResourceProvider = "Coursera" | "Udemy" | "YouTube" | "Docker Docs" | "Official learning";
 
 export interface LearningResource {
   id: string;
@@ -23,7 +24,7 @@ export interface LearningResource {
 }
 
 /** Local prototype examples. Provider links lead to discovery pages or official docs. */
-export const learningResources: readonly LearningResource[] = [
+const dockerResources: readonly LearningResource[] = [
   { id: "docker-coursera-projects", title: "Docker guided projects", provider: "Coursera", skill: "docker", level: "beginner", costType: "subscription", price: 19, certificate: true, durationHours: 12, format: "projects", language: "English", handsOnScore: 85, credentialScore: 90, url: "https://www.coursera.org/search?query=docker%20guided%20projects" },
   { id: "docker-coursera-foundations", title: "Docker and containers foundations", provider: "Coursera", skill: "docker", level: "intermediate", costType: "subscription", price: 19, certificate: true, durationHours: 16, format: "video", language: "English", handsOnScore: 64, credentialScore: 88, url: "https://www.coursera.org/search?query=docker%20containers" },
   { id: "docker-udemy-practical", title: "Practical Docker course path", provider: "Udemy", skill: "docker", level: "intermediate", costType: "one-time", price: 18, certificate: true, durationHours: 18, format: "hands-on", language: "English", handsOnScore: 94, credentialScore: 70, url: "https://www.udemy.com/topic/docker/" },
@@ -31,3 +32,8 @@ export const learningResources: readonly LearningResource[] = [
   { id: "docker-docs-start", title: "Get started with Docker", provider: "Docker Docs", skill: "docker", level: "beginner", costType: "free", price: 0, certificate: false, durationHours: 8, format: "hands-on", language: "English", handsOnScore: 96, credentialScore: 0, url: "https://docs.docker.com/get-started/" },
   { id: "docker-docs-workshop", title: "Docker workshop", provider: "Docker Docs", skill: "docker", level: "intermediate", costType: "free", price: 0, certificate: false, durationHours: 4, format: "hands-on", language: "English", handsOnScore: 100, credentialScore: 0, url: "https://docs.docker.com/get-started/workshop/" },
 ];
+
+export const learningResources: readonly LearningResource[] = [...dockerResources, ...devOpsLearning.map((item): LearningResource => ({
+  id: `${item.skillId}-official`, title: `${item.name} foundations · ${item.provider}`, provider: "Official learning", skill: item.skillId,
+  level: "beginner", costType: "free", price: 0, certificate: false, durationHours: 2, format: "reading", language: "English", handsOnScore: 70, credentialScore: 0, url: item.url,
+}))];

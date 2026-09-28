@@ -1,4 +1,4 @@
-import { freePathForSkill } from "../demo-data/free-learning-paths";
+import { learningProgress } from "./learning";
 import type { DemoState } from "../demo-data/types";
 
 export interface SkillReassessmentQuestion {
@@ -24,14 +24,14 @@ export function scoreDockerReassessment(answers: Record<string, string>): { scor
 
 /** Course and practice finish the path; project evidence remains an independent status. */
 export function selectLearningPathCompletion(state: DemoState, skillId: string) {
-  const path = freePathForSkill(skillId);
-  if (!path || state.scheduledPathBySkill[skillId] !== path.id) return null;
-  const completeStep = (stepId: string) => {
-    const tasks = state.tasks.filter((task) => task.id.startsWith(`learning-${path.id}-${stepId}-`));
-    return tasks.length > 0 && tasks.every((task) => task.status === "completed");
-  };
-  const courseComplete = path.steps.filter((step) => step.kind === "official documentation" || step.kind === "selected YouTube learning").every((step) => completeStep(step.id));
-  const practiceComplete = path.steps.filter((step) => step.kind === "free lab").every((step) => completeStep(step.id));
-  const projectComplete = path.steps.filter((step) => step.kind === "portfolio project").every((step) => completeStep(step.id));
-  return { path, courseComplete, practiceComplete, projectComplete, pathComplete: courseComplete && practiceComplete, assessmentComplete: Boolean(state.skillReassessments[skillId]) };
+  const learning = learningProgress(state, skillId);
+  if (!learning?.scheduled) return null;
+  const { path, steps } = learning;
+  const course = steps.filter((step) => step.kind === "guided course" || step.kind === "official documentation" || step.kind === "selected YouTube learning");
+  const practice = steps.filter((step) => step.kind === "free lab");
+  const project = steps.filter((step) => step.kind === "portfolio project");
+  const courseComplete = course.length > 0 && course.every((step) => step.complete);
+  const practiceComplete = practice.length > 0 && practice.every((step) => step.complete);
+  const projectComplete = project.length > 0 && project.every((step) => step.complete) && state.evidence.some((item) => item.kind === "project" && item.skillId === skillId && Boolean(item.url));
+  return { path, courseComplete, practiceComplete, projectComplete, pathComplete: courseComplete && practiceComplete, assessmentComplete: Boolean(state.skillReassessments[skillId]?.passed) };
 }

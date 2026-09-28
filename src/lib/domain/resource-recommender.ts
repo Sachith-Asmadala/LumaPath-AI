@@ -27,7 +27,7 @@ function resourceMatch(resource: LearningResource, skill: Pick<CareerSkill, "nam
   const level = levelFromScore(skill.proficiency);
   const hours = Math.max(1, preferences.weeklyLearningHours);
   const preferredFormat = preferences.preferredLearning.includes(resource.format);
-  const certificatePreferred = preferences.goal === "certification";
+  const certificatePreferred = preferences.certificatePreference ? preferences.certificatePreference !== "not important" : preferences.goal === "certification";
   const exactLevel = resource.level === level;
   const free = resource.costType === "free";
   const matchScore = Math.min(100, 15
@@ -61,6 +61,7 @@ export function recommendLearningResources(
     resource.skill === skill.id
     && resource.language.trim().toLowerCase() === preferences.language.trim().toLowerCase()
     && isWithinBudget(resource, preferences.budget)
+    && (preferences.certificatePreference !== "required" || resource.certificate)
     && resource.durationHours <= hours * 4
     && Math.abs(levels.indexOf(resource.level) - levels.indexOf(currentLevel)) <= 1,
   ).map((resource) => resourceMatch(resource, skill, preferences))
@@ -72,6 +73,6 @@ export function recommendLearningResources(
   };
   add("Best Overall", candidates[0]);
   add("Best Credential Option", candidates.find(({ resource }) => resource.certificate && !selected.some((item) => item.resource.id === resource.id)));
-  add("Best Free/Open Learning Path", candidates.find(({ resource }) => resource.costType === "free" && !selected.some((item) => item.resource.id === resource.id)));
+  if (selected.length < 2) add("Best Free/Open Learning Path", candidates.find(({ resource }) => resource.costType === "free" && !selected.some((item) => item.resource.id === resource.id)));
   return selected;
 }

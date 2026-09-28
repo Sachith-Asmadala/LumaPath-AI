@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { dockerReassessmentQuestions } from "../../src/lib/domain/skill-reassessment";
 import { baselineQuestions } from "../../src/lib/domain/baseline-assessment";
 
 test("a new student reaches Overview through the free DevOps path and can reset the whole journey", async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto("/");
   await page.getByRole("link", { name: "Find my path", exact: true }).click();
   await page.getByRole("button", { name: "Continue without an account" }).click();
@@ -51,6 +53,31 @@ test("a new student reaches Overview through the free DevOps path and can reset 
   await page.goto("/onboarding");
   await expect(page).toHaveURL(/\/overview$/);
 
+  await page.goto("/learning?skill=docker");
+  await expect(page.getByRole("heading", { name: "Your learning, connected" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Create completion record" })).toBeDisabled();
+  while (await page.getByRole("button", { name: "Mark stage complete", exact: true }).count()) {
+    await page.getByRole("button", { name: "Mark stage complete", exact: true }).first().click();
+  }
+  await page.getByLabel("Project link").fill("https://github.com/student/docker-project");
+  await page.getByRole("button", { name: "Save project evidence" }).click();
+  await expect(page.getByRole("link", { name: "View submitted project" })).toBeVisible();
+  await page.getByRole("link", { name: "Verify My Skill", exact: true }).click();
+  for (let index = 0; index < dockerReassessmentQuestions.length; index += 1) {
+    await page.getByRole("radio").first().click();
+    await page.getByRole("button", { name: index === dockerReassessmentQuestions.length - 1 ? /Submit/ : "Next", exact: index !== dockerReassessmentQuestions.length - 1 }).click();
+  }
+  await expect(page.getByRole("heading", { name: "Docker Verified", exact: true }).first()).toBeVisible();
+  await page.goto("/learning?skill=docker");
+  await page.getByRole("button", { name: "Create completion record" }).click();
+  await page.getByRole("link", { name: "View earned record" }).click();
+  await expect(page.getByText("LumaPath local completion record", { exact: true })).toBeVisible();
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download completion record" }).click();
+  expect((await download).suggestedFilename()).toMatch(/\.json$/);
+  await page.goto("/learning?view=history");
+  await expect(page.getByRole("heading", { name: "Docker knowledge check" })).toBeVisible();
+
   await page.goto("/settings");
   await page.getByRole("main").getByRole("button", { name: "Demo Reset" }).click();
   await expect(page).toHaveURL(/\/onboarding$/);
@@ -92,4 +119,19 @@ test("a returning student can schedule a chosen credential resource", async ({ p
     const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1") ?? "null");
     return state && state.scheduledPathBySkill.docker === state.selectedResourceBySkill.docker;
   })).toBe(true);
+});
+
+test("an unfinished onboarding resumes at its saved step", async ({ page }) => {
+  await page.goto("/onboarding");
+  await page.getByLabel("Full name").fill("Nila Silva");
+  await page.getByLabel("University", { exact: true }).fill("Demo University");
+  await page.getByLabel("Degree", { exact: true }).fill("Computing");
+  await page.getByLabel("Academic year").selectOption("Year 2");
+  await page.getByLabel("Semester", { exact: true }).selectOption("Semester 1");
+  await page.getByLabel("Current modules").fill("Networks");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole("radio", { name: /DevOps Engineer/ })).toBeVisible();
+  await page.getByRole("button", { name: "Back", exact: true }).click();
+  await expect(page.getByLabel("Full name")).toHaveValue("Nila Silva");
 });

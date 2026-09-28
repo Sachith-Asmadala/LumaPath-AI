@@ -44,7 +44,7 @@ export function buildDevOpsRoadmap(
       id: step.id,
       name: step.name,
       status,
-      proficiency: score,
+      proficiency: priorVerified ? Math.max(prior.proficiency, score) : score,
       targetScore: step.targetScore,
       estimatedWeeks: Math.max(1, Math.ceil(step.learningHours * remainingFactor / hoursPerWeek)),
       prerequisites: prerequisite,
@@ -56,7 +56,7 @@ export function buildDevOpsRoadmap(
     if (skill.status !== "locked") continue;
     const ready = skill.prerequisites.every((id) => skills.some((candidate) =>
       candidate.id === id && (candidate.status === "verified" || candidate.status === "completed")));
-    if (ready) skill.status = "available";
+    if (ready) skill.status = previousById.get(skill.id)?.status === "in-progress" ? "in-progress" : "available";
   }
 
   const preferred = skills.find((skill) => skill.name === recommendedSkill && skill.status === "available");

@@ -12,7 +12,8 @@ import { nextStudentJourneyRoute } from "@/lib/domain/student-journey";
 
 function ScrollReveal({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const reduced = useReducedMotion();
-  return <motion.div className={className} initial={{ opacity: 0, y: reduced ? 0 : 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.12 }} transition={{ duration: reduced ? 0.01 : 0.65, delay: reduced ? 0 : delay, ease: [0.22, 1, 0.36, 1] }}>{children}</motion.div>;
+  // Keep server-rendered content visible before hydration; motion only enhances it.
+  return <motion.div className={className} initial={false} whileInView={reduced ? { opacity: 1, y: 0 } : { opacity: [0.85, 1], y: [12, 0] }} viewport={{ once: true, amount: 0.12 }} transition={{ duration: reduced ? 0 : 0.5, delay: reduced ? 0 : delay, ease: [0.22, 1, 0.36, 1] }}>{children}</motion.div>;
 }
 
 export function LandingPage() {

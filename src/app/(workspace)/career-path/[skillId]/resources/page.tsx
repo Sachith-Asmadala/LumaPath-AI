@@ -22,7 +22,7 @@ export default function LearningResourcesPage() {
   const router = useRouter();
   const [scheduling, setScheduling] = useState(false);
   const [scheduleError, setScheduleError] = useState(false);
-  const { state, onboardingReady, chooseResource, scheduleSelectedResource } = useDemo();
+  const { state, onboardingReady, chooseResource, scheduleSelectedResource, learningAction } = useDemo();
   const skill = state.careerSkills.find((item) => item.id === skillId);
   const ready = state.onboarding.completed && Boolean(state.assessment);
   const eligible = skill?.status === "available" || skill?.status === "in-progress";
@@ -59,12 +59,13 @@ export default function LearningResourcesPage() {
         <Button asChild className="h-11 shrink-0 rounded-xl px-4 text-sm font-semibold"><Link href={`/career-path/${skill.id}/free-path`}>View Free Learning Path</Link></Button>
       </Card>}
 
+      {state.onboarding.certificatePreference === "required" && !recommendations.some((item) => item.resource.certificate) && <p className="mb-4 text-sm text-muted-foreground">No certificate course meets these preferences. The free path remains available and can earn a local LumaPath completion record; it does not provide an external provider certificate.</p>}
       {recommendations.length ? <div className="grid gap-4 lg:grid-cols-3">
         {recommendations.map(({ label, resource, matchScore, reasons }) => {
           const chosen = state.selectedResourceBySkill[skill.id] === resource.id;
           return <Card key={resource.id} className="flex h-full flex-col gap-0 rounded-[20px] border-border/80 bg-surface-raised p-5 shadow-none sm:p-6" aria-label={label}>
             <div className="flex items-start justify-between gap-3"><span className="rounded-full border border-primary/25 bg-primary/[0.07] px-2.5 py-1 text-xs font-semibold text-primary">{label}</span><span className="text-xs font-semibold tabular-nums text-foreground">{matchScore}% match</span></div>
-            <p className="mt-5 text-xs font-medium text-pathway">{resource.provider}</p>
+            <div className="mt-3 flex items-center justify-between gap-2"><p className="text-xs font-medium text-pathway">{resource.provider}</p><Button variant="ghost" className="h-11 text-xs" aria-pressed={state.resourceBookmarks.includes(resource.id)} onClick={() => learningAction({ type: "bookmark-resource", resourceId: resource.id })}>{state.resourceBookmarks.includes(resource.id) ? "Saved resource" : "Save resource"}</Button></div>
             <h2 className="mt-1 font-heading text-lg font-semibold leading-snug text-foreground">{resource.title}</h2>
             <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
               <span className="rounded-lg border border-border bg-background/55 px-2.5 py-1.5 capitalize">{resource.level}</span>
