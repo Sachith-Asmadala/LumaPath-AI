@@ -2,19 +2,19 @@
 
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
-import { ArrowRight, Bookmark, BookOpen, Check, ExternalLink, Play, Target } from "lucide-react";
+import { ArrowRight, Bookmark, BookOpen, Check, ExternalLink, Play, Sparkles, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AnimatedProgress, Reveal } from "@/components/motion/animated";
 import { TypographyH1, TypographyP } from "@/components/shared/typography";
-import { EmptyCollection, ViewSwitch } from "@/components/workspace/workspace-controls";
+import { EmptyCollection, ViewSwitch } from "@/features/workspace/components/workspace-controls";
 import { LearningPathCompletionCard } from "@/features/career/components/learning-path-completion";
-import { learningResources } from "@/lib/demo-data/resources";
-import { completionEligibility, learningProgress, safeExternalUrl } from "@/lib/domain/learning";
-import { selectActionableSkill } from "@/lib/domain/workspace";
-import { useDemo } from "@/lib/state/demo-provider";
+import { learningResources } from "@/data/demo/resources";
+import { completionEligibility, learningProgress, safeExternalUrl } from "@/features/learning/domain/learning";
+import { selectActionableSkill } from "@/features/workspace/domain/workspace";
+import { useDemo } from "@/state/demo-provider";
 
 export default function LearningPage() {
   const { state, learningAction, completeTask } = useDemo();
@@ -38,7 +38,7 @@ export default function LearningPage() {
     setProjectUrl("");
   };
   return <div className="mx-auto w-full max-w-[1200px] px-4 py-6 sm:px-6 lg:px-8">
-    <Reveal><div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="type-eyebrow mb-2 text-primary">Learn · practice · prove</p><TypographyH1>Your learning, connected</TypographyH1><TypographyP className="mt-2">Continue your path and keep the work behind your progress.</TypographyP></div><Button asChild variant="outline" className="h-11 rounded-xl"><Link href="/career-path">Explore your roadmap<ArrowRight className="size-4" /></Link></Button></div></Reveal>
+    <Reveal><div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="type-eyebrow mb-2 text-primary">Learn · practice · prove</p><TypographyH1>Your learning, connected</TypographyH1><TypographyP className="mt-2">Continue your path and keep the work behind your progress.</TypographyP></div><div className="flex flex-wrap gap-2"><Button asChild variant="outline" className="h-11 rounded-xl"><Link href={skillId ? `/study-assistant?objective=${encodeURIComponent(`skill-${skillId}`)}&mode=revision_plan` : "/study-assistant"}><Sparkles className="size-4" />Study Assistant</Link></Button><Button asChild variant="outline" className="h-11 rounded-xl"><Link href="/career-path">Explore your roadmap<ArrowRight className="size-4" /></Link></Button></div></div></Reveal>
     <GoalPanel />
     <div className="workspace-toolbar"><ViewSwitch label="Learning view" value={view} onChange={setView} options={[{ value: "learning", label: "Your learning" }, { value: "saved", label: "Saved resources", count: state.resourceBookmarks.length }, { value: "history", label: "Assessment history", count: state.assessmentHistory.length }]} />{view === "learning" && selectedIds.length > 0 && <select aria-label="Learning path" className="workspace-select" value={skillId} onChange={(event) => { setChosen(event.target.value); setMessage(""); setProjectUrl(""); }}>{selectedIds.map((id) => <option key={id} value={id}>{state.careerSkills.find((skill) => skill.id === id)?.name ?? id}</option>)}</select>}</div>
     {view === "learning" && (!learning ? <EmptyCollection title="Your next chapter starts with a path" description="Choose a free learning path or a course from an available roadmap skill. Your selected learning will appear here." /> : <div className="space-y-4">

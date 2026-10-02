@@ -6,8 +6,8 @@ import { Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { useDemo } from "@/lib/state/demo-provider";
-import { selectNextBestAction } from "@/lib/domain/dashboard";
+import { useDemo } from "@/state/demo-provider";
+import { selectNextBestAction } from "@/features/dashboard/domain/dashboard";
 
 export function PriorityExplanationSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const { state } = useDemo();

@@ -7,9 +7,9 @@ import { ArrowLeft, ArrowRight, Check, Circle, CloudDownload, LoaderCircle } fro
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TypographyH1, TypographyP } from "@/components/shared/typography";
-import { useDemo } from "@/lib/state/demo-provider";
-import { mockUniversityLms } from "@/lib/integrations/lms/mock-university-lms";
-import type { LmsAssignment } from "@/lib/integrations/lms/types";
+import { useDemo } from "@/state/demo-provider";
+import { mockUniversityLms } from "@/integrations/lms/mock-university-lms";
+import type { LmsAssignment } from "@/integrations/lms/types";
 
 const syncSteps = ["Connecting...", "Courses found", "Reading assignments", "Checking deadlines"];
 

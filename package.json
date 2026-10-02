@@ -10,7 +10,15 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:imports": "node scripts/check-local-imports.mjs",
+    "verify": "npm run check:imports && npm run check:i18n && npm run check:pseudo && npm run lint && npm run typecheck && npm test && npm run build",
+    "verify:full": "npm run verify && npm run test:e2e",
+    "dev:api": "python -m uvicorn apps.api.app.main:app --reload --port 8000",
+    "test:api": "python -m pytest apps/api/tests",
+    "verify:api": "python -m pytest apps/api/tests -q",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:pseudo": "node scripts/check-pseudo-localization.mjs"
   },
   "dependencies": {
     "@fontsource-variable/onest": "^5.3.1",

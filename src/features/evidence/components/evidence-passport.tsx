@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { EmptyCollection, ViewSwitch, WorkspaceSearch } from "@/components/workspace/workspace-controls";
+import { EmptyCollection, ViewSwitch, WorkspaceSearch } from "@/features/workspace/components/workspace-controls";
 import Link from "next/link";
 import { CheckCheck, CircleHelp, FileBadge2, Link2, ShieldCheck, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedProgress } from "@/components/motion/animated";
 import { EvidenceBadge, SkillBadge } from "@/components/shared/status-badge";
-import { calculateEvidenceConfidence, describeEvidenceConfidence } from "@/lib/domain/evidence";
-import { useDemo } from "@/lib/state/demo-provider";
-import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
+import { calculateEvidenceConfidence, describeEvidenceConfidence } from "@/features/evidence/domain/evidence";
+import { useDemo } from "@/state/demo-provider";
+import { selectLearningPathCompletion } from "@/features/career/domain/skill-reassessment";
 import { toast } from "sonner";
 
 const sourceIcon = (source: string) => source.includes("Repository") ? Link2 : source.includes("Certificate") ? FileBadge2 : source.includes("Assessment") ? CheckCheck : CircleHelp;

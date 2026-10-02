@@ -7,7 +7,7 @@ import { ArrowUpRight, BadgeCheck, BriefcaseBusiness, Code2, GraduationCap, Mess
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScoreRing, AnimatedProgress, AnimatedCounter } from "@/components/motion/animated";
 import { Button } from "@/components/ui/button";
-import { useDemo } from "@/lib/state/demo-provider";
+import { useDemo } from "@/state/demo-provider";
 
 const iconById = {
   technical: Code2,

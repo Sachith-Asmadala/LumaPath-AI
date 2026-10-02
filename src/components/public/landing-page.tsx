@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, Compass, Leaf, MoveUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
-import { PublicHeader } from "./public-header";
-import { PathPreview } from "./path-preview";
+import { PublicHeader } from "@/components/public/public-header";
+import { PathPreview } from "@/components/public/path-preview";
 import { Button } from "@/components/ui/button";
 import { BrandIcon } from "@/components/brand/brand-icon";
-import { useDemo } from "@/lib/state/demo-provider";
-import { nextStudentJourneyRoute } from "@/lib/domain/student-journey";
+import { useDemo } from "@/state/demo-provider";
+import { nextStudentJourneyRoute } from "@/features/onboarding/domain/student-journey";
 
 function ScrollReveal({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const reduced = useReducedMotion();

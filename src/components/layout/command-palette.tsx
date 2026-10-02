@@ -2,30 +2,48 @@
 
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Activity, CalendarPlus, ChartNoAxesCombined, CheckCircle2, Compass, Network, Search, ShieldAlert, Sparkles, Timer, WandSparkles } from "lucide-react";
+import { Activity, Bell, BrainCircuit, BriefcaseBusiness, ClipboardList, DatabaseZap, FileText, Files, GitCompareArrows, CalendarPlus, CalendarSync, ChartNoAxesCombined, CheckCircle2, Compass, HandHelping, MessageSquareText, Network, Route, Search, ShieldAlert, Sparkles, Timer, WandSparkles, Trophy, UsersRound } from "lucide-react";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandShortcut } from "@/components/ui/command";
-import { useDemo } from "@/lib/state/demo-provider";
+import { useDemo } from "@/state/demo-provider";
+import { useLocale } from "@/i18n/locale-provider";
 
 const commandItems = [
-  { label: "Generate weekly plan", href: "/planner", icon: WandSparkles, group: "Planning" },
-  { label: "Show next best action", href: "/overview", icon: CheckCircle2, group: "Planning" },
-  { label: "Check deadline risks", href: "/overview", icon: ShieldAlert, group: "Planning" },
-  { label: "Analyze skill gaps", href: "/skills", icon: ChartNoAxesCombined, group: "Career" },
-  { label: "Add assignment", href: "/planner?add=assignment", icon: CalendarPlus, group: "Create" },
-  { label: "Add career milestone", href: "/career-path", icon: Network, group: "Create" },
-  { label: "Open career pathway", href: "/career-path", icon: Compass, group: "Navigate" },
-  { label: "Start focus session", href: "/focus", icon: Timer, group: "Navigate" },
-  { label: "Continue learning", href: "/learning", icon: Compass, group: "Navigate" },
-  { label: "View Free and Premium plans", href: "/plans", icon: Sparkles, group: "Navigate" },
-  { label: "Open intelligence feed", href: "/intelligence", icon: Activity, group: "Navigate" },
+  { labelKey: "command.generatePlan", href: "/planner", icon: WandSparkles, groupKey: "command.planning" },
+  { labelKey: "command.nextAction", href: "/overview", icon: CheckCircle2, groupKey: "command.planning" },
+  { labelKey: "command.deadlineRisks", href: "/overview", icon: ShieldAlert, groupKey: "command.planning" },
+  { labelKey: "command.skillGaps", href: "/skills", icon: ChartNoAxesCombined, groupKey: "command.career" },
+  { labelKey: "command.addAssignment", href: "/planner?add=assignment", icon: CalendarPlus, groupKey: "command.create" },
+  { labelKey: "command.openCalendarSync", href: "/calendar-sync", icon: CalendarSync, groupKey: "command.navigate" },
+  { labelKey: "command.openTeams", href: "/teams", icon: UsersRound, groupKey: "command.navigate" },
+  { labelKey: "command.addMilestone", href: "/career-path", icon: Network, groupKey: "command.create" },
+  { labelKey: "command.openCareer", href: "/career-path", icon: Compass, groupKey: "command.navigate" },
+  { labelKey: "command.openCareerCompare", href: "/career-compare", icon: GitCompareArrows, groupKey: "command.career" },
+  { labelKey: "command.openMarketSignals", href: "/market-signals", icon: DatabaseZap, groupKey: "command.career" },
+  { labelKey: "command.openRoadmap", href: "/roadmap", icon: Route, groupKey: "command.career" },
+  { labelKey: "command.openEvidence", href: "/evidence", icon: ShieldAlert, groupKey: "command.career" },
+  { labelKey: "command.openPortfolio", href: "/portfolio", icon: BriefcaseBusiness, groupKey: "command.career" },
+  { labelKey: "command.openCv", href: "/cv", icon: FileText, groupKey: "command.career" },
+  { labelKey: "command.openOpportunities", href: "/opportunities", icon: BriefcaseBusiness, groupKey: "command.career" },
+  { labelKey: "command.openApplications", href: "/internships", icon: ClipboardList, groupKey: "command.career" },
+  { labelKey: "command.openInterviews", href: "/interviews", icon: MessageSquareText, groupKey: "command.career" },
+  { labelKey: "command.openMentors", href: "/mentors", icon: HandHelping, groupKey: "command.career" },
+  { labelKey: "command.startFocus", href: "/focus", icon: Timer, groupKey: "command.navigate" },
+  { labelKey: "command.continueLearning", href: "/learning", icon: Compass, groupKey: "command.navigate" },
+  { labelKey: "command.openAssistant", href: "/study-assistant", icon: BrainCircuit, groupKey: "command.navigate" },
+  { labelKey: "command.openDocuments", href: "/documents", icon: Files, groupKey: "command.navigate" },
+  { labelKey: "command.viewPlans", href: "/plans", icon: Sparkles, groupKey: "command.navigate" },
+  { labelKey: "command.openIntelligence", href: "/intelligence", icon: Activity, groupKey: "command.navigate" },
+  { labelKey: "command.openNotifications", href: "/notifications", icon: Bell, groupKey: "command.navigate" },
+  { labelKey: "command.openAchievements", href: "/achievements", icon: Trophy, groupKey: "command.navigate" },
 ];
 
 export function CommandPalette({ open, onOpenChange, onOpenCopilot }: { open: boolean; onOpenChange: (open: boolean) => void; onOpenCopilot: () => void }) {
   const router = useRouter();
   const { generatePlan } = useDemo();
-  const navigate = useCallback((label: string, href: string) => {
+  const { t } = useLocale();
+  const navigate = useCallback((labelKey: string, href: string) => {
     onOpenChange(false);
-    if (label === "Generate weekly plan") void generatePlan();
+    if (labelKey === "command.generatePlan") void generatePlan();
     router.push(href);
   }, [generatePlan, onOpenChange, router]);
 
@@ -41,18 +59,18 @@ export function CommandPalette({ open, onOpenChange, onOpenCopilot }: { open: bo
   }, [open, onOpenChange]);
 
   return (
-    <CommandDialog open={open} onOpenChange={onOpenChange} title="LumaPath Command" description="Search your workspace or run an action.">
-      <CommandInput placeholder="What would you like to do?" aria-label="Search commands" />
+    <CommandDialog open={open} onOpenChange={onOpenChange} title={t("command.title")} description={t("command.description")}>
+      <CommandInput placeholder={t("command.placeholder")} aria-label={t("command.placeholder")} />
       <CommandList className="max-h-[min(24rem,58dvh)]">
-        <CommandEmpty>No matching actions.</CommandEmpty>
-        {["Planning", "Career", "Create", "Navigate"].map((group) => <CommandGroup key={group} heading={group}>
-          {commandItems.filter((item) => item.group === group).map(({ label, href, icon: Icon }) => <CommandItem key={label} value={label} onSelect={() => navigate(label, href)} className="min-h-10 rounded-lg px-3 text-sm">
-            <Icon className="mr-2 size-4 text-muted-foreground" aria-hidden="true" />{label}
-            {label === "Show next best action" && <CommandShortcut>↵</CommandShortcut>}
+        <CommandEmpty>{t("command.empty")}</CommandEmpty>
+        {["command.planning", "command.career", "command.create", "command.navigate"].map((groupKey) => <CommandGroup key={groupKey} heading={t(groupKey)}>
+          {commandItems.filter((item) => item.groupKey === groupKey).map(({ labelKey, href, icon: Icon }) => <CommandItem key={labelKey} value={t(labelKey)} onSelect={() => navigate(labelKey, href)} className="min-h-10 rounded-lg px-3 text-sm">
+            <Icon className="mr-2 size-4 text-muted-foreground" aria-hidden="true" />{t(labelKey)}
+            {labelKey === "command.nextAction" && <CommandShortcut>↵</CommandShortcut>}
           </CommandItem>)}
         </CommandGroup>)}
         <CommandGroup heading="Luma AI">
-          <CommandItem value="Ask Luma" onSelect={() => { onOpenChange(false); onOpenCopilot(); }} className="min-h-10 rounded-lg px-3 text-sm"><Sparkles className="mr-2 size-4 text-primary" aria-hidden="true" />Ask Luma<CommandShortcut>⌘ L</CommandShortcut></CommandItem>
+          <CommandItem value={t("top.askLuma")} onSelect={() => { onOpenChange(false); onOpenCopilot(); }} className="min-h-10 rounded-lg px-3 text-sm"><Sparkles className="mr-2 size-4 text-primary" aria-hidden="true" />{t("top.askLuma")}<CommandShortcut>⌘ L</CommandShortcut></CommandItem>
         </CommandGroup>
       </CommandList>
       <div className="flex items-center gap-2 border-t border-border/70 px-4 py-2.5 text-[0.63rem] text-muted-foreground"><Search className="size-3" />Type to filter <span className="ml-auto flex items-center gap-3"><span><kbd className="rounded border border-border px-1 py-0.5">↑↓</kbd> navigate</span><span><kbd className="rounded border border-border px-1 py-0.5">esc</kbd> close</span></span></div>

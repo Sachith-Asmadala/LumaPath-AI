@@ -197,3 +197,14 @@
   .planner-calendar-wrap .fc .fc-timegrid-event { transition-property: opacity; transition-duration: 80ms; }
   .pathway-unlock-edge .react-flow__edge-path { animation: none; }
 }
+
+/* DOC-F22: keep mixed Sinhala/Tamil/Latin interfaces readable without changing the visual system. */
+html[data-locale="si-LK"] body,
+html[data-locale="ta-LK"] body {
+  font-family: var(--font-body, "Onest Variable"), "Noto Sans Sinhala", "Noto Sans Tamil", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.55;
+}
+html[data-locale="si-LK"] :where(button, a, label, p, span, h1, h2, h3, h4),
+html[data-locale="ta-LK"] :where(button, a, label, p, span, h1, h2, h3, h4) {
+  overflow-wrap: anywhere;
+}

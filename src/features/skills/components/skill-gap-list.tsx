@@ -6,10 +6,10 @@ import { ArrowRight, CheckCircle2, Circle, LockKeyhole, Sprout } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedCounter, AnimatedProgress } from "@/components/motion/animated";
-import { EmptyCollection, ViewSwitch } from "@/components/workspace/workspace-controls";
-import { useDemo } from "@/lib/state/demo-provider";
-import { selectActionableSkill } from "@/lib/domain/workspace";
-import { roadmapUnlocks } from "@/lib/domain/personalized-roadmap";
+import { EmptyCollection, ViewSwitch } from "@/features/workspace/components/workspace-controls";
+import { useDemo } from "@/state/demo-provider";
+import { selectActionableSkill } from "@/features/workspace/domain/workspace";
+import { roadmapUnlocks } from "@/features/career/domain/personalized-roadmap";
 
 export function SkillGapList() {
   const { state } = useDemo();

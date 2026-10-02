@@ -7,15 +7,15 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { MotionButton } from "@/components/motion/animated";
-import { useDemo } from "@/lib/state/demo-provider";
-import type { StudentCapacity } from "@/lib/demo-data/types";
-import type { LifeLoadFactor, LifeLoadImpact } from "@/lib/demo-data/types";
-import { lifeLoadFactorOptions, lifeLoadImpacts } from "@/lib/domain/life-load";
-import { contextualReply } from "@/lib/domain/contextual-reply";
-import { RecoveryMode } from "./recovery-mode";
+import { useDemo } from "@/state/demo-provider";
+import type { StudentCapacity } from "@/data/demo/types";
+import type { LifeLoadFactor, LifeLoadImpact } from "@/data/demo/types";
+import { lifeLoadFactorOptions, lifeLoadImpacts } from "@/features/capacity/domain/life-load";
+import { contextualReply } from "@/features/assistant/domain/contextual-reply";
+import { RecoveryMode } from "@/features/dashboard/components/recovery-mode";
 
 const timeOptions = [90, 120, 150, 180, 270, 300, 360];
-import { capacityPresets, capacityStages, availableCapacity, isLowCapacity } from "@/lib/domain/dashboard";
+import { capacityPresets, capacityStages, availableCapacity, isLowCapacity } from "@/features/dashboard/domain/dashboard";
 
 const energyLabels = ["Low", "Drained", "Steady", "Good", "High"];
 const energyDescription = ["low", "low", "medium", "high", "high"];

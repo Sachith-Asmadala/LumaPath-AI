@@ -1,0 +1,56 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      LUMAPATH_ENV: development
+      ASSISTANT_PROMPT_RETENTION_HOURS: "0"
+      ASSISTANT_SESSION_RETENTION_HOURS: "72"
+      ASSISTANT_RATE_LIMIT_PER_MINUTE: "15"
+      LUMAPATH_DATABASE_PATH: /app/apps/api/data/lumapath.db
+      DOCUMENT_STORAGE_PATH: /app/apps/api/data/private-documents
+      DOCUMENT_MAX_UPLOAD_BYTES: "15728640"
+      DOCUMENT_RETENTION_DAYS: "30"
+      DOCUMENT_REQUIRE_MALWARE_SCAN: "false"
+      DOCUMENT_WORKER_THREADS: "2"
+      DOCUMENT_MAX_PROCESSING_ATTEMPTS: "3"
+      DOCUMENT_UPLOADS_PER_MINUTE: "8"
+      ANALYTICS_WORKER_THREADS: "1"
+      ANALYTICS_MIN_COHORT_SIZE: "10"
+      CV_STORAGE_PATH: /app/apps/api/data/private-cv
+      CV_MAX_UPLOAD_BYTES: "8388608"
+      CV_REQUIRE_MALWARE_SCAN: "false"
+      CV_ANALYSES_PER_MINUTE: "8"
+    volumes:
+      - lumapath-api-data:/app/apps/api/data
+    ports:
+      - "8000:8000"
+
+  notification-worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    environment:
+      LUMAPATH_ENV: development
+      LUMAPATH_DATABASE_PATH: /workspace/apps/api/data/lumapath.db
+      NOTIFICATION_DELIVERY_MAX_ATTEMPTS: "3"
+      NOTIFICATION_WORKER_INTERVAL_SECONDS: "60"
+    volumes:
+      - lumapath-api-data:/workspace/apps/api/data
+    depends_on:
+      - api
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      LUMAPATH_API_URL: http://api:8000
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  lumapath-api-data:

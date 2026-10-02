@@ -8,8 +8,8 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import Loading from "@/app/loading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { baselineQuestions } from "@/lib/domain/baseline-assessment";
-import { useDemo } from "@/lib/state/demo-provider";
+import { baselineQuestions } from "@/features/assessment/domain/baseline-assessment";
+import { useDemo } from "@/state/demo-provider";
 
 export default function AssessmentPage() {
   const router = useRouter();

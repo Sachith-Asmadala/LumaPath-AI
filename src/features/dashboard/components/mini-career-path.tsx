@@ -5,8 +5,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Check, Circle, LockKeyhole } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedProgress, StatusPulse } from "@/components/motion/animated";
-import { useDemo } from "@/lib/state/demo-provider";
-import { selectCurrentCareerSkill, selectNextBestAction } from "@/lib/domain/dashboard";
+import { useDemo } from "@/state/demo-provider";
+import { selectCurrentCareerSkill, selectNextBestAction } from "@/features/dashboard/domain/dashboard";
 
 const steps = [
   { id: "linux", label: "Linux" },

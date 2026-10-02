@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { baselineQuestions } from "../../src/lib/domain/baseline-assessment";
+import { baselineQuestions } from "../../src/features/assessment/domain/baseline-assessment";
 
 test("DevOps assessment saves weighted baseline scores and survives refresh", async ({ page }) => {
   await page.addInitScript(() => {

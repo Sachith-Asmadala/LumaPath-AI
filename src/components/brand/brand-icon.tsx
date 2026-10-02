@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { brand } from "@/lib/brand";
+import { brand } from "@/config/brand";
 import { cn } from "@/lib/utils";
 
 export function BrandIcon({ size = 32, className, decorative = false, priority = false }: { size?: number; className?: string; decorative?: boolean; priority?: boolean }) {

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { dockerReassessmentQuestions } from "../../src/lib/domain/skill-reassessment";
-import { baselineQuestions } from "../../src/lib/domain/baseline-assessment";
+import { dockerReassessmentQuestions } from "../../src/features/career/domain/skill-reassessment";
+import { baselineQuestions } from "../../src/features/assessment/domain/baseline-assessment";
 
 test("a new student reaches Overview through the free DevOps path and can reset the whole journey", async ({ page }) => {
   test.setTimeout(120_000);

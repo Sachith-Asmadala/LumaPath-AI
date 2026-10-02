@@ -9,3 +9,9 @@ tests
 playwright-report
 .env
 .env.*
+__pycache__
+*.pyc
+.pytest_cache
+*.egg-info
+apps/api/data/*.db
+apps/api/data/*.db-*

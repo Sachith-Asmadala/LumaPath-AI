@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, ArrowUpRight, Eye, EyeOff, Leaf, LockKeyhole } from "lucide-react";
-import { PublicHeader } from "./public-header";
-import { PathPreview } from "./path-preview";
+import { PublicHeader } from "@/components/public/public-header";
+import { PathPreview } from "@/components/public/path-preview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useDemo } from "@/lib/state/demo-provider";
-import { nextStudentJourneyRoute } from "@/lib/domain/student-journey";
+import { useDemo } from "@/state/demo-provider";
+import { nextStudentJourneyRoute } from "@/features/onboarding/domain/student-journey";
 
 export function AccessPage({ mode }: { mode: "login" | "register" }) {
   const register = mode === "register";

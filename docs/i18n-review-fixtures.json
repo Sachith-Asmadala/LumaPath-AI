@@ -1,0 +1,240 @@
+{
+  "resource_version": "2026-10-02.10",
+  "review_policy": "Native-speaker semantic sign-off is a manual release gate; automated checks validate structure/script only.",
+  "fixtures": [
+    {
+      "key": "assistant.localeFallback",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly disclose AI language fallback without implying the interface locale changed."
+    },
+    {
+      "key": "focus.zeroProductive",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must explain interrupted-session accounting without punitive language."
+    },
+    {
+      "key": "analytics.privateDescription",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Privacy explanation must retain the same meaning in all scripts."
+    },
+    {
+      "key": "documents.dateReviewHint",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Extracted dates must remain explicitly unconfirmed."
+    },
+    {
+      "key": "nav.tasks",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative navigation fixture used by automated script checks."
+    },
+    {
+      "key": "cv.privacyText",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must preserve CV privacy, retention and no-third-party/model meaning."
+    },
+    {
+      "key": "cv.analysisEnglishFallback",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly disclose English fallback for deterministic CV analysis templates without implying source translation."
+    },
+    {
+      "key": "nav.cv",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F15 navigation label for all supported scripts."
+    },
+    {
+      "key": "internships.privacyText",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must preserve owner-only notes/outcomes and explicitly state that LumaPath does not contact employers or scrape inboxes."
+    },
+    {
+      "key": "internships.confirmPlanner",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must make planner timing approval an explicit user confirmation in all supported scripts."
+    },
+    {
+      "key": "nav.applications",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F16 navigation label for all supported scripts."
+    },
+    {
+      "key": "interviews.consent",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly distinguish automated practice feedback from a hiring decision and explain recording/deletion choice."
+    },
+    {
+      "key": "interviews.privacyText",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must preserve protected-characteristic, ranking and hiring-decision boundaries across supported scripts."
+    },
+    {
+      "key": "nav.interviews",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F17 navigation label for all supported scripts."
+    },
+    {
+      "key": "notifications.safePreview",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly explain that external/lock-screen previews hide task, CV, mentor and other sensitive content by default."
+    },
+    {
+      "key": "notifications.muteNonCritical",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "The single mute control must be understandable without implying critical user-controlled categories are disabled."
+    },
+    {
+      "key": "nav.notifications",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F20 navigation label for all supported scripts."
+    },
+    {
+      "key": "calendar.noProviderConnection",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must preserve the explicit-authorisation and no-provider-connected boundary."
+    },
+    {
+      "key": "calendar.commitNotice",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must explain that external descriptions are untrusted content and embedded instructions are not executed."
+    },
+    {
+      "key": "calendar.sourceAuthorityNotice",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must not imply LumaPath verifies that a user-uploaded calendar was officially issued by a university or LMS."
+    },
+    {
+      "key": "nav.roadmap",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F13 navigation label for all supported scripts."
+    },
+    {
+      "key": "roadmap.draftDoesNotAffectPlan",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly state that recalculation drafts do not alter the active roadmap or Planner until explicit approval."
+    },
+    {
+      "key": "roadmap.manualCompletionNote",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must distinguish roadmap learning completion from verified skill evidence in every supported script."
+    },
+    {
+      "key": "mentors.privacyNote",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must preserve the purpose-limited, revocable relationship and explicit exclusion of private capacity/CV/interview/personal-note content."
+    },
+    {
+      "key": "mentors.recommendationAccepted",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly state that accepting mentor guidance does not itself change Planner; scheduling remains a separate student action."
+    },
+    {
+      "key": "nav.mentors",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F24 navigation label for all supported scripts."
+    },
+    {
+      "key": "opportunities.eligibilityDisclaimer",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly distinguish unknown eligibility from confirmed eligibility and preserve provider authority."
+    },
+    {
+      "key": "opportunities.sourceDisclaimer",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must disclose catalogue freshness limits, original-source authority and demo-feed replacement before production."
+    },
+    {
+      "key": "opportunities.sponsored",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Sponsored placement disclosure must remain explicit in every supported script."
+    },
+    {
+      "key": "nav.opportunities",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F28 navigation label for all supported scripts."
+    },
+    {
+      "key": "careerEngine.approvedTaxonomyNote",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must state that only approved taxonomy requirements are used and AI cannot silently create high-impact career requirements."
+    },
+    {
+      "key": "careerEngine.assessmentHelp",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must distinguish self-assessment from stronger evidence sources and preserve confidence/uncertainty wording."
+    },
+    {
+      "key": "careerEngine.assessmentRequiredForRoadmap",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must explain that roadmap generation uses the server-owned reviewed assessment rather than unverified client-only claims."
+    },
+    {
+      "key": "evidencePassport.sharePrivacy",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must state that only explicitly selected evidence summaries are shared and sensitive originals remain private."
+    },
+    {
+      "key": "evidenceShare.privacy",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Public share wording must distinguish evidence provenance/verification meaning from guaranteed credential authenticity or professional proficiency."
+    },
+    {
+      "key": "evidencePassport.mentorValidationBody",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must preserve explicit student consent and limit mentor review to the requested skill context."
+    },
+    {
+      "key": "teams.privacyBody",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must clearly state that private capacity/check-ins, grades, CV content and personal notes are excluded from team sharing."
+    },
+    {
+      "key": "teams.allocationBody",
+      "risk": "high",
+      "status": "native_review_required",
+      "reason": "Must preserve that allocation suggestions are limited planning aids, use only explicitly shared data, and are not effort or ability judgments."
+    },
+    {
+      "key": "nav.teams",
+      "risk": "core",
+      "status": "developer_reviewed",
+      "reason": "Representative DOC-F21 navigation label for all supported scripts."
+    }
+  ]
+}

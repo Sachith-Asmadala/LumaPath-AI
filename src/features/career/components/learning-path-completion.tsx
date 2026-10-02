@@ -4,8 +4,8 @@ import Link from "next/link";
 import { CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
-import { useDemo } from "@/lib/state/demo-provider";
+import { selectLearningPathCompletion } from "@/features/career/domain/skill-reassessment";
+import { useDemo } from "@/state/demo-provider";
 
 export function LearningPathCompletionCard({ skillId }: { skillId: string }) {
   const { state } = useDemo();

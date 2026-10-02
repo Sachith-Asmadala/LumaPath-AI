@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { baselineQuestions } from "../../src/lib/domain/baseline-assessment";
+import { baselineQuestions } from "../../src/features/assessment/domain/baseline-assessment";
 
 const answers = Object.fromEntries(baselineQuestions.map((question) => [question.id, question.options[question.id === "docker-compose" || ["CI/CD", "Cloud"].includes(question.skill) ? 1 : 0]]));
 test("learning, certificates and privacy controls share persisted student state", async ({ page }) => {

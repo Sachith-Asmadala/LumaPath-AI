@@ -3,9 +3,9 @@
 import { CheckCircle2, Clock3, Flame, Target, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { AnimatedCounter } from "@/components/motion/animated";
-import { useDemo } from "@/lib/state/demo-provider";
+import { useDemo } from "@/state/demo-provider";
 
-import { dashboardMetrics } from "@/lib/domain/dashboard";
+import { dashboardMetrics } from "@/features/dashboard/domain/dashboard";
 
 export function WeeklyProgressStrip() {
   const { state } = useDemo();

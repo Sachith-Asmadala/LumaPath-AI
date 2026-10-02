@@ -9,10 +9,10 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import Loading from "@/app/loading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { BaselineSkill, SkillGapLevel } from "@/lib/demo-data/types";
-import { baselineSkills } from "@/lib/domain/baseline-assessment";
-import { improveThreshold, strongThreshold } from "@/lib/domain/skill-gap";
-import { useDemo } from "@/lib/state/demo-provider";
+import type { BaselineSkill, SkillGapLevel } from "@/data/demo/types";
+import { baselineSkills } from "@/features/assessment/domain/baseline-assessment";
+import { improveThreshold, strongThreshold } from "@/features/career/domain/skill-gap";
+import { useDemo } from "@/state/demo-provider";
 
 function AnimatedPercent({ value, large = false }: { value: number; large?: boolean }) {
   const reduceMotion = useReducedMotion();

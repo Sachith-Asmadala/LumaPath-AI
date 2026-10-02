@@ -40,3 +40,23 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright generated artifacts
+/test-results/
+/playwright-report/
+/blob-report/
+
+# Python / FastAPI
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+/apps/api/data/*.db
+/apps/api/data/*.db-*
+
+# DOC-F09 private uploaded sources
+/apps/api/data/private-documents/
+
+# DOC-F15 private CV sources
+/apps/api/data/private-cv/
