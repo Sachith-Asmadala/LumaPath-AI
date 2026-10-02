@@ -13,12 +13,12 @@ let update = {
   id: "impact-1", pathway_id: "path-1", target_role: "DevOps Engineer", from_version: "2026-10-v2", to_version: "2026-10-v2.f34-global-002", proposal_id: "proposal-1",
   explanation: "The approved DevOps Engineer taxonomy changed after review of emerging market evidence. Your current roadmap remains usable and unchanged until you choose to recalculate.",
   changes: [{ skill_id: "docker", skill_name: "Docker", change: "Changed Docker required proficiency from 70% to 75% after human review.", before_required_proficiency: 70, after_required_proficiency: 75, completed_credit_preserved: true }],
-  status: "pending", created_at: "2026-11-20T10:00:00Z", decided_at: null, draft_pathway_id: null,
+  status: "pending", created_at: "2026-11-20T10:00:00Z", decided_at: null as string | null, draft_pathway_id: null as string | null,
 };
 const signal = {
   id: "signal-1", role_id: "devops-engineer", skill_id: "docker", profile_scope: "international", region_code: null, label: "emerging", delta: .18, recent_share: .49, prior_share: .31, sample_size: 620, source_count: 3, confidence: .91, recency_days: 4, methodology_version: "doc-f34-signal-v1", methodology: "Weighted recent-vs-prior skill-share change. Signals never publish taxonomy changes automatically.", source_ids: ["jobs", "cert", "tech"], observation_ids: ["obs-1"], observations: [{ id: "obs-1", source_id: "jobs", source_name: "Governed aggregate", source_type: "job_aggregate", period_start: "2026-10-01", period_end: "2026-10-28", observed_at: "2026-11-16T10:00:00Z", sample_size: 220, skill_share: .49, provenance_url: "https://example.org/methodology" }], publication_eligible: true, limitations: [], created_at: "2026-11-20T10:00:00Z", expires_at: "2027-01-04T10:00:00Z",
 };
-let proposal = { id: "proposal-1", signal_id: "signal-1", base_version: "2026-10-v2", candidate_version: "2026-10-v2.f34-global-002", role_id: "devops-engineer", role_name: "DevOps Engineer", skill_id: "docker", skill_name: "Docker", profile_scope: "international", region_code: null, change_type: "increase_priority", current_required_proficiency: 70, proposed_required_proficiency: 75, impact_level: "low", status: "review", observed_signal: "emerging", signal_confidence: .91, rationale: "Governed aggregate evidence suggests a reviewed priority increase.", created_by: "curator-1", created_at: "2026-11-20T09:00:00Z", decided_at: null, decision_rationale: null, resulting_version: null };
+let proposal = { id: "proposal-1", signal_id: "signal-1", base_version: "2026-10-v2", candidate_version: "2026-10-v2.f34-global-002", role_id: "devops-engineer", role_name: "DevOps Engineer", skill_id: "docker", skill_name: "Docker", profile_scope: "international", region_code: null, change_type: "increase_priority", current_required_proficiency: 70, proposed_required_proficiency: 75, impact_level: "low", status: "review", observed_signal: "emerging", signal_confidence: .91, rationale: "Governed aggregate evidence suggests a reviewed priority increase.", created_by: "curator-1", created_at: "2026-11-20T09:00:00Z", decided_at: null as string | null, decision_rationale: null as string | null, resulting_version: null as string | null };
 
 async function mockShell(page: Page) {
   await page.route("**/api/notifications/**", route => route.fulfill({ status: 200, headers, body: JSON.stringify({ items: [], unread_count: 0, generated_at: "2026-11-20T10:00:00Z", partial: false, calendar_integration_available: true, student_id: "student-onboarded", timezone: "Asia/Colombo", quiet_hours_enabled: false, quiet_hours_start: "22:00", quiet_hours_end: "07:00", mute_non_critical: false, max_non_critical_per_day: 6, max_non_critical_per_hour: 3, in_app_enabled: true, push_enabled: false, push_permission_granted: false, email_enabled: false, email_consent: false, categories: {}, updated_at: "2026-11-20T10:00:00Z", push_provider_available: false, email_provider_available: false, saved: true }) }));
@@ -26,8 +26,8 @@ async function mockShell(page: Page) {
 }
 
 async function mockMarketApi(page: Page) {
-  update = { ...update, status: "pending", decided_at: null, draft_pathway_id: null };
-  proposal = { ...proposal, status: "review", decided_at: null, decision_rationale: null, resulting_version: null };
+  update = { ...update, status: "pending", decided_at: null as string | null, draft_pathway_id: null as string | null };
+  proposal = { ...proposal, status: "review", decided_at: null as string | null, decision_rationale: null as string | null, resulting_version: null as string | null };
   await page.route("**/api/career-scenarios/roles", route => route.fulfill({ status: 200, headers, body: JSON.stringify(roles) }));
   await page.route("**/api/market-taxonomy/**", async route => {
     const req = route.request(); const url = new URL(req.url()); const path = url.pathname;

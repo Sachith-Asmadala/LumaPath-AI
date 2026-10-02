@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { ArrowUpRight, ChevronDown, Grid2X2, Search, Settings2, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, ChevronDown, Grid2X2, Search, Settings2, Sparkles, X } from "lucide-react";
 import { useReducedMotion } from "motion/react";
-import { Button } from "@/components/ui/button";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { useDemo } from "@/state/demo-provider";
 import { CommandPalette } from "@/components/layout/command-palette";
@@ -19,6 +18,7 @@ import { useLocale } from "@/i18n/locale-provider";
 import { NotificationProvider } from "@/features/notifications/components/notification-provider";
 import { AchievementProvider } from "@/features/achievements/components/achievement-provider";
 import { homeLink, inboxLink, routeMatches, workspaceGroups, workspaceLinks } from "./workspace-map";
+import { DecisionPulse } from "@/features/dashboard/components/decision-pulse";
 import { PremiumWelcome } from "./premium-welcome";
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
@@ -36,6 +36,16 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  useEffect(() => {
+    const shortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "l") {
+        event.preventDefault();
+        setCopilotOpen((value) => !value);
+      }
+    };
+    window.addEventListener("keydown", shortcut);
+    return () => window.removeEventListener("keydown", shortcut);
+  }, []);
   const activeGroup = workspaceGroups.find((group) => group.links.some((link) => routeMatches(pathname, link.href)));
   const activeLink = workspaceLinks.find((link) => routeMatches(pathname, link.href));
   const title = activeLink ? t(activeLink.labelKey) : pathname === "/explore" ? "All tools" : pathname === "/plans" ? "Plans & membership" : t("nav.settings");
@@ -51,11 +61,11 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
     <a className="workspace-skip" href="#workspace-main">Skip to content</a>
     {!focus && <Sidebar collapsible="icon" className="workspace-sidebar">
       <SidebarHeader className="gap-5 px-5 pb-5 pt-7 group-data-[collapsible=icon]:px-1">
-        <Link href="/overview" className="workspace-brand" aria-label="LumaPath home"><BrandIcon size={34} decorative /><span className="group-data-[collapsible=icon]:hidden">luma<span>path</span><small>YOUR PERSONAL WORKSPACE</small></span></Link>
+        <div className="flex items-center justify-between"><Link href="/overview" className="workspace-brand" aria-label="LumaPath home"><BrandIcon size={34} decorative /><span className="group-data-[collapsible=icon]:hidden">luma<span>path</span><small>YOUR PERSONAL WORKSPACE</small></span></Link>{isMobile && <button onClick={() => setOpenMobile(false)} aria-label="Close navigation" className="grid size-10 place-items-center rounded-xl hover:bg-muted"><X size={18} /></button>}</div>
         <button className="sidebar-search group-data-[collapsible=icon]:hidden" onClick={() => { closeMobile(); setCommandOpen(true); }}><Search size={16} /><span>Find anything...</span><kbd>⌘ K</kbd></button>
       </SidebarHeader>
       <SidebarContent className="gap-5 px-3 pb-4">
-        <SidebarMenu>{[homeLink, inboxLink].map(renderLink)}<SidebarMenuItem><SidebarMenuButton asChild tooltip="All tools" isActive={pathname === "/explore"} className="workspace-nav-link"><Link href="/explore" onClick={closeMobile} aria-current={pathname === "/explore" ? "page" : undefined}><Grid2X2 size={18} /><span>All tools</span><span className="nav-count">{workspaceLinks.length}</span></Link></SidebarMenuButton></SidebarMenuItem></SidebarMenu>
+        <SidebarMenu>{[homeLink, inboxLink].map(renderLink)}<SidebarMenuItem><SidebarMenuButton asChild tooltip="All tools" isActive={pathname === "/explore"} className="workspace-nav-link"><Link href="/explore" onClick={closeMobile} aria-current={pathname === "/explore" ? "page" : undefined}><Grid2X2 size={18} /><span>All tools</span><span className="nav-count">{workspaceGroups.flatMap((group) => group.links).length}</span></Link></SidebarMenuButton></SidebarMenuItem></SidebarMenu>
         <div><p className="sidebar-caption group-data-[collapsible=icon]:hidden">YOUR WORKSPACE</p>
           {workspaceGroups.map((group) => {
             const open = expanded === null ? activeGroup?.id === group.id || (!activeGroup && group.id === "planning") : expanded === group.id;
@@ -79,6 +89,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
       {!focus && <TopBar title={title} onOpenCommand={() => setCommandOpen(true)} onOpenCopilot={() => setCopilotOpen(true)} />}
       {!focus && activeGroup && <nav className="workspace-context-nav" aria-label={`${activeGroup.title} tools`}>{activeGroup.links.map((link) => <Link key={link.href} href={link.href} aria-current={routeMatches(pathname, link.href) ? "page" : undefined}>{t(link.labelKey)}</Link>)}</nav>}
       <main id="workspace-main" tabIndex={-1} className={focus ? "min-h-dvh outline-none" : "min-h-[calc(100dvh-5rem)] pb-24 outline-none md:pb-10"}>
+        {!focus && <div className="mx-auto max-w-[1400px] px-4 sm:px-8"><DecisionPulse /></div>}
         <PageTransition pathname={pathname} reduceMotion={Boolean(reduced)}>{children}</PageTransition>
       </main>
       {!focus && <nav aria-label={t("nav.mobilePrimary")} className="workspace-mobile-nav">{[homeLink, workspaceGroups[0].links[1], workspaceGroups[0].links[2]].map(({ labelKey, href, icon: Icon }) => <Link key={href} href={href} aria-current={routeMatches(pathname, href) ? "page" : undefined}><Icon size={20} /><span>{t(labelKey)}</span></Link>)}<button onClick={() => setOpenMobile(true)}><Grid2X2 size={20} /><span>More</span></button></nav>}

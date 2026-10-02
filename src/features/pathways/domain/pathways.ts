@@ -182,8 +182,8 @@ export function buildRecalculationReasons(active: PathwayView, context: ReturnTy
 }
 
 export function applyPathwayPlanActions(state: DemoState, actions: PlannerPathwayAction[]): Pick<DemoState, "tasks" | "planBlocks" | "simulation"> {
-  let tasks = [...state.tasks];
-  let planBlocks = [...state.planBlocks];
+  const tasks = [...state.tasks];
+  const planBlocks = [...state.planBlocks];
   for (const action of actions) {
     if (tasks.some((task) => task.id === action.internal_task_id) || planBlocks.some((block) => block.externalId === action.plan_item_id)) continue;
     const task: Task = {

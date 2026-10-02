@@ -535,6 +535,25 @@ http://localhost:3000
 
 ---
 
+## Workspace navigation
+
+The signed-in workspace groups tools into **Plan your day**, **Learn & grow**,
+**Build your career**, and **See your progress**. Use **All tools** to search and
+browse the directory, or press **⌘K / Ctrl+K** to jump to a page. **⌘L / Ctrl+L**
+opens the assistant. On mobile, **More** opens the full navigation.
+
+The overview separates **Today’s overview** from **My growth**. Capacity controls
+expand when needed, and task rows reveal notes and study help through their details
+button. Focus mode offers **Aurora**, **Ocean**, and **Dawn** backgrounds with a
+pause control; scene preferences are saved in this browser and reduced-motion
+preferences are respected.
+
+A dismissible **LumaPath Plus** introduction appears on the first workspace visit
+per local student. Plus is a future-plan preview; all implemented tools remain free
+and no checkout is connected. The public landing page is unchanged.
+
+---
+
 ## 🧪 Project Checks
 
 ### Structural Import Check

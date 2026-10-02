@@ -29,7 +29,7 @@ export default function RoadmapPage() {
   const { state, applyPathwayActions } = useDemo();
   const { t, formatDate, formatTime, formatNumber, locale } = useLocale();
   const [current, setCurrent] = useState<CurrentRoadmapView>({ active: null, pending_draft: null });
-  const [targetRole, setTargetRole] = useState(state.onboarding.careerGoal || state.student.targetRole || "DevOps Engineer");
+  const [targetRole, setTargetRole] = useState<string>(state.onboarding.careerGoal || state.student.targetRole || "DevOps Engineer");
   const [goal, setGoal] = useState(state.learningGoal?.title || t("roadmap.defaultGoal"));
   const [pace, setPace] = useState<PathwayPace>("balanced");
   const [targetDate, setTargetDate] = useState(() => new Date(Date.now() + 84 * 86_400_000).toISOString().slice(0, 10));

@@ -37,7 +37,7 @@ test("student can select one evidence item and create a scoped recruiter share",
   await page.getByLabel("Select Container API for export or sharing").check();
   await page.getByRole("button",{name:"Share selected"}).click();
   await expect(page.getByText("Private share link ready")).toBeVisible();
-  await expect(page.getByDisplayValue(/evidence-share\/share-token-1/)).toBeVisible();
+  await expect(page.locator('input[value*="evidence-share/share-token-1"]')).toBeVisible();
   await page.goto("/evidence-share/share-token-1");
   await expect(page.getByText("Container API")).toBeVisible();
   await expect(page.getByText("Git Fundamentals")).toHaveCount(0);

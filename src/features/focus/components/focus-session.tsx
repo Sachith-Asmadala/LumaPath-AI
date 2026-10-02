@@ -266,10 +266,10 @@ export function FocusSession({ initialTaskId }: { initialTaskId?: string }) {
     finally { setBusy(false); }
   };
 
-  if (loading) return <div className="mx-auto grid min-h-[calc(100dvh-4.5rem)] max-w-[800px] place-items-center px-6"><p className="text-sm text-muted-foreground" role="status">{t("focus.recovering")}</p></div>;
+  if (loading) return <div className="mx-auto grid min-h-[calc(100dvh-5rem)] max-w-[800px] place-items-center px-6"><p className="text-sm text-muted-foreground" role="status">{t("focus.recovering")}</p></div>;
 
   if (finalSession) return (
-    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-4.5rem)] w-full max-w-[760px] flex-col px-4 py-6 sm:px-6 sm:py-10">
+    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-[760px] flex-col px-4 py-6 sm:px-6 sm:py-10">
       <div className="flex flex-1 items-center justify-center">
         <motion.div initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-[560px] text-center">
           <span className="mx-auto grid size-14 place-items-center rounded-[18px] border border-success/20 bg-success/[0.055] text-success"><CheckCircle2 className="size-7" /></span>
@@ -285,7 +285,7 @@ export function FocusSession({ initialTaskId }: { initialTaskId?: string }) {
   );
 
   if (!session) return (
-    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-4.5rem)] w-full max-w-[900px] flex-col px-4 py-5 sm:px-6 sm:py-8">
+    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-[900px] flex-col px-4 py-5 sm:px-6 sm:py-8">
       <TopExit />
       <div className="flex flex-1 items-center justify-center py-8">
         <motion.div initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-[600px]">
@@ -305,7 +305,7 @@ export function FocusSession({ initialTaskId }: { initialTaskId?: string }) {
   );
 
   if (wrapUp) return (
-    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-4.5rem)] w-full max-w-[900px] flex-col px-4 py-5 sm:px-6 sm:py-8">
+    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-[900px] flex-col px-4 py-5 sm:px-6 sm:py-8">
       <TopExit />
       <div className="flex flex-1 items-center justify-center py-8"><Card className="w-full max-w-[620px] rounded-[24px] border-border/85 bg-surface-raised py-0 shadow-[var(--paper-shadow)]"><div className="p-5 sm:p-7">
         <p className="type-eyebrow text-primary">{t("focus.closeSession")}</p><h1 className="mt-2 font-heading text-2xl font-semibold tracking-[-0.03em]">{t("focus.whatChanged")}</h1><p className="mt-2 text-sm leading-6 text-muted-foreground">{t("focus.wrapDescription")}</p>
@@ -321,7 +321,7 @@ export function FocusSession({ initialTaskId }: { initialTaskId?: string }) {
   );
 
   return (
-    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-4.5rem)] w-full max-w-[1050px] flex-col px-4 py-5 sm:px-6 sm:py-8">
+    <div className="focus-retreat mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-[1050px] flex-col px-4 py-5 sm:px-6 sm:py-8">
       <TopExit />
       <div className="flex flex-1 flex-col items-center justify-center py-10"><motion.div initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-[600px]">
         <div className="mb-5 text-center"><p className="type-eyebrow mb-3 text-primary">{session.task_title}</p><h1 className="font-heading text-[1.8rem] font-semibold tracking-[-0.035em] text-foreground sm:text-3xl">{session.objective}</h1><p className="mx-auto mt-2 max-w-[32rem] text-sm leading-6 text-muted-foreground">{t("focus.activeDescription")}</p></div>

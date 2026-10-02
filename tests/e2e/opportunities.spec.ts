@@ -47,7 +47,7 @@ test("preparation checklist requires a second explicit approval before planner i
   await page.goto("/opportunities");
   await page.getByRole("button",{name:"Why this?"}).click();
   await page.getByRole("button",{name:"Build preparation plan"}).click();
-  await expect(page.getByDisplayValue("Strengthen: Docker")).toBeVisible();
+  await expect(page.locator('input[value="Strengthen: Docker"]')).toBeVisible();
   const approve=page.getByRole("button",{name:"Approve selected tasks"});
   await expect(approve).toBeDisabled();
   await page.getByText(/I reviewed the checklist/i).locator("..").getByRole("checkbox").check();

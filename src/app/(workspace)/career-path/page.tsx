@@ -14,7 +14,7 @@ import { buildAssessmentPayload, careerRequest, type CareerRoleDetailView, type 
 export default function CareerPathPage(){
  const {state}=useDemo(); const {t,formatNumber}=useLocale();
  const studentId=state.student.id;
- const [roles,setRoles]=useState<CareerRoleSummaryView[]>([]); const [selectedRole,setSelectedRole]=useState(state.onboarding.careerGoal||state.student.targetRole||"DevOps Engineer");
+ const [roles,setRoles]=useState<CareerRoleSummaryView[]>([]); const [selectedRole,setSelectedRole]=useState<string>(state.onboarding.careerGoal||state.student.targetRole||"DevOps Engineer");
  const [role,setRole]=useState<CareerRoleDetailView|null>(null); const [assessment,setAssessment]=useState<SkillAssessmentView|null>(null); const [resources,setResources]=useState<SkillResourcesView|null>(null);
  const [loading,setLoading]=useState(true); const [working,setWorking]=useState(false); const [error,setError]=useState(""); const [message,setMessage]=useState("");
 

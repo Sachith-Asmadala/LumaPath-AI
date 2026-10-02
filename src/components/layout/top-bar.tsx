@@ -1,6 +1,5 @@
 "use client";
 
-import { demoScenario } from "@/data/demo/scenario";
 import Link from "next/link";
 import { Bell, Command, Search, Sparkles, X } from "lucide-react";
 import { useState } from "react";
@@ -21,12 +20,12 @@ export function TopBar({ title, onOpenCommand, onOpenCopilot }: { title: string;
   const [notificationOpen, setNotificationOpen] = useState(false);
   const { state } = useDemo();
   const { inbox, unreadCount, loading, error, dismissed, acted } = useNotifications();
-  const { t, formatDate } = useLocale();
+  const { t } = useLocale();
   const router = useRouter();
   const go = async (deliveryId: string, href: string) => { try { await acted(deliveryId); } finally { setNotificationOpen(false); router.push(href); } };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[4.5rem] items-center justify-between gap-3 border-b border-border/75 bg-background/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-[4.5rem] items-center justify-between gap-3 border-b border-border/75 bg-card/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
       <div className="flex min-w-0 items-center gap-3">
         <div className="md:hidden"><SidebarTrigger aria-label={t("nav.openNavigation")} className="size-11" /></div>
         <Link href="/overview" aria-label={`${brand.name} home`} className="flex size-11 items-center justify-center md:hidden"><BrandIcon size={40} decorative priority /></Link>
@@ -34,7 +33,7 @@ export function TopBar({ title, onOpenCommand, onOpenCopilot }: { title: string;
         <Separator orientation="vertical" className="hidden h-5 bg-border sm:block" />
         <div className="min-w-0">
           <p className="truncate text-[0.78rem] font-medium text-foreground"><span className="mr-2 hidden font-normal text-muted-foreground xl:inline">{t("top.yourSpace")} <span className="ml-2 text-border">/</span></span>{title}</p>
-          <p className="hidden truncate text-[0.65rem] text-muted-foreground lg:block">{formatDate(`${demoScenario.date}T12:00:00`, { weekday: "long", month: "long", day: "numeric" })} <span className="mx-1.5 text-border">/</span> {t("top.pathway")}</p>
+          <p className="hidden truncate text-[0.65rem] text-muted-foreground lg:block">{state.student.targetRole} <span className="mx-1.5 text-border">·</span> Your personal workspace</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
