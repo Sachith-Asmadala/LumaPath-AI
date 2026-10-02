@@ -36,6 +36,32 @@ test("returning students can log in and resume after onboarding", async ({ page 
   await expect(page).toHaveURL(/\/assessment$/);
 });
 
+test("settings sign out preserves progress and requires re-entry after reload", async ({ page }) => {
+  await seedExistingStudent(page);
+  await page.goto("/settings");
+  const signOut = page.getByRole("button", { name: "Sign out", exact: true });
+  await expect(signOut).toBeVisible();
+  const savedProgress = () => page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!);
+    return { tasks: state.tasks, evidence: state.evidence, onboarding: state.onboarding, assessment: state.assessment };
+  });
+  const before = await savedProgress();
+  await signOut.click();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect.poll(savedProgress).toEqual(before);
+  await page.goto("/overview");
+  await expect(page).toHaveURL(/\/login$/);
+  await page.reload();
+  await expect(page).toHaveURL(/\/login$/);
+  await page.getByLabel("Email address").fill("student@example.com");
+  await page.getByLabel("Password", { exact: true }).fill("demo-password");
+  await page.getByRole("button", { name: "Continue to LumaPath" }).click();
+  await expect(page).toHaveURL(/\/assessment$/);
+  await page.goto("/settings");
+  await expect(signOut).toBeVisible();
+  await expect.poll(savedProgress).toEqual(before);
+});
+
 for (const theme of ["light", "dark"]) {
   test(`public pages fit mobile and tablet widths in ${theme} theme`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });

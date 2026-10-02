@@ -41,7 +41,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider><LocaleProvider>{children}</LocaleProvider></DemoProvider></ThemeProvider></body>
+      {/* Extensions such as Grammarly add body attributes before hydration. Suppression is limited to this element. */}
+      <body suppressHydrationWarning><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider><LocaleProvider>{children}</LocaleProvider></DemoProvider></ThemeProvider></body>
     </html>
   );
 }

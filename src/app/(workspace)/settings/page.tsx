@@ -1,50 +1,105 @@
 "use client";
 
-import { Accessibility, RotateCcw, ShieldCheck, UserRound } from "lucide-react";
+import { Accessibility, ArrowUpRight, Bell, Check, Globe2, GraduationCap, LockKeyhole, LogOut, Monitor, Moon, RotateCcw, ShieldCheck, SlidersHorizontal, Sparkles, Sun, UserRound } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
-import { BrandLogo } from "@/components/brand/brand-logo";
+import { BrandIcon } from "@/components/brand/brand-icon";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TypographyH1, TypographyP } from "@/components/shared/typography";
 import { useDemo } from "@/state/demo-provider";
 import { cn } from "@/lib/utils";
+import { releaseLabel } from "@/lib/release";
 import { localeOptions } from "@/i18n/config";
 import { useLocale } from "@/i18n/locale-provider";
 import { NotificationPreferencesCard } from "@/features/notifications/components/notification-preferences-card";
+import styles from "./settings.module.css";
+
+const themes = [{ id: "light", icon: Sun }, { id: "dark", icon: Moon }, { id: "system", icon: Monitor }] as const;
 
 export default function SettingsPage() {
-  const { subscription } = useSubscription();
-  const { state, resetDemo, learningAction } = useDemo();
+  const { subscription, loading } = useSubscription();
+  const { state, resetDemo, learningAction, signOut } = useDemo();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { locale, setLocale, t } = useLocale();
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
-  const settings = [
-    { title: t("settings.studentContext"), detail: t("settings.studentContextDetail", { name: state.student.name, role: state.student.targetRole }), icon: UserRound },
-    { title: t("settings.demoCalculations"), detail: t("settings.demoCalculationsDetail"), icon: ShieldCheck },
-    { title: t("settings.motionPreference"), detail: t("settings.motionPreferenceDetail"), icon: Accessibility },
+  const links = [
+    { id: "settings-account", label: t("settings.account"), icon: UserRound },
+    { id: "settings-appearance", label: t("settings.appearance"), icon: SlidersHorizontal },
+    { id: "settings-notifications", label: t("settings.notifications"), icon: Bell },
+    { id: "settings-privacy", label: t("settings.localData"), icon: LockKeyhole },
   ];
-  return <div className="mx-auto w-full max-w-[900px] px-4 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pt-8"><div className="mb-6"><p className="type-eyebrow mb-2 text-muted-foreground">{t("settings.eyebrow")}</p><TypographyH1>{t("settings.title")}</TypographyH1><TypographyP className="mt-2">{t("settings.subtitle")}</TypographyP></div><div className="space-y-3">
-    <Card className="rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5">
-      <h2 className="text-[0.76rem] font-medium text-foreground">{t("settings.languageTitle")}</h2>
-      <p className="mt-1 text-[0.66rem] leading-5 text-muted-foreground">{t("settings.languageDescription")}</p>
-      <div role="radiogroup" aria-label={t("settings.languageTitle")} className="mt-4 grid gap-2 sm:grid-cols-3">
-        {localeOptions.map((option) => <button key={option.code} type="button" role="radio" aria-checked={locale === option.code} onClick={() => setLocale(option.code)} className={cn("min-h-12 rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", locale === option.code ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-foreground hover:bg-accent")}>
-          <span className="block text-sm font-medium">{option.nativeLabel}</span><span className="mt-0.5 block text-[0.65rem] text-muted-foreground">{option.label}{locale === option.code ? ` · ${t("common.selected")}` : ""}</span>
-        </button>)}
-      </div>
-      <p className="mt-3 text-[0.65rem] leading-5 text-muted-foreground">{t("settings.languageFallback")}</p>
-    </Card>
-    <Card className="rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5"><h2 className="text-[0.76rem] font-medium text-foreground">{t("settings.appearance")}</h2><p className="mt-1 text-[0.66rem] leading-5 text-muted-foreground">{t("settings.appearanceDescription")}</p><div role="group" aria-label={t("settings.themeLabel")} className="mt-4 grid grid-cols-3 gap-3">{(["system", "light", "dark"] as const).map((option) => <button key={option} type="button" onClick={() => setTheme(option)} aria-pressed={mounted && theme === option} className={cn("min-w-0 rounded-xl border p-2 text-xs capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", mounted && theme === option ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-foreground hover:bg-accent")}><span className="theme-preview" data-theme={option} aria-hidden="true"><span /><span /></span><span className="block py-3">{t(`settings.theme.${option}`)}{mounted && theme === option ? ` · ${t("common.selected")}` : ""}</span></button>)}</div></Card>
-    <NotificationPreferencesCard />
-    {settings.map(({ title, detail, icon: Icon }) => <Card key={title} className="flex items-start gap-3 rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5"><span className="grid size-9 shrink-0 place-items-center rounded-[11px] border border-border/75 bg-background/55 text-primary"><Icon className="size-4" /></span><div><h2 className="text-[0.76rem] font-medium text-foreground">{title}</h2><p className="mt-1 text-[0.66rem] leading-5 text-muted-foreground">{detail}</p></div></Card>)}
-    <Card className="rounded-2xl border-border bg-surface-raised p-5 shadow-none"><h2 className="text-sm font-medium">{t("settings.localData")}</h2><p className="mt-2 text-xs leading-6 text-muted-foreground">{t("settings.localDataDescription")}</p><Button variant="outline" className="mt-3 min-h-11" disabled={!state.capacity.lifeLoadNote && !Object.keys(state.capacity.lifeLoadFactors ?? {}).length} onClick={() => learningAction({ type: "clear-life-load" })}>{t("settings.clearPrivate")}</Button><p className="mt-2 text-xs text-muted-foreground">{t("settings.clearPrivateHint")}</p></Card>
-    <Card className="rounded-2xl border-border bg-surface-raised p-5 shadow-none"><h2 className="text-sm font-medium">{subscription?.name ?? "My subscription"}</h2><p className="mt-2 text-xs leading-6 text-muted-foreground">Compare Free, Pro and Institution, and review your current allowances.</p><Button asChild variant="outline" className="mt-3 min-h-11"><Link href="/settings/subscription">{t("settings.viewPlans")}</Link></Button></Card>
-    <Card className="flex flex-wrap items-center justify-between gap-3 rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5"><div><h2 className="text-sm font-medium text-foreground">{t("settings.resetTitle")}</h2><p className="mt-1 text-xs leading-5 text-muted-foreground">{t("settings.resetDescription")}</p></div><Button type="button" variant="outline" className="h-11 gap-2 rounded-xl" onClick={() => { resetDemo(); router.replace("/onboarding"); }}><RotateCcw className="size-4" aria-hidden="true" />{t("settings.resetTitle")}</Button></Card>
-    <Card className="flex items-center gap-3 rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5"><div className="relative h-14 w-[155px] shrink-0 overflow-hidden"><BrandLogo size="md" className="absolute top-1/2 left-0 -translate-y-1/2" /></div><p className="text-[0.66rem] leading-5 text-muted-foreground">{t("settings.brandTagline")}</p></Card>
-  </div></div>;
+
+  return <div className={styles.page}>
+    <header className={styles.heading}>
+      <div><p className="type-eyebrow mb-2 text-primary">{t("settings.eyebrow")}</p><TypographyH1>{t("settings.title")}</TypographyH1><TypographyP className="mt-2">{t("settings.subtitle")}</TypographyP></div>
+      <span className={styles.headingIcon} aria-hidden="true"><SlidersHorizontal size={25} strokeWidth={1.5} /></span>
+    </header>
+
+    <nav className={styles.sectionNav} aria-label={t("settings.title")}>{links.map(({ id, label, icon: Icon }) => <a key={id} href={`#${id}`}><Icon size={15} aria-hidden="true" />{label}</a>)}</nav>
+
+    <section id="settings-account" aria-label={t("settings.account")} className={styles.account}>
+      <Card className={styles.profile}>
+        <div className={styles.profileMain}>
+          <span className={styles.avatar} aria-hidden="true">{state.student.initials}</span>
+          <div className={styles.profileCopy}><p className={styles.eyebrow}>{t("settings.studentContext")}</p><h2>{state.student.name}</h2><p>{state.student.targetRole}</p>{state.onboarding.university && <p className={styles.university}><GraduationCap size={15} aria-hidden="true" />{state.onboarding.university}</p>}</div>
+        </div>
+        <div className={styles.accountFooter}><p>{t("settings.signOutDescription")}</p><Button type="button" variant="outline" className="h-11 shrink-0 gap-2 rounded-xl" onClick={() => { signOut(); router.replace("/login"); }}><LogOut size={15} aria-hidden="true" />{t("settings.signOut")}</Button></div>
+      </Card>
+      <Card className={styles.membership}>
+        <span className={styles.sectionIcon}><Sparkles size={20} aria-hidden="true" /></span>
+        <p className={styles.eyebrow}>{t("settings.membership")}</p>
+        <h2>{loading ? t("common.loading") : subscription?.name ?? t("settings.planUnavailable")}</h2>
+        <p className={styles.description}>{t("settings.membershipDescription")}</p>
+        <Button asChild variant="outline" className="mt-auto h-11 w-full justify-between rounded-xl"><Link href="/settings/subscription">{t("settings.viewPlans")}<ArrowUpRight size={16} aria-hidden="true" /></Link></Button>
+      </Card>
+    </section>
+
+    <div className={styles.preferences}>
+      <section id="settings-appearance" aria-labelledby="appearance-title" className={styles.appearance}>
+        <Card className={styles.panel}>
+          <div className={styles.sectionHeading}><span className={styles.sectionIcon}><SlidersHorizontal size={18} aria-hidden="true" /></span><div><h2 id="appearance-title">{t("settings.appearance")}</h2><p>{t("settings.appearanceDescription")}</p></div></div>
+          <div role="group" aria-label={t("settings.themeLabel")} className={styles.themeGrid}>
+            {themes.map(({ id, icon: Icon }) => <button key={id} type="button" onClick={() => setTheme(id)} aria-pressed={mounted && theme === id} className={cn(styles.themeOption, mounted && theme === id && styles.selected)}>
+              <span className="theme-preview" data-theme={id} aria-hidden="true"><span /><span><i /><i /><i /></span></span>
+              <span className={styles.themeLabel}><Icon size={14} aria-hidden="true" /><span>{t(`settings.theme.${id}`)}</span><span className={styles.selectionDot} aria-hidden="true">{mounted && theme === id && <Check size={12} />}</span></span>
+            </button>)}
+          </div>
+          <div className={styles.motionNote}><Accessibility size={17} aria-hidden="true" /><p>{t("settings.motionPreferenceDetail")}</p></div>
+        </Card>
+      </section>
+      <section aria-labelledby="language-title">
+        <Card className={styles.panel}>
+          <div className={styles.sectionHeading}><span className={styles.sectionIcon}><Globe2 size={18} aria-hidden="true" /></span><div><h2 id="language-title">{t("settings.languageTitle")}</h2><p>{t("settings.languageDescription")}</p></div></div>
+          <div role="radiogroup" aria-label={t("settings.languageTitle")} className={styles.languages}>
+            {localeOptions.map((option) => <button key={option.code} type="button" role="radio" aria-checked={locale === option.code} onClick={() => setLocale(option.code)} className={cn(styles.languageOption, locale === option.code && styles.selected)}>
+              <span><strong>{option.nativeLabel}</strong><small>{option.label}</small></span><span className={styles.selectionDot} aria-hidden="true">{locale === option.code && <Check size={12} />}</span>
+            </button>)}
+          </div>
+          <p className={styles.hint}>{t("settings.languageFallback")}</p>
+        </Card>
+      </section>
+    </div>
+
+    <section id="settings-notifications" aria-label={t("settings.notifications")} className={styles.notifications}><NotificationPreferencesCard /></section>
+
+    <section id="settings-privacy" aria-labelledby="privacy-title" className={styles.privacy}>
+      <Card className={styles.panel}>
+        <div className={styles.sectionHeading}><span className={styles.sectionIcon}><LockKeyhole size={18} aria-hidden="true" /></span><div><h2 id="privacy-title">{t("settings.localData")}</h2><p>{t("settings.localDataDescription")}</p></div></div>
+        <Button variant="outline" className="min-h-11 w-fit max-w-full whitespace-normal rounded-xl" disabled={!state.capacity.lifeLoadNote && !Object.keys(state.capacity.lifeLoadFactors ?? {}).length} onClick={() => learningAction({ type: "clear-life-load" })}>{t("settings.clearPrivate")}</Button>
+        <p className={styles.hint}>{t("settings.clearPrivateHint")}</p>
+        <div className={styles.infoNote}><ShieldCheck size={17} aria-hidden="true" /><div><h3>{t("settings.demoCalculations")}</h3><p>{t("settings.demoCalculationsDetail")}</p></div></div>
+      </Card>
+      <Card className={cn(styles.panel, styles.reset)}>
+        <div className={styles.sectionHeading}><span className={styles.sectionIcon}><RotateCcw size={18} aria-hidden="true" /></span><div><h2>{t("settings.resetTitle")}</h2><p>{t("settings.resetDescription")}</p></div></div>
+        <Button type="button" variant="outline" className="mt-auto h-11 w-fit gap-2 rounded-xl" onClick={() => { resetDemo(); router.replace("/onboarding"); }}><RotateCcw size={15} aria-hidden="true" />{t("settings.resetTitle")}</Button>
+      </Card>
+    </section>
+
+    <footer className={styles.footer}><div><BrandIcon size={26} decorative /><p>{t("settings.brandTagline")}</p></div><span>{releaseLabel}</span></footer>
+  </div>;
 }

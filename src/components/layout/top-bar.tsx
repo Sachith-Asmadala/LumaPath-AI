@@ -38,10 +38,10 @@ export function TopBar({ title, onOpenCommand, onOpenCopilot }: { title: string;
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <div className="hidden sm:block"><ThemeToggle /></div>
-        <Button variant="outline" onClick={onOpenCommand} className="hidden h-9 w-[min(31vw,15rem)] justify-start gap-2 rounded-[14px] border-border/80 bg-white/[0.025] px-3 text-[0.72rem] text-muted-foreground hover:bg-white/[0.05] md:flex" aria-label={t("top.search")}>
+        <Button variant="outline" onClick={onOpenCommand} className="hidden h-9 w-[min(31vw,15rem)] justify-start gap-2 rounded-[14px] border-border/80 bg-white/[0.025] px-3 text-[0.72rem] text-muted-foreground hover:bg-white/[0.05] lg:flex" aria-label={t("top.search")}>
           <Search className="size-3.5" aria-hidden="true" /><span className="flex-1 text-left">{t("top.search")}</span><kbd className="flex items-center gap-0.5 rounded border border-border px-1.5 py-0.5 font-mono text-[0.58rem] text-muted-foreground"><Command className="size-2.5" />K</kbd>
         </Button>
-        <Button variant="ghost" size="icon" onClick={onOpenCommand} className="size-11 text-muted-foreground hover:text-foreground md:hidden" aria-label={t("top.openSearch")}><Search className="size-[17px]" /></Button>
+        <Button variant="ghost" size="icon" onClick={onOpenCommand} className="size-11 text-muted-foreground hover:text-foreground lg:hidden" aria-label={t("top.openSearch")}><Search className="size-[17px]" /></Button>
         <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
           <PopoverTrigger asChild><Button variant="ghost" size="icon" className="relative size-11 text-muted-foreground hover:text-foreground md:size-9" aria-label={`${t("top.notifications")}${unreadCount ? `, ${unreadCount}` : ""}`}>
             <Bell className="size-[17px]" strokeWidth={1.8} />{unreadCount > 0 && <span className="absolute right-[7px] top-[7px] size-1.5 rounded-full bg-primary ring-2 ring-background" />}

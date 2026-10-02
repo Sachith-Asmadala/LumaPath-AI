@@ -14,7 +14,7 @@ import { nextStudentJourneyRoute } from "@/features/onboarding/domain/student-jo
 
 export function AccessPage({ mode }: { mode: "login" | "register" }) {
   const register = mode === "register";
-  const { state, onboardingReady, updateOnboarding } = useDemo();
+  const { state, onboardingReady, updateOnboarding, resumeSession } = useDemo();
   const router = useRouter();
   const reduced = useReducedMotion();
   const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +27,7 @@ export function AccessPage({ mode }: { mode: "login" | "register" }) {
       if (name) updateOnboarding({ name });
     }
     // Prototype access resumes the same local journey. Credentials are never persisted or sent.
+    resumeSession();
     form?.reset();
     startTransition(() => router.push(nextStudentJourneyRoute(state)));
   }

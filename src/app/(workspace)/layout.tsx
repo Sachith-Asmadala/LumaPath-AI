@@ -8,10 +8,12 @@ import { useDemo } from "@/state/demo-provider";
 
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { state, onboardingReady } = useDemo();
+  const { state, onboardingReady, signedOut } = useDemo();
   useEffect(() => {
-    if (onboardingReady && !state.onboarding.completed) router.replace("/onboarding");
-  }, [onboardingReady, state.onboarding.completed, router]);
-  if (!onboardingReady || !state.onboarding.completed) return <Loading />;
+    if (!onboardingReady) return;
+    if (signedOut) router.replace("/login");
+    else if (!state.onboarding.completed) router.replace("/onboarding");
+  }, [onboardingReady, signedOut, state.onboarding.completed, router]);
+  if (!onboardingReady || signedOut || !state.onboarding.completed) return <Loading />;
   return <WorkspaceShell>{children}</WorkspaceShell>;
 }

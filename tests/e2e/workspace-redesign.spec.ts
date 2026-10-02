@@ -20,7 +20,7 @@ test("Pro introduction is dismissible and stays dismissed on return", async ({ p
   await expect(welcome).toBeHidden();
   await page.goto("/plans");
   await expect(page.getByRole("heading", { name: "LumaPath Pro", exact: true })).toBeVisible();
-  await expect(page.getByText(/pricing to be announced/)).toBeVisible();
+  await expect(page.locator(".membership-plus .membership-price")).toHaveText("USD 4.99per month · monthly membership");
 });
 
 test("overview separates daily actions from growth and keeps capacity accessible", async ({ page }) => {
