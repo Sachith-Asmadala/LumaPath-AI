@@ -238,18 +238,22 @@ def test_http_boundary_requires_admin_claims_and_blocks_cross_institution(tmp_pa
     service.refresh(admin(), "se-y3", START, END, "UTC")
     monkeypatch.setattr(institutional_router, "_service", service)
     monkeypatch.setattr(institutional_router, "_repository", repo)
+    from apps.api.tests.entitlement_helpers import grant_test_plan
+    grant_test_plan(app, monkeypatch, db, "institution-account", "institution")
     client = TestClient(app)
 
     path = "/v1/institutional-analytics/dashboard?cohort_id=se-y3&start=2026-10-01&end=2026-10-07&timezone=UTC"
     missing = client.get(path)
     assert missing.status_code == 401
     own = client.get(path, headers={
+        "X-Luma-Student-Id": "institution-account",
         "X-Luma-Admin-Id": "admin-http",
         "X-Luma-Admin-Role": "programme_admin",
         "X-Luma-Institution-Id": "inst-a",
     })
     assert own.status_code == 200 and own.json()["cohort"]["id"] == "se-y3"
     cross = client.get(path, headers={
+        "X-Luma-Student-Id": "institution-account",
         "X-Luma-Admin-Id": "admin-http",
         "X-Luma-Admin-Role": "programme_admin",
         "X-Luma-Institution-Id": "inst-b",

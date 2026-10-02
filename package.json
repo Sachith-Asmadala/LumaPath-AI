@@ -1,6 +1,6 @@
 {
   "name": "lumapath",
-  "version": "0.1.0",
+  "version": "1.0.0-competition",
   "private": true,
   "packageManager": "npm@10.8.2",
   "scripts": {

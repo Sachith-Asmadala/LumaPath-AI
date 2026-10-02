@@ -1,6 +1,8 @@
 "use client";
 
+import { CompetitionDemoBar } from "@/features/competition/components/demo-controls";
 import Link from "next/link";
+import { releaseLabel } from "@/lib/release";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, ChevronDown, Grid2X2, Search, Settings2, Sparkles, X } from "lucide-react";
@@ -32,7 +34,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const reduced = useReducedMotion();
   const { isMobile, setOpenMobile, state: sidebarState } = useSidebar();
-  const { state } = useDemo();
+  const { state, competitionResetVersion } = useDemo();
   const { subscription } = useSubscription();
   const { t } = useLocale();
   const [commandOpen, setCommandOpen] = useState(false);
@@ -85,18 +87,20 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
       <SidebarFooter className="border-t border-sidebar-border px-3 py-4">
         <SidebarMenu><SidebarMenuItem><SidebarMenuButton asChild tooltip={t("nav.settings")} className="workspace-nav-link" isActive={pathname === "/settings"}><Link href="/settings" onClick={closeMobile}><Settings2 size={18} /><span>{t("nav.settings")}</span></Link></SidebarMenuButton></SidebarMenuItem></SidebarMenu>
         <Link href="/settings" onClick={closeMobile} className="sidebar-profile"><span className="profile-initials">{state.student.initials}</span><span className="min-w-0 group-data-[collapsible=icon]:hidden"><strong>{state.student.name}</strong><small>{subscription?.name ?? "My workspace"}</small></span></Link>
+        <span className="px-3 text-[0.6rem] text-muted-foreground group-data-[collapsible=icon]:hidden">{releaseLabel}</span>
       </SidebarFooter>
     </Sidebar>}
     <SidebarInset className="workspace-surface min-w-0 bg-transparent" data-page={pathname.split("/")[1]}>
       {!focus && <TopBar title={title} onOpenCommand={() => setCommandOpen(true)} onOpenCopilot={() => setCopilotOpen(true)} />}
       {!focus && activeGroup && <nav className="workspace-context-nav" aria-label={`${activeGroup.title} tools`}>{activeGroup.links.map((link) => <Link key={link.href} href={link.href} aria-current={routeMatches(pathname, link.href) ? "page" : undefined}>{t(link.labelKey)}</Link>)}</nav>}
       <main id="workspace-main" tabIndex={-1} className={focus ? "min-h-dvh outline-none" : "min-h-[calc(100dvh-5rem)] pb-24 outline-none md:pb-10"}>
+        {!focus && <CompetitionDemoBar />}
         {!focus && <div className="mx-auto max-w-[1400px] px-4 sm:px-8"><DecisionPulse /></div>}
-        <PageTransition pathname={pathname} reduceMotion={Boolean(reduced)}>{children}</PageTransition>
+        <PageTransition key={competitionResetVersion} pathname={pathname} reduceMotion={Boolean(reduced)}>{children}</PageTransition>
       </main>
       {!focus && <nav aria-label={t("nav.mobilePrimary")} className="workspace-mobile-nav">{[homeLink, workspaceGroups[0].links[1], workspaceGroups[0].links[2]].map(({ labelKey, href, icon: Icon }) => <Link key={href} href={href} aria-current={routeMatches(pathname, href) ? "page" : undefined}><Icon size={20} /><span>{t(labelKey)}</span></Link>)}<button onClick={() => setOpenMobile(true)}><Grid2X2 size={20} /><span>More</span></button></nav>}
     </SidebarInset>
-    {!focus && <PremiumWelcome studentId={state.student.id} />}
+    {!focus && !state.competition && <PremiumWelcome studentId={state.student.id} />}
     <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} onOpenCopilot={() => setCopilotOpen(true)} />
     <CopilotDrawer open={copilotOpen} onOpenChange={setCopilotOpen} route={pathname} />
     <Toaster position="bottom-right" richColors={false} closeButton />

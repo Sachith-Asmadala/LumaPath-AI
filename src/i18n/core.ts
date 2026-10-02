@@ -27,7 +27,7 @@ export function allMessageKeys() {
 
 export function pseudoLocalize(message: string) {
   const map: Record<string, string> = { a: "á", e: "ë", i: "ï", o: "ô", u: "ü", A: "Á", E: "Ë", I: "Ï", O: "Ô", U: "Ü" };
-  return `［${message.replace(/[aeiouAEIOU]/g, (char) => map[char] ?? char)}～～］`;
+  return `［${message.split(/(\{[^{}]+\})/g).map(part => part.startsWith("{") ? part : part.replace(/[aeiouAEIOU]/g, (char) => map[char] ?? char)).join("")}～～］`;
 }
 
 function normalizeFormatDate(value: string | Date) {

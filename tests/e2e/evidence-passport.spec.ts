@@ -12,7 +12,7 @@ async function mockShell(page:Page){
 }
 
 async function mockEvidenceApi(page:Page){
-  let shares:any[]=[];
+  let shares:Record<string,unknown>[]=[];
   await page.route("**/api/evidence-passport**",async route=>{
     const req=route.request(),path=new URL(req.url()).pathname;
     if(path==="/api/evidence-passport")return route.fulfill({status:200,headers,body:JSON.stringify(dashboard)});

@@ -3,6 +3,8 @@ from __future__ import annotations
 from ..subscriptions.dependencies import taxonomy_access
 from ..subscriptions.service import EntitlementService, get_entitlements
 
+from ..competition_demo.clock import competition_service
+
 from fastapi import APIRouter, Depends, Query
 
 from ...core.config import settings
@@ -67,8 +69,8 @@ def rollback(request: TaxonomyRollbackRequest, p: TaxonomyCuratorPrincipal = Dep
 def compare(role_id:str,region_code:str|None=Query(default=None),p:Principal=Depends(current_principal),ent:EntitlementService=Depends(get_entitlements)):
     if region_code:
         ent.require(p.student_id, "regional_comparison")
-    return _service.compare_profiles(p.student_id,role_id,region_code)
+    return competition_service(_service, p.student_id).compare_profiles(p.student_id,role_id,region_code)
 @router.get("/student/updates",response_model=list[StudentTaxonomyUpdateView])
-def updates(p:Principal=Depends(current_principal)): return _service.student_updates(p.student_id)
+def updates(p:Principal=Depends(current_principal)): return competition_service(_service, p.student_id).student_updates(p.student_id)
 @router.post("/student/updates/{impact_id}/decision",response_model=StudentTaxonomyUpdateView)
-def update_decision(impact_id:str,request:StudentUpdateDecisionRequest,p:Principal=Depends(current_principal)): return _service.decide_student_update(p.student_id,impact_id,request)
+def update_decision(impact_id:str,request:StudentUpdateDecisionRequest,p:Principal=Depends(current_principal)): return competition_service(_service, p.student_id).decide_student_update(p.student_id,impact_id,request)

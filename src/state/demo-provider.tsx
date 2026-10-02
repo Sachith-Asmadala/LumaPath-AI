@@ -1,5 +1,6 @@
 "use client";
 
+import { adaptCompetitionDeadline, createCompetitionState, type CompetitionSnapshot } from "@/data/demo/competition";
 import { authorizeAdaptivePlanning } from "@/features/subscriptions/entitlements";
 import { scenarioAt, scenarioDate } from "@/data/demo/scenario";
 
@@ -497,6 +498,9 @@ interface DemoContextValue {
   scheduleFreePath: (skillId: string, pathId: string) => Promise<boolean>;
   scheduleSelectedResource: (skillId: string, resourceId: string) => Promise<boolean>;
   resetDemo: () => void;
+  competitionResetVersion: number;
+  startCompetitionDemo: () => Promise<void>;
+  moveCompetitionDeadline: () => Promise<void>;
   updateCapacity: (capacity: StudentCapacity) => Promise<void>;
   keepCurrentPlan: () => void;
   applyRecoveryChoice: (choice: RecoveryChoice) => Promise<boolean>;
@@ -534,6 +538,7 @@ function pause(ms: number) {
 
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(demoReducer, undefined, demoDataAdapter.load);
+  const [competitionResetVersion, setCompetitionResetVersion] = useState(0);
   const [onboardingReady, setOnboardingReady] = useState(false);
   const runId = useRef(0);
   const running = useRef(false);
@@ -689,6 +694,32 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }, (stage) => dispatch({ type: "capacity-stage", capacity, stage }));
   }, [showSteps]);
 
+  const startCompetitionDemo = useCallback(async () => {
+    if (process.env.NODE_ENV === "production") throw new Error("Competition demo is unavailable in production.");
+    const response = await fetch("/api/competition-demo/reset", { method: "POST", headers: { "X-Luma-Student-Id": state.student.id }, cache: "no-store", signal: AbortSignal.timeout(40_000) });
+    const body = await response.json();
+    if (!response.ok) throw new Error(typeof body.detail === "string" ? body.detail : "The competition scenario could not be restored. Please retry.");
+    const fresh = createCompetitionState(body as CompetitionSnapshot);
+    runId.current += 1; running.current = false;
+    try {
+      for (const key of [demoStateStorageKey, onboardingStorageKey, baselineStorageKey, onboardingDraftStorageKey]) localStorage.removeItem(key);
+      localStorage.setItem(onboardingStorageKey, JSON.stringify(fresh.onboarding));
+      localStorage.setItem(`lumapath-plus-welcome-v1:${fresh.student.id}`, "seen");
+      storeDemoState(fresh);
+    } catch { /* The reset still works in memory when storage is blocked. */ }
+    dispatch({ type: "hydrate-demo", state: fresh });
+    setCompetitionResetVersion(version=>version+1);
+    window.dispatchEvent(new Event("lumapath:competition-reset"));
+  }, [state.student.id]);
+
+  const moveCompetitionDeadline = useCallback(async () => {
+    if (!state.competition || state.competition.deadlineChanged || running.current) return;
+    if (!await authorizeAdaptivePlanning(state.student.id)) return;
+    await showSteps("replan", ["Checking the earlier deadline", "Protecting academic work", "Moving lower-urgency practice"], () => {
+      dispatch({ type: "hydrate-demo", state: adaptCompetitionDeadline(state) });
+    });
+  }, [state, showSteps]);
+
   const keepCurrentPlan = useCallback(() => {
     if (!running.current) dispatch({ type: "keep-recovery-plan" });
   }, []);
@@ -705,6 +736,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [showSteps, state.recoveryPending]);
 
   const addUrgentDeadline = useCallback(async () => {
+    if (state.competition) { await moveCompetitionDeadline(); return; }
     if (running.current) return;
     const existing = state.planBlocks.find((block) => block.id === "urgent-database-block");
     const urgentBlock: PlanBlock = {
@@ -734,7 +766,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         notifications: makeNotification(state, { kind: "plan", title: "Week re-planned around the new deadline", description: "Five blocks moved; the critical deadline and focus time are protected.", href: "/planner" }),
       } });
     });
-  }, [showSteps, state]);
+  }, [showSteps, state, moveCompetitionDeadline]);
 
   const applyRecoveryPlan = useCallback(async () => {
     if (!await authorizeAdaptivePlanning(state.student.id)) return;
@@ -753,12 +785,13 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [showSteps, state.capacity]);
 
   const replanWeek = useCallback(async () => {
+    if (state.competition) { await moveCompetitionDeadline(); return; }
     if (!await authorizeAdaptivePlanning(state.student.id)) return;
     await showSteps("replan", replanSteps, () => {
       const result = ["5 tasks rescheduled", "Critical deadline protected", "Career activity moved to Thursday", "2 focus blocks preserved"];
       dispatch({ type: "patch", patch: { planBlocks: blocksAfterUrgentDeadline(state.planBlocks), simulation: { kind: null, step: null, message: "Week re-planned", result, announcement: result.join(". ") } } });
     });
-  }, [showSteps, state.planBlocks, state.student.id]);
+  }, [showSteps, state.planBlocks, state.student.id, state.competition, moveCompetitionDeadline]);
 
   const completeTask = useCallback((taskId: string) => dispatch({ type: "complete-task", taskId, at: new Date().toISOString() }), []);
   const completeFocusSession = useCallback((taskId: string, minutes: number, details: { progressAfter?: number; suggestedEstimatedMinutes?: number; sessionId?: string; note?: string; nextStep?: string; at?: string } = {}) => dispatch({ type: "complete-focus-session", taskId, minutes, ...details }), []);
@@ -817,6 +850,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     scheduleFreePath,
     scheduleSelectedResource,
     resetDemo,
+    competitionResetVersion,
+    startCompetitionDemo,
+    moveCompetitionDeadline,
     updateCapacity,
     keepCurrentPlan,
     applyRecoveryChoice,
@@ -842,7 +878,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [learningAction, submitSkillReassessment, state, onboardingReady, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, addTasks, applyImportedCalendarActions, applyApprovedPathwayActions, importLmsAssignments, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [learningAction, submitSkillReassessment, state, onboardingReady, competitionResetVersion, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, startCompetitionDemo, moveCompetitionDeadline, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, addTasks, applyImportedCalendarActions, applyApprovedPathwayActions, importLmsAssignments, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

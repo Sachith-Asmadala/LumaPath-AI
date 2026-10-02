@@ -117,6 +117,7 @@ export interface PlanBlock {
   startAt: string;
   endAt: string;
   previousStartAt?: string;
+  adaptationReason?: string;
   lifeLoadOriginalMinutes?: number;
   isFixed?: boolean;
   isFocusBlock?: boolean;
@@ -254,6 +255,7 @@ export interface CompletionRecord {
 }
 
 export interface DemoState {
+  competition?: { version: string; date: string; deadlineChanged: boolean; roles?: import("@/features/career-scenarios/domain/career-scenarios").CareerScenarioRole[]; opportunity: import("@/features/opportunities/domain/opportunities").OpportunityItem };
   readinessStartingScore?: number;
   assessmentHistory: AssessmentAttempt[];
   assessmentDraft: { answers: Record<string, string>; index: number };

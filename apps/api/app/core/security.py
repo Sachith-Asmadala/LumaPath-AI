@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fastapi import Header, HTTPException, status
+from .config import settings
+
+
+def development_identity_only() -> None:
+    if settings.environment not in {"development", "demo", "test"}:
+        raise HTTPException(status_code=503, detail="Verified authentication is not configured for this release. Development identity headers are disabled.")
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,6 +40,7 @@ def current_principal(x_luma_student_id: str | None = Header(default=None, alias
     session/JWT. Keeping identity parsing server-side still lets every assistant operation fail
     closed on ownership mismatches today.
     """
+    development_identity_only()
     if not x_luma_student_id or not x_luma_student_id.strip():
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Student identity is required.")
     student_id = x_luma_student_id.strip()
@@ -63,6 +70,7 @@ def current_administrator(
     headers with claims from the verified administrator session/JWT.
     """
 
+    development_identity_only()
     administrator_id = _validated_claim(x_luma_admin_id, label="Administrator identity")
     institution_id = _validated_claim(x_luma_institution_id, label="Institution identity")
     role = _validated_claim(x_luma_admin_role, label="Administrator role", max_length=64)
@@ -97,6 +105,7 @@ def current_taxonomy_curator(
     Production must derive role/region claims from a verified staff session. Region claims
     are enforced server-side for draft market profiles and cannot be supplied in request bodies.
     """
+    development_identity_only()
     curator_id = _validated_claim(x_luma_curator_id, label="Taxonomy curator identity")
     role = _validated_claim(x_luma_curator_role, label="Taxonomy curator role", max_length=64)
     if role not in TAXONOMY_ROLES:

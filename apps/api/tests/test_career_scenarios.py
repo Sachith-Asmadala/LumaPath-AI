@@ -157,9 +157,11 @@ def test_saved_scenarios_and_student_boundaries():
 
 
 def test_http_primary_flow(monkeypatch):
-    service, _ = build_service()
+    service, db = build_service()
     monkeypatch.setattr(router_module, "_service", service)
     app = FastAPI(); app.include_router(router_module.router)
+    from apps.api.tests.entitlement_helpers import grant_test_plan
+    grant_test_plan(app, monkeypatch, db, "student-http", "pro")
     client = TestClient(app); headers = {"X-Luma-Student-Id": "student-http"}
     assert client.get("/v1/career-scenarios/roles").status_code == 401
     roles = client.get("/v1/career-scenarios/roles", headers=headers)

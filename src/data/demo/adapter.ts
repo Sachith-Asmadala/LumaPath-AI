@@ -1,3 +1,4 @@
+import { competitionScenario } from "@/data/demo/competition";
 import { createDemoState } from "@/data/demo/seed";
 import type { DemoState } from "@/data/demo/types";
 
@@ -8,6 +9,8 @@ export function readStoredDemoState(): DemoState | null {
     const raw = window.localStorage.getItem(demoStateStorageKey);
     if (!raw) return null;
     const state = JSON.parse(raw) as DemoState;
+    if (state?.competition && process.env.NODE_ENV === "production") return null;
+    if (state?.competition && (state.competition.version !== competitionScenario.version || state.student?.id !== competitionScenario.student.id || state.competition.date !== competitionScenario.date || !competitionScenario.tasks.every(task=>state.tasks?.some(item=>item.id===task.id)) || !competitionScenario.blocks.every(block=>state.planBlocks?.some(item=>item.id===block.id)))) return null;
     return state?.onboarding?.completed && Array.isArray(state.tasks) && Array.isArray(state.planBlocks)
       && Array.isArray(state.careerSkills) && Array.isArray(state.evidence) && Boolean(state.readiness)
       && Boolean(state.selectedResourceBySkill) && Boolean(state.selectedFreePathBySkill)

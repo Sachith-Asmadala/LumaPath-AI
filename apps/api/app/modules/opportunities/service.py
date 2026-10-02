@@ -526,7 +526,7 @@ class OpportunityService:
                     status = "met"
                     explanation = f"Current Evidence Passport records support {requirement['label']}. Verify the provider's exact proficiency expectation before applying."
                     for ev in trusted[:3]:
-                        evidence.append(RequirementEvidence(source_type="evidence_passport", label=f"Evidence Passport · {ev['verification_status']}", reference=ev["id"], verification=ev["verification_status"]))
+                        evidence.append(RequirementEvidence(source_type="evidence_passport", label=ev["title"] or f"Evidence Passport · {ev['verification_status']}", reference=ev["id"], verification=ev["verification_status"]))
                 elif step and step["state"] in {"completed", "credited"}:
                     status = "met"
                     explanation = f"Your active pathway marks {requirement['label']} as {step['state']}. This supports preparation but is not a provider decision."

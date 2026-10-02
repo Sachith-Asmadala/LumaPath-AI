@@ -58,3 +58,19 @@
 @media (max-width: 1100px) { .dashboard { padding: 28px 24px 12px; } .stat { padding: 18px; gap: 10px; } .statIcon { display: none; } .mainGrid, .secondaryGrid { grid-template-columns: 1fr; } .schedule > [data-slot="card"] { height: auto; } }
 @media (max-width: 640px) { .dashboard { padding: 24px 16px 12px; } .heading { align-items: flex-start; flex-direction: column; gap: 20px; } .heading h1 { font-size: 1.95rem; } .stats { gap: 8px; margin-bottom: 24px; } .stat { padding: 14px 10px; } .stat strong { font-size: 1.35rem; white-space: nowrap; } .statLabel { font-size: .68rem; line-height: 1.4; display: block; min-height: 2.8em; } .stat small, .statArrow { display: none; } .viewBar { gap: 8px; } .textLink { font-size: .65rem; } .growthGrid { grid-template-columns: 1fr; } .capacity summary { padding: 16px; } .capacity small { line-height: 1.5; } }
 @media (prefers-reduced-motion: reduce) { .tabContent { animation: none; } .stat, .shortcuts > a > svg, .capacity summary > svg { transition: none; } .stat:hover { transform: none; } }
+
+/* Competition presentation keeps the same cards and typography, with tighter spacing. */
+.competition { padding-top: 18px; }
+.competition .heading { margin-bottom: 16px; }
+.competition .heading h1 { margin-top: 6px; font-size: 1.8rem; }
+.competition .heading > div > p:last-child { margin-top: 5px; }
+.competition .stats { margin-bottom: 16px; }
+.competition .stat { padding: 14px 18px; }
+.competition .stat strong { font-size: 1.35rem; }
+.competition .stat:first-child strong { font-size: 1.08rem; }
+.competition .viewBar { padding-bottom: 10px; }
+.competition .tabContent { padding-top: 14px; }
+.competition .sectionLabel { margin-bottom: 8px; }
+.competition .hero h2 { font-size: 1.5rem; }
+.competition .mainGrid { gap: 18px; }
+@media (max-width: 700px) { .competition .stat { padding: 12px 9px; } .competition .stat:first-child strong { font-size: .85rem; } }

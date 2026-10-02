@@ -1,0 +1,83 @@
+import { expect, test } from "@playwright/test";
+
+test.use({ timezoneId: "Asia/Colombo" });
+test.describe.configure({ mode: "serial" });
+
+test("two-minute demo: priority, disruption, approved preparation, and DOC-F33 comparison", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await page.goto("/competition-demo");
+  await page.getByRole("button", { name: "Start Competition Demo", exact: true }).click();
+  await expect(page).toHaveURL(/\/overview/, { timeout: 45_000 });
+  await expect(page.getByText("Competition Demo • Synthetic Data", { exact: true })).toBeVisible();
+  await expect(page.getByText("90 min", { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const why = page.getByRole("button", { name: "Why this?", exact: true });
+  await expect(why).toBeInViewport();
+  await why.click();
+  await expect(page.getByText("Dependency impact", { exact: true })).toBeVisible();
+  await expect(page.getByText("Capacity fit", { exact: true })).toBeVisible();
+  const dialogBounds = await page.getByRole("dialog").boundingBox();
+  expect(dialogBounds!.y).toBeGreaterThanOrEqual(0);
+  expect(dialogBounds!.y + dialogBounds!.height).toBeLessThanOrEqual(768);
+  await page.getByRole("button", { name: "Close priority explanation" }).click();
+  await page.getByRole("button", { name: "Move assignment deadline: Oct 7 → Oct 5", exact: true }).click();
+  const adaptation = page.getByRole("region", { name: "Plan adaptation summary" });
+  await expect(adaptation).toContainText("PLAN ADAPTED");
+  await expect(adaptation).toContainText("Oct 7 → Oct 5");
+  await expect(adaptation).toContainText("Oct 5 → Oct 7");
+  await page.screenshot({ path: "/tmp/lumapath-competition-overview.png", fullPage: true });
+  await page.getByRole("navigation", { name: "Two-minute demo path" }).getByRole("link", { name: "Opportunity", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Junior DevOps Internship", exact: true })).toBeVisible();
+  await expect(page.getByText("✓ MET", { exact: true })).toBeVisible();
+  await expect(page.getByText("! UNMET", { exact: true })).toBeVisible();
+  await expect(page.getByText("? UNKNOWN", { exact: true })).toBeVisible();
+  await expect(page.getByText("Evidence: GitHub release automation project", { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const before = await page.evaluate(() => JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!).tasks.length);
+  await page.getByRole("button", { name: "Build preparation plan", exact: true }).click();
+  await expect(page.getByLabel("Preparation task title").first()).toBeVisible();
+  const generated = await page.evaluate(() => JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!).tasks.length);
+  expect(generated).toBe(before);
+  await page.getByLabel("Preparation task title").first().fill("Verify AWS fundamentals with a practical exercise");
+  await page.getByText("I reviewed the checklist, source deadline and proposed times.", { exact: false }).click();
+  await page.getByRole("button", { name: "Approve selected tasks", exact: true }).click();
+  await expect(page.getByRole("link", { name: "View approved tasks in Planner" })).toBeVisible();
+  await page.screenshot({ path: "/tmp/lumapath-competition-opportunity.png", fullPage: true });
+  await page.getByRole("link", { name: "View approved tasks in Planner" }).click();
+  await expect(page.getByRole("button", { name: /Verify AWS fundamentals with a practical exercise/ })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole("navigation", { name: "Two-minute demo path" }).getByRole("link", { name: "Career Compare", exact: true }).click();
+  await page.getByRole("button", { name: "Compare careers", exact: true }).click();
+  const compare = page.getByRole("region", { name: "DevOps versus Cloud comparison" });
+  await expect(compare.getByRole("heading", { name: "DevOps Engineer", exact: true })).toBeVisible();
+  await expect(compare.getByRole("heading", { name: "Cloud Engineer", exact: true })).toBeVisible();
+  await expect(compare.getByText("Free route", { exact: true })).toHaveCount(2);
+  await expect(compare.getByText("Low-cost route", { exact: true })).toHaveCount(2);
+  await expect(compare.getByText("Certification-focused route", { exact: true })).toHaveCount(2);
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("stale storage and repeated resets restore exactly four tasks and four blocks", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.addInitScript(() => localStorage.setItem("lumapath-demo-state-v1", '{"corrupt":true'));
+  await page.goto("/competition-demo");
+  await page.getByRole("button", { name: "Start Competition Demo", exact: true }).click();
+  await expect(page).toHaveURL(/\/overview/, { timeout: 45_000 });
+  const snapshot = () => page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!);
+    return { tasks: state.tasks, blocks: state.planBlocks, capacity: state.capacity, evidence: state.evidence };
+  });
+  const first = await snapshot();
+  expect(first.tasks).toHaveLength(4);
+  expect(first.blocks).toHaveLength(4);
+  await page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!);
+    state.tasks.push({ ...state.tasks[0], id: "duplicate-stale" });
+    localStorage.setItem("lumapath-demo-state-v1", JSON.stringify(state));
+  });
+  await page.getByRole("button", { name: "Reset demo", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Reset demo", exact: true })).toBeEnabled({ timeout: 45_000 });
+  await expect.poll(snapshot).toEqual(first);
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

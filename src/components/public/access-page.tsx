@@ -51,6 +51,7 @@ export function AccessPage({ mode }: { mode: "login" | "register" }) {
           </form>
           <div className="access-divider"><span />or explore first<span /></div>
           <Button variant="outline" onClick={() => enter()} disabled={!onboardingReady || pending} className="h-12 w-full gap-2 rounded-xl border-border bg-transparent text-sm">Continue without an account<ArrowUpRight className="size-4" /></Button>
+          {process.env.NODE_ENV !== "production" && <Link href="/competition-demo" className="mt-4 block text-center text-sm text-primary">Start Competition Demo →</Link>}
           <p className="mt-7 text-center text-sm text-muted-foreground">{register ? "Already finding your rhythm?" : "New to LumaPath?"} <Link className="font-medium text-primary underline-offset-4 hover:underline" href={register ? "/login" : "/register"}>{register ? "Log in" : "Start your journey"}</Link></p>
         </div>
       </motion.section>

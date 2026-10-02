@@ -2,9 +2,9 @@ import { expect, test } from "@playwright/test";
 import { seedExistingStudent } from "./seed-existing-student";
 
 const headers = { "content-type": "application/json" };
-let application: Record<string, any> | null = null;
+let application: (Record<string, unknown> & { history?: unknown[] }) | null = null;
 
-function response(overrides: Record<string, any> = {}) {
+function response(overrides: Record<string, unknown> = {}) {
   return {
     id: "application-1", company: "Acme Cloud", role: "DevOps Intern", source_type: "manual", source_reference: null, source_url: "https://example.com/role",
     application_deadline: "2026-10-28", application_deadline_confirmed: true, deadline_state: "upcoming", contact_name: "Recruiting", contact_email: "careers@example.com",

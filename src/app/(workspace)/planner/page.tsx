@@ -1,7 +1,7 @@
 "use client";
 
 import { ProBadge } from "@/features/subscriptions/components/pro-badge";
-import { scenarioWeekLabel } from "@/data/demo/scenario";
+import { scenarioWeekLabel, stateScenarioDate } from "@/data/demo/scenario";
 
 import { scenarioAt } from "@/data/demo/scenario";
 
@@ -50,6 +50,7 @@ export default function PlannerPage() {
   };
 
   useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("view") === "agenda") setView("agenda");
     if (new URLSearchParams(window.location.search).get("add") !== "assignment") return;
     setSelectedBlock({ ...demoPlanBlocks[0], id: "new-plan-block", taskId: null, title: "", startAt: scenarioAt(2, "19:00:00"), endAt: scenarioAt(2, "19:45:00") });
     setEditorOpen(true);
@@ -70,7 +71,7 @@ export default function PlannerPage() {
         <Card className="flex flex-col gap-1 rounded-[16px] border-border/75 bg-white/[0.02] px-4 py-3 shadow-none sm:flex-row sm:items-center sm:gap-3"><span className="grid size-8 place-items-center rounded-[10px] border border-success/15 bg-success/[0.04] text-success"><ShieldCheck className="size-4" /></span><div><p className="text-[0.7rem] font-medium text-foreground">{t("planner.deadlineProtection")}</p><p className="mt-0.5 text-[0.62rem] text-muted-foreground">{t("planner.deadlineDescription")}</p></div></Card>
         <Card className="flex flex-col gap-1 rounded-[16px] border-border/75 bg-white/[0.02] px-4 py-3 shadow-none sm:flex-row sm:items-center sm:gap-3"><span className="grid size-8 place-items-center rounded-[10px] border border-pathway/15 bg-pathway/[0.04] text-pathway"><CalendarDays className="size-4" /></span><div><p className="text-[0.7rem] font-medium text-foreground">{t("planner.studentContext")}</p><p className="mt-0.5 text-[0.62rem] text-muted-foreground">{t("planner.studentContextDescription")}</p></div></Card>
       </div>
-      <section aria-label={t("planner.weeklyPlan")}><div className="mb-3 flex items-center justify-between gap-3"><SectionHeading eyebrow={t("planner.weeklyPlan")} title={t("planner.timeBlocks")} aside={<Badge variant="outline" className="rounded-full border-border text-[0.62rem] text-muted-foreground">{t("planner.scenarioWeek", { week: scenarioWeekLabel() })}</Badge>} /></div><div className="mb-4"><ViewSwitch label={t("planner.view")} value={view} onChange={setView} options={[{ value: "calendar", label: t("planner.calendar") }, { value: "agenda", label: t("planner.agenda") }]} /></div>{view === "calendar" ? <PlannerCalendar onEditTask={editBlock} /> : <PlannerAgenda onEditTask={editBlock} />}</section>
+      <section aria-label={t("planner.weeklyPlan")}><div className="mb-3 flex items-center justify-between gap-3"><SectionHeading eyebrow={t("planner.weeklyPlan")} title={t("planner.timeBlocks")} aside={<Badge variant="outline" className="rounded-full border-border text-[0.62rem] text-muted-foreground">{t("planner.scenarioWeek", { week: state.competition ? `${new Date(`${stateScenarioDate(state)}T12:00:00`).toLocaleDateString("en-US", {month:"short",day:"numeric"})} – ${new Date(`${stateScenarioDate(state,6)}T12:00:00`).toLocaleDateString("en-US", {month:"short",day:"numeric"})}` : scenarioWeekLabel() })}</Badge>} /></div><div className="mb-4"><ViewSwitch label={t("planner.view")} value={view} onChange={setView} options={[{ value: "calendar", label: t("planner.calendar") }, { value: "agenda", label: t("planner.agenda") }]} /></div>{view === "calendar" ? <PlannerCalendar onEditTask={editBlock} /> : <PlannerAgenda onEditTask={editBlock} />}</section>
       <TaskEditorDialog block={selectedBlock} open={editorOpen} onOpenChange={setEditorOpen} />
     </div>
   );

@@ -1,9 +1,10 @@
 from typing import Literal
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from ...core.security import Principal, current_principal
+from ...core.config import settings
 from .definitions import PLAN_NAMES, PLAN_RULES
 from .service import EntitlementService, get_entitlements
 
@@ -11,6 +12,10 @@ router = APIRouter(prefix="/v1/subscriptions", tags=["subscriptions"])
 
 class DemoPlanRequest(BaseModel):
     plan: Literal["free", "pro", "institution"]
+
+def demo_only():
+    if settings.environment not in {"development", "demo", "test"}:
+        raise HTTPException(404, "Demo plan switching is unavailable in production.")
 
 @router.get("/plans")
 def plans():
@@ -20,7 +25,7 @@ def plans():
 def me(p: Principal = Depends(current_principal), service: EntitlementService = Depends(get_entitlements)):
     return service.snapshot(p.student_id)
 
-@router.post("/demo-plan")
+@router.post("/demo-plan", dependencies=[Depends(demo_only)])
 def demo_plan(request: DemoPlanRequest, p: Principal = Depends(current_principal), service: EntitlementService = Depends(get_entitlements)):
     return service.set_demo_plan(p.student_id, request.plan)
 

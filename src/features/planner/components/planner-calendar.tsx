@@ -1,6 +1,6 @@
 "use client";
 
-import { scenarioDate } from "@/data/demo/scenario";
+import { stateScenarioDate } from "@/data/demo/scenario";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
@@ -33,7 +33,7 @@ export function PlannerCalendar({ onEditTask }: { onEditTask: (block: PlanBlock)
   const calendarRef = useRef<FullCalendar>(null);
   const [view, setView] = useState("timeGridWeek");
   const [mobile, setMobile] = useState(false);
-  const [viewLabel, setViewLabel] = useState(() => formatDate(scenarioDate(), { month: "short", day: "numeric", year: "numeric" }));
+  const [viewLabel, setViewLabel] = useState(() => formatDate(stateScenarioDate(state), { month: "short", day: "numeric", year: "numeric" }));
   const [selectedBlock, setSelectedBlock] = useState<PlanBlock | null>(null);
   const [addingUrgent, setAddingUrgent] = useState(false);
   const events = useMemo<EventInput[]>(() => state.planBlocks.map((block) => ({
@@ -141,7 +141,7 @@ export function PlannerCalendar({ onEditTask }: { onEditTask: (block: PlanBlock)
               ref={calendarRef}
               plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
               initialView={mobile ? "timeGridDay" : "timeGridWeek"}
-              initialDate={scenarioDate()}
+              initialDate={typeof window !== "undefined" && /^\d{4}-\d{2}-\d{2}$/.test(new URLSearchParams(window.location.search).get("date")??"") ? new URLSearchParams(window.location.search).get("date")! : stateScenarioDate(state)}
               headerToolbar={false}
               height={mobile ? 580 : 660}
               firstDay={1}

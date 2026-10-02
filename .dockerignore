@@ -1,5 +1,15 @@
 node_modules
 .next
+.next-dev
+.venv
+coverage
+blob-report
+*.tsbuildinfo
+*.log
+*.db
+*.db-*
+apps/api/data/private-documents
+apps/api/data/private-cv
 .git
 .github
 Dockerfile

@@ -33,8 +33,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   useEffect(() => { void refresh(); }, [refresh]);
   useEffect(() => {
     const handle = (event: Event) => { const detail = (event as CustomEvent).detail; if (isPlanError(detail)) { setUpgrade(detail); void refresh(); } };
+    const reset = () => { void refresh(); };
+    window.addEventListener("lumapath:competition-reset", reset);
     window.addEventListener("lumapath:plan-required", handle);
-    return () => window.removeEventListener("lumapath:plan-required", handle);
+    return () => { window.removeEventListener("lumapath:plan-required", handle); window.removeEventListener("lumapath:competition-reset", reset); };
   }, [refresh]);
   const switchDemoPlan = async (plan: PlanId) => {
     const response = await fetch("/api/subscriptions/demo-plan", { method: "POST", headers: { "X-Luma-Student-Id": state.student.id, "Content-Type": "application/json" }, body: JSON.stringify({ plan }), cache: "no-store", signal: AbortSignal.timeout(12_000) });

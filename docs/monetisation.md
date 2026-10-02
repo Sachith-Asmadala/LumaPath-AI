@@ -16,7 +16,7 @@ checkout or payment gateway is installed. Visit `/pricing`, `/plans` or
 | Intelligence items per UTC day | 3 distinct items | Full available feed | Full available feed |
 | CV analyses per UTC month | 2 | 15 | 15 |
 | Document analyses per UTC month | 3 | 25 | 25 |
-| Opportunity-readiness previews per UTC month | 3 | 30 | 30 |
+| Preparation proposals per UTC month | 3 | 30 | 30 |
 | Adaptive automatic replanning | No | Yes | Yes |
 | International market profile | Yes | Yes | Yes |
 | Regional market comparison | No | Yes | Yes |
@@ -126,3 +126,5 @@ The tests cover atomic quotas/refunds/reset windows, real comparison API access,
 saved slots, stable daily feed grants, actual institution API plan/role checks,
 demo production lockout, automation authorisation, pricing/usage rendering,
 backend plan persistence, mobile layout and upgrade messaging.
+
+For the competition release, this quota is consumed when generating a preparation proposal, not by browsing opportunities or reading requirement states. Development student/admin/curator identity headers are rejected in production until verified authentication is integrated. See `docs/competition-demo.md`.

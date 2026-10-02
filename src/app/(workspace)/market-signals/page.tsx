@@ -28,6 +28,7 @@ import {
 } from "@/features/market-taxonomy/services/market-taxonomy";
 import { useLocale } from "@/i18n";
 import { useDemo } from "@/state/demo-provider";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
 
 const REGION_OPTIONS = ["none", "lk"] as const;
 
@@ -35,6 +36,8 @@ function pct(value: number) { return `${Math.round(value * 100)}%`; }
 
 export default function MarketSignalsPage() {
   const { state } = useDemo();
+  const { subscription } = useSubscription();
+  const canGovern = subscription?.entitlements.taxonomy_governance?.enabled === true;
   const { t, formatDate } = useLocale();
   const studentId = state.student.id;
   const [tab, setTab] = useState("student");
@@ -102,7 +105,7 @@ export default function MarketSignalsPage() {
   }, [t]);
 
   useEffect(() => { void loadStudent(); }, [loadStudent]);
-  useEffect(() => { if (tab === "curator") void loadCurator(); }, [tab, loadCurator]);
+  useEffect(() => { if (tab === "curator" && canGovern) void loadCurator(); }, [tab, loadCurator, canGovern]);
 
   const decideUpdate = async (decisionValue: "keep_current" | "recalculate" | "dismiss") => {
     if (!selectedUpdate || !studentId || busy) return;
@@ -152,10 +155,10 @@ export default function MarketSignalsPage() {
         <Badge variant="outline" className="w-fit rounded-xl px-3 py-2"><ShieldCheck className="mr-1.5 size-3.5 text-primary" />{t("marketSignals.humanReviewed")}</Badge>
       </div>
 
-      <Tabs value={tab} onValueChange={setTab} className="mt-5">
+      <Tabs value={canGovern ? tab : "student"} onValueChange={setTab} className="mt-5">
         <TabsList className="h-10 rounded-xl bg-muted/45 p-1">
           <TabsTrigger value="student" className="rounded-lg text-xs">{t("marketSignals.studentView")}</TabsTrigger>
-          <TabsTrigger value="curator" className="rounded-lg text-xs">{t("marketSignals.curatorView")}</TabsTrigger>
+          {canGovern && <TabsTrigger value="curator" className="rounded-lg text-xs">{t("marketSignals.curatorView")}</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="student" className="mt-4 space-y-4">

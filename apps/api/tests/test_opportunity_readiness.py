@@ -387,6 +387,8 @@ def test_http_readiness_flow_exposes_source_reference_and_requires_approved_plan
     monkeypatch.setattr(router_module, "_service", service)
     app = FastAPI()
     app.include_router(router_module.router)
+    from apps.api.tests.entitlement_helpers import grant_test_plan
+    grant_test_plan(app, monkeypatch, service.repository.database_path, "s1", "pro")
     client = TestClient(app)
     headers = {"X-Luma-Student-Id": "s1"}
 

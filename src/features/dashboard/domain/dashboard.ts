@@ -1,6 +1,6 @@
 import type { CareerSkill, DemoState, PlanBlock, StudentCapacity, Task } from "@/data/demo/types";
 import { demoPlanBlocks, demoTasks } from "@/data/demo/seed";
-import { scenarioDate } from "@/data/demo/scenario";
+import { scenarioDate, stateScenarioDate } from "@/data/demo/scenario";
 import { buildLowCapacityPlan, endAtMinutes } from "@/features/planner/domain/planner";
 import { buildNextBestAction, riskLevel } from "@/features/planner/domain/priority";
 import { hasLifeLoadFactors, planningCapacityMinutes } from "@/features/capacity/domain/life-load";
@@ -29,7 +29,7 @@ export function selectCurrentCareerSkill(state: DemoState): CareerSkill | undefi
     ?? state.careerSkills.find((skill) => skill.status === "locked");
 }
 
-export function selectTodayTimeline(state: DemoState, today = scenarioDate()): PlanBlock[] {
+export function selectTodayTimeline(state: DemoState, today = stateScenarioDate(state)): PlanBlock[] {
   return state.planBlocks.filter((block) => block.startAt.startsWith(today) || block.previousStartAt?.startsWith(today))
     .sort((a, b) => a.startAt.localeCompare(b.startAt));
 }
@@ -74,6 +74,11 @@ export function adaptCapacityStage(state: DemoState, capacity: StudentCapacity, 
     const urgent = task.dueAt.slice(0, 10) <= scenarioDate(1);
     return { ...task, riskScore: Math.min(99, baseline + (low ? 6 : 0) + (urgent ? 4 : 0)) };
   }) };
+  if (state.competition && stage === 3) return { ...state, capacity };
+  if (state.competition && stage === 4) {
+    const task = state.tasks.find(item=>item.id===state.activeAction.taskId);
+    return task ? { ...state, activeAction: buildNextBestAction(task, { durationMinutes: Math.min(task.estimatedMinutes,availableCapacity(capacity)), rationale: `The assignment still needs focused work. Your updated capacity allows ${availableCapacity(capacity)} minutes today.` }) } : state;
+  }
   if (stage === 3) {
     const replacements = buildLowCapacityPlan(capacity).map((block) => ({ ...block, id: ({ "db-outline": "block-database", "docker-lesson": "block-docker", "review-notes": "block-review" } as Record<string, string>)[block.id] ?? block.id }));
     // Only adapt known flexible blocks. Preserve user-created, fixed, and completed work.
@@ -146,7 +151,7 @@ export function recoverDatabase(state: DemoState): DemoState {
 
 export function weeklyPlannedHours(state: DemoState) {
   return Array.from({ length: 7 }, (_, index) => {
-    const date = scenarioDate(index);
+    const date = stateScenarioDate(state,index);
     const blocks = state.planBlocks.filter((block) => block.startAt.startsWith(date) && !block.isFocusBlock);
     const hours = (categories: string[]) => Number((blocks.filter((block) => categories.includes(block.category)).reduce((sum, block) => sum + (new Date(block.endAt).getTime() - new Date(block.startAt).getTime()) / 3_600_000, 0)).toFixed(1));
     return { day: new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { weekday: "short" }), academic: hours(["Academic"]), career: hours(["Career", "career-learning", "AI Recommended", "Internship"]) };

@@ -99,6 +99,8 @@ def proposal_for_scope(repo: MarketTaxonomyRepository, scope: str, region: str |
 
 
 def main() -> None:
+    if settings.environment not in {"development", "demo", "test"}:
+        raise SystemExit("Synthetic seed actions are disabled outside development/demo/test.")
     now = datetime.now(timezone.utc).replace(microsecond=0)
     career_repo = CareerRepository(settings.database_path)
     career = CareerService(career_repo)
