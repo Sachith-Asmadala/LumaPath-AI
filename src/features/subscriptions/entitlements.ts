@@ -1,6 +1,7 @@
 import { toast } from "sonner";
 
 export type PlanId = "free" | "pro" | "institution";
+export function hasProFeatures(plan: PlanId | undefined) { return plan === "pro" || plan === "institution"; }
 export type Entitlement = { limit: number | null; used: number; remaining: number | null; period: string; enabled: boolean; resets_at: string | null };
 export type Subscription = { subject_id: string; plan: PlanId; name: string; entitlements: Record<string, Entitlement>; demo_switch_enabled: boolean; billing_connected: boolean; period_timezone: string };
 export type PlanError = { code: "PLAN_LIMIT_REACHED" | "PLAN_FEATURE_REQUIRED"; feature: string; plan: PlanId; limit: number | null; used: number; upgrade_required: boolean; required_plan?: PlanId };

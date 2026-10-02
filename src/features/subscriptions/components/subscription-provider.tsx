@@ -42,6 +42,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     const response = await fetch("/api/subscriptions/demo-plan", { method: "POST", headers: { "X-Luma-Student-Id": state.student.id, "Content-Type": "application/json" }, body: JSON.stringify({ plan }), cache: "no-store", signal: AbortSignal.timeout(12_000) });
     const body = await response.json();
     if (!response.ok) throw new Error(apiErrorMessage(body, "The demo plan could not be changed."));
+    if (body.subject_id !== state.student.id || body.plan !== plan || !body.entitlements) throw new Error("The updated plan could not be verified. Please refresh and try again.");
     ++requestVersion.current;
     setSubscription(body); setUpgrade(null); setError(""); setLoading(false);
   };

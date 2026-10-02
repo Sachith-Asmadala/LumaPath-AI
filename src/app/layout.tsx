@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { ThemeProvider } from "next-themes";
+import { PlanThemeProvider } from "@/features/subscriptions/components/plan-theme-provider";
+import { SubscriptionProvider } from "@/features/subscriptions/components/subscription-provider";
 import { brand } from "@/config/brand";
 import { DemoProvider } from "@/state/demo-provider";
 import { LocaleProvider } from "@/i18n/locale-provider";
@@ -42,7 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       {/* Extensions such as Grammarly add body attributes before hydration. Suppression is limited to this element. */}
-      <body suppressHydrationWarning><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider><LocaleProvider>{children}</LocaleProvider></DemoProvider></ThemeProvider></body>
+      <body suppressHydrationWarning><DemoProvider><SubscriptionProvider><PlanThemeProvider><LocaleProvider>{children}</LocaleProvider></PlanThemeProvider></SubscriptionProvider></DemoProvider></body>
     </html>
   );
 }

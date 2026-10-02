@@ -85,7 +85,7 @@ describe("connected dashboard", () => {
     expect(next.tasks.find((task) => task.id === "docker-lab")?.riskScore).toBe(0);
     expect(demoReducer(next, { type: "complete-skill", skillId: "docker" })).toBe(next);
     expect(demoReducer(next, { type: "complete-task", taskId: "docker-lab" })).toBe(next);
-    expect(dashboardMetrics(next).planCompletion).toBe(25);
+    expect(dashboardMetrics(next).planCompletion).toBe(33);
     expect(dashboardMetrics(next).careerProgress).toBeGreaterThan(dashboardMetrics(seed).careerProgress);
   });
   it("planning an intelligence item is idempotent and shared by the planner", () => {
@@ -100,12 +100,12 @@ describe("connected dashboard", () => {
     const added = demoReducer(seed, { type: "plan-intelligence", itemId: "container-release" });
     const verified = demoReducer(added, { type: "complete-skill", skillId: "docker" });
     const metrics = dashboardMetrics(verified);
-    expect(metrics.completedTasks).toBe(1);
-    expect(metrics.totalTasks).toBe(8);
-    expect(metrics.taskCompletion).toBe(13);
-    expect(metrics.planCompletion).toBe(20);
+    expect(metrics.completedTasks).toBe(5);
+    expect(metrics.totalTasks).toBe(16);
+    expect(metrics.taskCompletion).toBe(31);
+    expect(metrics.planCompletion).toBe(31);
     expect(metrics.careerProgress).toBe(28);
-    expect(metrics.productiveHours).toBe(0.5);
+    expect(metrics.productiveHours).toBe(4.5);
     expect(selectCurrentCareerSkill(verified)?.id).toBe("cicd");
   });
   it("keeps capacity, recovery, risk, timeline, and next action aligned", () => {

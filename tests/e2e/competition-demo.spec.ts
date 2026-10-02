@@ -60,17 +60,22 @@ test("two-minute demo: priority, disruption, approved preparation, and DOC-F33 c
 
 test("stale storage and repeated resets restore exactly four tasks and four blocks", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.addInitScript(() => localStorage.setItem("lumapath-demo-state-v1", '{"corrupt":true'));
+  await page.addInitScript(() => {
+    if (location.pathname === "/competition-demo") localStorage.setItem("lumapath-demo-state-v1", '{"corrupt":true');
+  });
   await page.goto("/competition-demo");
   await page.getByRole("button", { name: "Start Competition Demo", exact: true }).click();
   await expect(page).toHaveURL(/\/overview/, { timeout: 45_000 });
   const snapshot = () => page.evaluate(() => {
     const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!);
-    return { tasks: state.tasks, blocks: state.planBlocks, capacity: state.capacity, evidence: state.evidence };
+    return { tasks: state.tasks, blocks: state.planBlocks, capacity: state.capacity, evidence: state.evidence, notifications: state.notifications, intelligence: state.intelligenceItems, productiveMinutes: state.productiveMinutes };
   });
   const first = await snapshot();
   expect(first.tasks).toHaveLength(4);
   expect(first.blocks).toHaveLength(4);
+  expect(first.notifications).toHaveLength(4);
+  expect(first.intelligence).toHaveLength(6);
+  expect(first.productiveMinutes).toBe(0);
   await page.evaluate(() => {
     const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!);
     state.tasks.push({ ...state.tasks[0], id: "duplicate-stale" });
@@ -80,4 +85,7 @@ test("stale storage and repeated resets restore exactly four tasks and four bloc
   await expect(page.getByRole("button", { name: "Reset demo", exact: true })).toBeEnabled({ timeout: 45_000 });
   await expect.poll(snapshot).toEqual(first);
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.goto("/notifications");
+  await expect(page.getByText("Integration tests still need attention", { exact: false })).toBeVisible();
+  await expect(page.getByText("Northstar Labs internship closes Oct 14", { exact: false })).toBeVisible();
 });

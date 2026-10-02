@@ -1,28 +1,252 @@
 {
-  "version": "competition-v1",
+  "version": "competition-v2",
   "date": "2026-10-05",
   "now": "2026-10-05T03:30:00+00:00",
-  "student": {"id":"competition-student","name":"Sachith","initials":"S","targetRole":"DevOps Engineer","university":"Luma University"},
+  "student": {
+    "id": "competition-student",
+    "name": "Sachith",
+    "initials": "S",
+    "targetRole": "DevOps Engineer",
+    "university": "Luma University"
+  },
   "opportunityId": "competition-junior-devops",
-  "comparisonRoles": ["devops-engineer","cloud-engineer"],
+  "comparisonRoles": [
+    "devops-engineer",
+    "cloud-engineer"
+  ],
   "capacityMinutes": 90,
   "skills": [
-    {"id":"git","name":"Git","proficiency":85,"status":"verified","title":"GitHub release automation project","verification":"verified"},
-    {"id":"linux","name":"Linux","proficiency":82,"status":"verified","title":"Linux server administration lab","verification":"verified"},
-    {"id":"docker","name":"Docker","proficiency":45,"status":"in-progress","title":"Container networking practice","verification":"observed"},
-    {"id":"cicd","name":"CI/CD","proficiency":25,"status":"locked","title":"CI pipeline baseline assessment","verification":"observed"},
-    {"id":"cloud","name":"Cloud","proficiency":40,"status":"available","title":"Cloud foundations coursework","verification":"self-reported"}
+    {
+      "id": "git",
+      "name": "Git",
+      "proficiency": 85,
+      "status": "verified",
+      "title": "GitHub release automation project",
+      "verification": "verified"
+    },
+    {
+      "id": "linux",
+      "name": "Linux",
+      "proficiency": 82,
+      "status": "verified",
+      "title": "Linux server administration lab",
+      "verification": "verified"
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "proficiency": 45,
+      "status": "in-progress",
+      "title": "Container networking practice",
+      "verification": "observed"
+    },
+    {
+      "id": "cicd",
+      "name": "CI/CD",
+      "proficiency": 25,
+      "status": "locked",
+      "title": "CI pipeline baseline assessment",
+      "verification": "observed"
+    },
+    {
+      "id": "cloud",
+      "name": "Cloud",
+      "proficiency": 40,
+      "status": "available",
+      "title": "Cloud foundations coursework",
+      "verification": "self-reported"
+    }
   ],
   "tasks": [
-    {"id":"se-assignment","title":"Software Engineering Assignment","category":"Academic","status":"in-progress","estimatedMinutes":60,"dueAt":"2026-10-07T23:59:00+05:30","progress":45,"difficulty":3,"careerSkillIds":["git","cicd"],"riskScore":82,"careerRelevance":70,"description":"Finish the integration tests and architecture notes for the team API."},
-    {"id":"statistics-quiz","title":"Statistics Quiz","category":"Academic","status":"upcoming","estimatedMinutes":30,"dueAt":"2026-10-06T17:00:00+05:30","progress":25,"difficulty":2,"careerSkillIds":[],"riskScore":52,"careerRelevance":30,"description":"Review sampling and probability questions."},
-    {"id":"graphics-lab","title":"Computer Graphics Lab","category":"Academic","status":"upcoming","estimatedMinutes":45,"dueAt":"2026-10-09T17:00:00+05:30","progress":20,"difficulty":3,"careerSkillIds":[],"riskScore":35,"careerRelevance":35,"description":"Complete the transformation and shading exercises."},
-    {"id":"docker-practice","title":"Docker Practice","category":"Career","status":"in-progress","estimatedMinutes":45,"dueAt":"2026-10-09T20:00:00+05:30","progress":45,"difficulty":2,"careerSkillIds":["docker"],"riskScore":38,"careerRelevance":90,"description":"Connect two containers and record a reproducible README."}
+    {
+      "id": "se-assignment",
+      "title": "Software Engineering Assignment",
+      "category": "Academic",
+      "status": "in-progress",
+      "estimatedMinutes": 60,
+      "dueAt": "2026-10-07T23:59:00+05:30",
+      "progress": 45,
+      "difficulty": 3,
+      "careerSkillIds": [
+        "git",
+        "cicd"
+      ],
+      "riskScore": 82,
+      "careerRelevance": 70,
+      "description": "CS305 team project: finish the room-booking API integration tests for authentication, overlapping reservations, and cancellation. Add the architecture diagram and individual contribution notes before uploading the repository link. Worth 25% of the module grade; two test cases and the final write-up remain.",
+      "module": "Software Engineering",
+      "source": "University LMS (demo)"
+    },
+    {
+      "id": "statistics-quiz",
+      "title": "Statistics Quiz",
+      "category": "Academic",
+      "status": "upcoming",
+      "estimatedMinutes": 30,
+      "dueAt": "2026-10-06T17:00:00+05:30",
+      "progress": 25,
+      "difficulty": 2,
+      "careerSkillIds": [],
+      "riskScore": 52,
+      "careerRelevance": 30,
+      "description": "MA204 Quiz 3: revise conditional probability, binomial distributions, and confidence intervals. Work through the six practice questions and bring a calculator. The 20-minute LMS quiz opens Tuesday at 14:00 and closes at 17:00; it contributes 5% of the module grade.",
+      "module": "Applied Statistics",
+      "source": "University LMS (demo)"
+    },
+    {
+      "id": "graphics-lab",
+      "title": "Computer Graphics Lab",
+      "category": "Academic",
+      "status": "upcoming",
+      "estimatedMinutes": 45,
+      "dueAt": "2026-10-09T17:00:00+05:30",
+      "progress": 20,
+      "difficulty": 3,
+      "careerSkillIds": [],
+      "riskScore": 35,
+      "careerRelevance": 35,
+      "description": "CS306 Lab 4: implement translation, rotation, and scaling for the sample scene. Compare flat and Gouraud shading, capture three screenshots, and explain the transformation order. The starter scene runs; finish the exercises and upload the code plus a short report.",
+      "module": "Computer Graphics",
+      "source": "University LMS (demo)"
+    },
+    {
+      "id": "docker-practice",
+      "title": "Docker Practice",
+      "category": "Career",
+      "status": "in-progress",
+      "estimatedMinutes": 45,
+      "dueAt": "2026-10-09T20:00:00+05:30",
+      "progress": 45,
+      "difficulty": 2,
+      "careerSkillIds": [
+        "docker"
+      ],
+      "riskScore": 38,
+      "careerRelevance": 90,
+      "description": "Run a FastAPI service and PostgreSQL container with Docker Compose. Use service-name DNS on a private network, confirm the API health check, and document reproducible setup and cleanup commands. Keep credentials in an untracked local environment file; the sample app already builds.",
+      "source": "Personal learning plan"
+    }
   ],
   "blocks": [
-    {"id":"competition-docker","taskId":"docker-practice","title":"Docker Practice","category":"Career","startAt":"2026-10-05T16:00:00+05:30","endAt":"2026-10-05T16:45:00+05:30"},
-    {"id":"competition-stats","taskId":"statistics-quiz","title":"Statistics Quiz","category":"Academic","startAt":"2026-10-05T17:00:00+05:30","endAt":"2026-10-05T17:30:00+05:30"},
-    {"id":"competition-se","taskId":"se-assignment","title":"Software Engineering Assignment","category":"Academic","startAt":"2026-10-07T16:00:00+05:30","endAt":"2026-10-07T17:00:00+05:30"},
-    {"id":"competition-graphics","taskId":"graphics-lab","title":"Computer Graphics Lab","category":"Academic","startAt":"2026-10-08T16:00:00+05:30","endAt":"2026-10-08T16:45:00+05:30"}
+    {
+      "id": "competition-docker",
+      "taskId": "docker-practice",
+      "title": "Docker Practice",
+      "category": "Career",
+      "startAt": "2026-10-05T16:00:00+05:30",
+      "endAt": "2026-10-05T16:45:00+05:30"
+    },
+    {
+      "id": "competition-stats",
+      "taskId": "statistics-quiz",
+      "title": "Statistics Quiz",
+      "category": "Academic",
+      "startAt": "2026-10-05T17:00:00+05:30",
+      "endAt": "2026-10-05T17:30:00+05:30"
+    },
+    {
+      "id": "competition-se",
+      "taskId": "se-assignment",
+      "title": "Software Engineering Assignment",
+      "category": "Academic",
+      "startAt": "2026-10-07T16:00:00+05:30",
+      "endAt": "2026-10-07T17:00:00+05:30"
+    },
+    {
+      "id": "competition-graphics",
+      "taskId": "graphics-lab",
+      "title": "Computer Graphics Lab",
+      "category": "Academic",
+      "startAt": "2026-10-08T16:00:00+05:30",
+      "endAt": "2026-10-08T16:45:00+05:30"
+    }
+  ],
+  "intelligence": [
+    {
+      "id": "docker",
+      "skillId": "docker",
+      "title": "Build a reproducible container workflow",
+      "excerpt": "Use a multi-stage Dockerfile, pin the base image, and add a health check to the room-booking API. Compare image size and startup behaviour, then record the commands in the project README.",
+      "publishedAt": "2026-10-04T09:00:00+05:30",
+      "readingMinutes": 20
+    },
+    {
+      "id": "cicd",
+      "skillId": "cicd",
+      "title": "Take your first CI pipeline from test to release",
+      "excerpt": "Create a pull-request workflow that installs dependencies, runs integration tests, and builds a container only after the checks pass. Keep a failed-run screenshot and the corrected workflow as evidence.",
+      "publishedAt": "2026-10-03T11:30:00+05:30",
+      "readingMinutes": 25
+    },
+    {
+      "id": "docker-networking",
+      "skillId": "docker",
+      "title": "Troubleshoot service discovery in Docker Compose",
+      "excerpt": "Check service-name DNS, published ports, and readiness before blaming the API connection string. Work through a database connection failure and document which observation ruled out each possible cause.",
+      "publishedAt": "2026-10-04T14:00:00+05:30",
+      "readingMinutes": 15
+    },
+    {
+      "id": "cloud-iam",
+      "skillId": "cloud",
+      "title": "Explain least privilege with a small deployment example",
+      "excerpt": "Separate deployment permissions from runtime access. Write an example policy for reading one storage bucket and explain why a wildcard permission is unnecessary for the application.",
+      "publishedAt": "2026-10-02T10:00:00+05:30",
+      "readingMinutes": 18
+    },
+    {
+      "id": "linux-logs",
+      "skillId": "linux",
+      "title": "Follow a failed Linux service from status to logs",
+      "excerpt": "Use service status, journal logs, listening ports, and file permissions to diagnose a failed process. Keep a short troubleshooting timeline that another student can reproduce on a local VM.",
+      "publishedAt": "2026-10-01T16:00:00+05:30",
+      "readingMinutes": 12
+    },
+    {
+      "id": "git-review",
+      "skillId": "git",
+      "title": "Make a project pull request easier to review",
+      "excerpt": "Split the API change into focused commits, describe the test cases, and link the issue. Review the diff for generated files and accidental secrets before asking a teammate for feedback.",
+      "publishedAt": "2026-10-03T15:00:00+05:30",
+      "readingMinutes": 10
+    }
+  ],
+  "notifications": [
+    {
+      "id": "competition-assignment-risk",
+      "kind": "risk",
+      "title": "Integration tests still need attention",
+      "description": "The Software Engineering assignment is 45% complete. Reserve a focused block for the two remaining test cases and architecture notes.",
+      "href": "/planner",
+      "createdAt": "2026-10-05T08:15:00+05:30",
+      "read": false
+    },
+    {
+      "id": "competition-quiz-reminder",
+      "kind": "plan",
+      "title": "Statistics quiz closes tomorrow at 17:00",
+      "description": "Your 30-minute revision block is protected today. Review conditional probability and confidence intervals before opening the quiz.",
+      "href": "/tasks",
+      "createdAt": "2026-10-05T08:00:00+05:30",
+      "read": false
+    },
+    {
+      "id": "competition-internship-reminder",
+      "kind": "opportunity",
+      "title": "Northstar Labs internship closes Oct 14",
+      "description": "This sample role needs Git, Docker, and AWS fundamentals. Review the requirements and prepare your CV plus a reproducible project README.",
+      "href": "/opportunities?competition=1",
+      "createdAt": "2026-10-04T18:00:00+05:30",
+      "read": false
+    },
+    {
+      "id": "competition-git-evidence",
+      "kind": "evidence",
+      "title": "Git release automation project is on your passport",
+      "description": "The sample project includes reviewed pull requests, release tags, and a repeatable release script. Git evidence meets the internship requirement in this demo.",
+      "href": "/evidence",
+      "createdAt": "2026-10-02T16:30:00+05:30",
+      "read": true
+    }
   ]
 }

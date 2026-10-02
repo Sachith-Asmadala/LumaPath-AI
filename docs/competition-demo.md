@@ -42,11 +42,16 @@ Use the development launcher for the competition. `npm run build` / `npm run sta
 - Fixed scenario date **October 5, 2026**; **90 minutes** available today.
 - Git/Linux strong verified evidence; Docker partial, CI/CD weak, Cloud partial.
 - Software Engineering assignment, Statistics quiz, Computer Graphics lab, Docker practice.
+- Assignment briefs include module names, submission requirements, realistic remaining work and assessment weighting.
+- Six practical learning articles on containers, Compose networking, CI, IAM, Linux troubleshooting and Git reviews; four notification records with read/unread states.
 - Synthetic Northstar Labs **Junior DevOps Internship**, with MET/UNMET/UNKNOWN requirements.
+- Sample internship details include a 12-week hybrid placement in Colombo, a Nov 2 start after the Oct 14 application deadline, and a three-step preparation checklist.
 - DevOps Engineer and Cloud Engineer preselected for DOC-F33 comparison.
 - Governed synthetic market/intelligence fixtures under `example.org`; not live labour-market research.
 
 The shared manifest is `src/data/demo/competition-scenario.json`. Backend services freeze the clock only for this dedicated synthetic student; ordinary users keep normal service clocks.
+
+The regular browser demo uses `src/data/demo/seed.ts`: 15 tasks, 20 calendar blocks, four completed sessions (240 minutes), three sample opportunities, and six notifications. Its fixed scenario week remains Sep 28–Oct 4. Reset the demo to load fresh fixtures; previously saved student work is preserved until reset. Competition resets keep their four-task/four-block walkthrough and do not inherit the regular demo's completion history.
 
 ## E. Backup if internet fails
 
@@ -59,6 +64,8 @@ Keep a local screen recording or PDF/screenshots as a separate presenter backup.
 Planner/capacity/onboarding and some learning state remain browser-local; there is no cross-device planner sync. Production student/admin/curator authentication is not integrated, and development identity headers are rejected in production. SQLite and local workers need operational hardening before public multi-instance deployment.
 
 Pro billing is an **MVP/demo entitlement flow**, with no real payment provider. The university LMS UI uses controlled samples; the institutional/API connector is future/partial, while manual iCalendar/CSV import works. External AI, push/email delivery, source-control OAuth and credential verification must not be implied to be live integrations. Market demo data may be synthetic.
+
+To demonstrate a Pro upgrade, open Pricing, select Free in **Competition Demo Plan** if Pro is already active, then click **Upgrade to Pro**. The standalone `/checkout` page offers monthly ($4.99) and annual ($47.90) demo totals, billing details, card validation, processing states, and a downloadable demo PDF receipt. Click **Use demo card**, then **Activate Pro**, then **Download PDF receipt** on the confirmation screen. The PDF includes customer details, the date, transaction reference, itemized totals, and the $0.00 actual charge. It is generated locally with bundled fonts and branding. The existing subscription API activates the student's demo Pro entitlement; only `{ "plan": "pro" }` is sent. Card fields never leave the page. No charge, recurring billing, payment-provider connection, tax invoice or email receipt is created. Annual billing is illustrative and does not create a billing schedule.
 
 ## G. What not to claim to judges
 

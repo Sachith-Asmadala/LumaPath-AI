@@ -19,15 +19,15 @@ import { BrandIcon } from "@/components/brand/brand-icon";
 import { useLocale } from "@/i18n/locale-provider";
 import { NotificationProvider } from "@/features/notifications/components/notification-provider";
 import { AchievementProvider } from "@/features/achievements/components/achievement-provider";
-import { SubscriptionProvider, useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
 import { homeLink, inboxLink, routeMatches, workspaceGroups, workspaceLinks } from "./workspace-map";
 import { DecisionPulse } from "@/features/dashboard/components/decision-pulse";
 import { PremiumWelcome } from "./premium-welcome";
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
-  return <SubscriptionProvider><TooltipProvider delayDuration={250}><NotificationProvider><AchievementProvider>
+  return <TooltipProvider delayDuration={250}><NotificationProvider><AchievementProvider>
     <SidebarProvider defaultOpen className="workspace-shell"><WorkspaceContent>{children}</WorkspaceContent></SidebarProvider>
-  </AchievementProvider></NotificationProvider></TooltipProvider></SubscriptionProvider>;
+  </AchievementProvider></NotificationProvider></TooltipProvider>;
 }
 
 function WorkspaceContent({ children }: { children: React.ReactNode }) {

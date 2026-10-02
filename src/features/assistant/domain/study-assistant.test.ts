@@ -15,7 +15,9 @@ describe("Study Assistant context assembly", () => {
 
     const snapshot = buildAssistantContextSnapshot(state);
     expect(snapshot.student_id).toBe("student-onboarded");
-    expect(snapshot.modules).toHaveLength(2);
+    expect(snapshot.modules.map((module) => module.name).sort()).toEqual([
+      "Applied Statistics", "Cloud Computing", "Computer Networks", "Database Systems", "Operating Systems", "Software Engineering",
+    ]);
     expect(snapshot.tasks.every((task) => task.owner_id === "student-onboarded")).toBe(true);
     expect(snapshot.plan_blocks.every((block) => block.owner_id === "student-onboarded")).toBe(true);
     expect(snapshot.materials[0]).toMatchObject({ id: "docker-notes-core", owner_id: "student-onboarded" });
