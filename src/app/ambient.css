@@ -1,0 +1,62 @@
+/* Decorative dark-theme atmosphere. Solid cards keep text independent of motion. */
+.dark :is(.public-site, .workspace-shell .workspace-surface:not([data-page="focus"])) {
+  position: relative;
+  isolation: isolate;
+  background: var(--background);
+}
+
+.dark :is(.public-site, .workspace-surface:not([data-page="focus"]))::before,
+.dark :is(.public-site, .workspace-surface:not([data-page="focus"]))::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.dark :is(.public-site, .workspace-surface:not([data-page="focus"]))::before {
+  inset: -12%;
+  background:
+    radial-gradient(ellipse at 82% 18%, #b0b0b024, transparent 43%),
+    radial-gradient(ellipse at 16% 72%, #9292921c, transparent 40%),
+    radial-gradient(ellipse at 55% 104%, #a0a0a020, transparent 48%);
+  animation: atmosphere-drift 22s ease-in-out infinite alternate;
+}
+
+.dark :is(.public-site, .workspace-surface:not([data-page="focus"]))::after {
+  inset: 0;
+  background:
+    radial-gradient(ellipse 76% 56% at 78% 18%, transparent 69.7%, #bdbdbd30 69.9%, #bdbdbd30 70%, transparent 70.2%),
+    radial-gradient(ellipse 80% 60% at 78% 18%, transparent 69.7%, #bdbdbd18 69.9%, #bdbdbd18 70%, transparent 70.2%),
+    radial-gradient(ellipse 64% 64% at 6% 100%, transparent 69.7%, #b4b4b429 69.9%, #b4b4b429 70%, transparent 70.2%);
+  animation: atmosphere-orbit 28s ease-in-out infinite alternate;
+}
+
+.dark .public-header { border-bottom-color: color-mix(in srgb, var(--border) 70%, transparent); }
+.dark .preview-paper { box-shadow: 0 24px 80px -34px #00000090; }
+.dark .public-primary-button { box-shadow: 0 5px 28px -12px #bea5ff80; }
+.dark .workspace-nav-link[data-active="true"] { box-shadow: inset 2px 0 var(--primary); }
+
+@keyframes atmosphere-drift {
+  from { transform: translate3d(-2%, -2%, 0) scale(1); }
+  to { transform: translate3d(4%, 5%, 0) scale(1.08); }
+}
+
+@keyframes atmosphere-orbit {
+  from { transform: translate3d(0, -2%, 0); opacity: .65; }
+  to { transform: translate3d(0, 6%, 0); opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .dark :is(.public-site, .workspace-surface:not([data-page="focus"]))::before {
+    background:
+      radial-gradient(ellipse at 95% 12%, #b0b0b024, transparent 50%),
+      radial-gradient(ellipse at 0% 86%, #9292921c, transparent 48%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dark :is(.public-site, .workspace-surface:not([data-page="focus"]))::before,
+  .dark :is(.public-site, .workspace-surface:not([data-page="focus"]))::after {
+    animation: none;
+  }
+}
