@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
+from .modules.subscriptions.router import router as subscriptions_router
 from .modules.ai.study_assistant.router import router as study_assistant_router
 from .modules.documents.router import router as documents_router
 from .modules.analytics.router import router as analytics_router
@@ -45,6 +49,7 @@ app.add_middleware(
         "X-Luma-Region-Scope",
     ],
 )
+app.include_router(subscriptions_router)
 app.include_router(study_assistant_router)
 app.include_router(documents_router)
 app.include_router(analytics_router)
@@ -76,3 +81,10 @@ app.include_router(market_taxonomy_router)
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "lumapath-api"}
+
+
+@app.exception_handler(StarletteHTTPException)
+async def subscription_errors(request: Request, exc: StarletteHTTPException):
+    if isinstance(exc.detail, dict) and str(exc.detail.get("code", "")).startswith("PLAN_"):
+        return JSONResponse(exc.detail, status_code=exc.status_code, headers={"Cache-Control": "no-store", **(exc.headers or {})})
+    return await http_exception_handler(request, exc)

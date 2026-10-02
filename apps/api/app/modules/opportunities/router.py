@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ..subscriptions.service import EntitlementService, get_entitlements
+
 from fastapi import APIRouter, Depends
 
 from ...core.config import settings
@@ -38,12 +40,14 @@ def plan(opportunity_id: str, request: PreparationPlanRequest, principal: Princi
 
 
 @router.post("/{opportunity_id}/preparation-plans", response_model=PreparationPlanView, status_code=201)
-def propose_preparation(opportunity_id: str, request: PreparationProposalRequest, principal: Principal = Depends(current_principal)):
-    return _service.propose_preparation(principal.student_id, opportunity_id, request)
+def propose_preparation(opportunity_id: str, request: PreparationProposalRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    with ent.meter(principal.student_id, "opportunity_readiness"):
+        return _service.propose_preparation(principal.student_id, opportunity_id, request)
 
 
 @router.post("/{opportunity_id}/preparation-plans/{plan_id}/approve", response_model=PreparationApproveResponse)
-def approve_preparation(opportunity_id: str, plan_id: str, request: PreparationApproveRequest, principal: Principal = Depends(current_principal)):
+def approve_preparation(opportunity_id: str, plan_id: str, request: PreparationApproveRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "advanced_opportunity_preparation")
     return _service.approve_preparation(principal.student_id, opportunity_id, plan_id, request)
 
 

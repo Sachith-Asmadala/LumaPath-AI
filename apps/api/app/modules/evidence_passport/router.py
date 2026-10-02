@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ..subscriptions.dependencies import mentor_access
+
 from fastapi import APIRouter, Depends, Header
 
 from ...core.config import settings
@@ -10,7 +12,7 @@ from .service import EvidencePassportService
 
 router=APIRouter(prefix="/v1/evidence-passport",tags=["evidence-passport"])
 public_router=APIRouter(prefix="/v1/evidence-share",tags=["evidence-share"])
-mentor_router=APIRouter(prefix="/v1/evidence-mentor",tags=["evidence-mentor"])
+mentor_router=APIRouter(prefix="/v1/evidence-mentor",tags=["evidence-mentor"],dependencies=[Depends(mentor_access)])
 repository=EvidencePassportRepository(settings.database_path)
 service=EvidencePassportService(repository)
 

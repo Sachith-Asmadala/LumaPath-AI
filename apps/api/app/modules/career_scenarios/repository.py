@@ -120,6 +120,13 @@ class CareerScenarioRepository:
                 (scenario_id, student_id),
             ).fetchone()
 
+    def result_history(self, scenario_id: str, student_id: str):
+        with self._connect() as db:
+            return db.execute(
+                "SELECT * FROM scenario_results WHERE scenario_id=? AND student_id=? ORDER BY created_at DESC,rowid DESC",
+                (scenario_id, student_id),
+            ).fetchall()
+
     def audit(self, scenario_id: str, student_id: str, event_type: str, detail: str, at: str) -> None:
         with self._connect() as db:
             db.execute(

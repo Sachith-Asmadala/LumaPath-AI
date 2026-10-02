@@ -1,3 +1,4 @@
+import { apiErrorMessage } from "@/features/subscriptions/entitlements";
 export interface CareerScenarioRole { id:string; name:string; version:string; level:string; description:string; quality_status:string; skill_count:number; }
 export interface ScenarioPreferences { language:string; formats:string[]; }
 export interface SnapshotEvidence { skill_id:string; skill_name:string; proficiency:number; confidence:number; credited:boolean; evidence_refs:string[]; uncertainty:string|null; }
@@ -14,5 +15,5 @@ export interface SwitchDraftResponse { scenario_id:string; result_id:string; tar
 
 export async function scenarioRequest<T>(path:string,studentId:string,init?:RequestInit):Promise<T>{
  const response=await fetch(path,{...init,cache:"no-store",headers:{"X-Luma-Student-Id":studentId,...(init?.body?{"Content-Type":"application/json"}:{}),...(init?.headers??{})}});
- const body=await response.json().catch(()=>({})); if(!response.ok)throw new Error(body.detail??"Career scenario request failed."); return body as T;
+ const body=await response.json().catch(()=>({})); if(!response.ok)throw new Error(apiErrorMessage(body, "Career scenario request failed.")); return body as T;
 }

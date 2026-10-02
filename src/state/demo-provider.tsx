@@ -1,5 +1,6 @@
 "use client";
 
+import { authorizeAdaptivePlanning } from "@/features/subscriptions/entitlements";
 import { scenarioAt, scenarioDate } from "@/data/demo/scenario";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
@@ -722,6 +723,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       simulation: { ...state.simulation, announcement: "Schedule conflict detected. Database Assignment is now at critical risk." },
       notifications: makeNotification(state, { kind: "risk", title: "Urgent Database Assignment added", description: "Your academic workload and weekly plan need a new priority order.", href: "/planner" }),
     } });
+    // Adding a deadline is basic; automatic rescheduling requires Pro access.
+    if (!await authorizeAdaptivePlanning(state.student.id)) return;
     await showSteps("replan", replanSteps, () => {
       const replanResults = ["5 tasks rescheduled", "Critical deadline protected", "Career activity moved to Thursday", "2 focus blocks preserved"];
       dispatch({ type: "patch", patch: {
@@ -734,11 +737,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [showSteps, state]);
 
   const applyRecoveryPlan = useCallback(async () => {
+    if (!await authorizeAdaptivePlanning(state.student.id)) return;
     await showSteps("recovery", ["Checking deadline risk", "Moving AWS Fundamentals to Thursday", "Reserving tonight’s 90-minute focus window"], () => {
       dispatch({ type: "recover-database" });
       dispatch({ type: "simulation", patch: { kind: null, step: null, message: "Recovery plan applied", result: ["AWS Fundamentals moved to Thursday", "Database risk reduced", "90-minute recovery window reserved"], announcement: "Recovery plan applied. Database risk reduced and tonight’s focus window reserved." } });
     });
-  }, [showSteps]);
+  }, [showSteps, state.student.id]);
 
   const generatePlan = useCallback(async () => {
     await showSteps("generate", ["Evaluating your open tasks…", "Checking capacity and due dates…", "Placing focused work blocks…"], () => {
@@ -749,11 +753,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [showSteps, state.capacity]);
 
   const replanWeek = useCallback(async () => {
+    if (!await authorizeAdaptivePlanning(state.student.id)) return;
     await showSteps("replan", replanSteps, () => {
       const result = ["5 tasks rescheduled", "Critical deadline protected", "Career activity moved to Thursday", "2 focus blocks preserved"];
       dispatch({ type: "patch", patch: { planBlocks: blocksAfterUrgentDeadline(state.planBlocks), simulation: { kind: null, step: null, message: "Week re-planned", result, announcement: result.join(". ") } } });
     });
-  }, [showSteps, state.planBlocks]);
+  }, [showSteps, state.planBlocks, state.student.id]);
 
   const completeTask = useCallback((taskId: string) => dispatch({ type: "complete-task", taskId, at: new Date().toISOString() }), []);
   const completeFocusSession = useCallback((taskId: string, minutes: number, details: { progressAfter?: number; suggestedEstimatedMinutes?: number; sessionId?: string; note?: string; nextStep?: string; at?: string } = {}) => dispatch({ type: "complete-focus-session", taskId, minutes, ...details }), []);

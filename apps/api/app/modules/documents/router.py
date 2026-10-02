@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ..subscriptions.service import EntitlementService, get_entitlements
+
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from ...core.config import settings
@@ -39,18 +41,20 @@ async def upload_document(
     document_kind: str | None = Form(default=None),
     module_id: str | None = Form(default=None),
     principal: Principal = Depends(current_principal),
+    ent: EntitlementService = Depends(get_entitlements),
 ) -> DocumentRecord:
     limiter.check(principal.student_id)
     try:
         data = await file.read(settings.document_max_upload_bytes + 1)
-        return service.upload(
-            principal.student_id,
-            filename=file.filename or "upload",
-            declared_mime=file.content_type,
-            data=data,
-            requested_kind=document_kind,
-            module_id=module_id,
-        )
+        with ent.meter(principal.student_id, "document_analyses"):
+            return service.upload(
+                principal.student_id,
+                filename=file.filename or "upload",
+                declared_mime=file.content_type,
+                data=data,
+                requested_kind=document_kind,
+                module_id=module_id,
+            )
     except DocumentError as exc:
         raise _handle(exc) from exc
 

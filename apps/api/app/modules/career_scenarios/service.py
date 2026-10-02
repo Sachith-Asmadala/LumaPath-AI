@@ -83,6 +83,10 @@ class CareerScenarioService:
             raise HTTPException(status_code=409, detail="Career scenario has no calculation result.")
         return self._scenario_view(student_id, scenario, self._result_view(result))
 
+    def history(self, student_id: str, scenario_id: str) -> list[ScenarioResultView]:
+        self._owned_scenario(student_id, scenario_id)
+        return [self._result_view(row) for row in self.repository.result_history(scenario_id, student_id)]
+
     def list_saved(self, student_id: str) -> list[ScenarioView]:
         views = []
         for scenario in self.repository.list_saved(student_id):

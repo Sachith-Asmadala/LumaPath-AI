@@ -311,3 +311,5 @@ body:has(.workspace-shell) [data-sidebar="sidebar"] { background: var(--sidebar)
 .nav-section-content:not([hidden]) { animation: workspace-reveal 220ms ease both; }
 @keyframes workspace-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .nav-section-content:not([hidden]) { animation: none; } }
+/* The existing membership cards now display the three business-model tiers. */
+@media (min-width: 1100px) { .membership-grid[data-plans="three"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

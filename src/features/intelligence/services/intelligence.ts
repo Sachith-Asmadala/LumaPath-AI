@@ -1,3 +1,4 @@
+import { apiErrorMessage } from "@/features/subscriptions/entitlements";
 import type { DailyFeedResponse, FeedInteractionResponse, FeedView, PlannerHandoff } from "@/features/intelligence/domain/daily-feed";
 
 export class IntelligenceApiError extends Error {
@@ -16,7 +17,7 @@ async function api<T>(path: string, studentId: string, init: RequestInit = {}): 
     if (init.body) headers.set("Content-Type", "application/json");
     const response = await fetch(path, { ...init, headers, cache: "no-store", signal: controller.signal });
     const body = await response.json().catch(() => null) as { detail?: string } | null;
-    if (!response.ok) throw new IntelligenceApiError(body?.detail ?? `Intelligence request failed (${response.status}).`, response.status);
+    if (!response.ok) throw new IntelligenceApiError(apiErrorMessage(body, `Intelligence request failed (${response.status}).`), response.status);
     return body as T;
   } catch (error) {
     if (error instanceof IntelligenceApiError) throw error;

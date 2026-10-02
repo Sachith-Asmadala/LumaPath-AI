@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
+from ..subscriptions.service import EntitlementService, get_entitlements
 
 from ...core.config import settings
 from ...core.security import Principal, current_principal
@@ -26,7 +27,8 @@ def current(principal: Principal = Depends(current_principal)):
 
 
 @router.post("/generate", response_model=PathwayResponse, status_code=201)
-def generate(request: PathwayContextRequest, principal: Principal = Depends(current_principal)):
+def generate(request: PathwayContextRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "active_pathways", amount=1)
     return service.generate(principal.student_id, request)
 
 
@@ -36,7 +38,9 @@ def get(pathway_id: str, principal: Principal = Depends(current_principal)):
 
 
 @router.post("/{pathway_id}/decision", response_model=PathwayResponse)
-def decision(pathway_id: str, request: PathwayDecisionRequest, principal: Principal = Depends(current_principal)):
+def decision(pathway_id: str, request: PathwayDecisionRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    if request.decision == "approve":
+        ent.require(principal.student_id, "active_pathways", amount=1)
     return service.decide(principal.student_id, pathway_id, request)
 
 

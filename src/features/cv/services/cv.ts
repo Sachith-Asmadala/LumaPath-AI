@@ -1,3 +1,4 @@
+import { apiErrorMessage } from "@/features/subscriptions/entitlements";
 import { isCvDocument, type CvAnalysis, type CvDocument, type CvExport, type CvSection, type CvSuggestion } from "@/features/cv/domain/cv";
 
 export class CvApiError extends Error {
@@ -13,7 +14,7 @@ async function cvFetch(path: string, studentId: string, init: RequestInit = {}, 
     if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
     const response = await fetch(path, { ...init, cache: "no-store", headers, signal: controller.signal });
     const body = response.status === 204 ? null : await response.json().catch(() => null) as { detail?: string } | null;
-    if (!response.ok) throw new CvApiError(body?.detail ?? `CV request failed (${response.status}).`, response.status);
+    if (!response.ok) throw new CvApiError(apiErrorMessage(body, `CV request failed (${response.status}).`), response.status);
     return body;
   } catch (error) {
     if (error instanceof CvApiError) throw error;

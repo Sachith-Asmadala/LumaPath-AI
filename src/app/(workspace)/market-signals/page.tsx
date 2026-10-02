@@ -1,5 +1,6 @@
 "use client";
 
+import { ProBadge } from "@/features/subscriptions/components/pro-badge";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -39,7 +40,7 @@ export default function MarketSignalsPage() {
   const [tab, setTab] = useState("student");
   const [roles, setRoles] = useState<CareerScenarioRole[]>([]);
   const [roleId, setRoleId] = useState("devops-engineer");
-  const [region, setRegion] = useState("lk");
+  const [region, setRegion] = useState("none");
   const [comparison, setComparison] = useState<ProfileComparison | null>(null);
   const [updates, setUpdates] = useState<StudentTaxonomyUpdate[]>([]);
   const [studentLoading, setStudentLoading] = useState(true);
@@ -161,7 +162,7 @@ export default function MarketSignalsPage() {
           <Card className="rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
             <CardContent className="grid gap-3 p-4 sm:p-5 lg:grid-cols-[1fr_0.8fr_auto] lg:items-end">
               <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.career")}</label><Select value={roleId} onValueChange={setRoleId}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{roles.map((role) => <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>)}</SelectContent></Select></div>
-              <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.profile")}</label><Select value={region} onValueChange={setRegion}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{REGION_OPTIONS.map((item) => <SelectItem key={item} value={item}>{item === "none" ? t("marketSignals.internationalOnly") : t("marketSignals.sriLanka")}</SelectItem>)}</SelectContent></Select></div>
+              <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.profile")}<ProBadge /></label><Select value={region} onValueChange={setRegion}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{REGION_OPTIONS.map((item) => <SelectItem key={item} value={item}>{item === "none" ? t("marketSignals.internationalOnly") : t("marketSignals.sriLanka")}</SelectItem>)}</SelectContent></Select></div>
               <Button className="h-10 rounded-xl" onClick={() => void refreshComparison()} disabled={studentLoading || !roleId}><RefreshCw className={`size-3.5 ${studentLoading ? "animate-spin" : ""}`} />{t("marketSignals.compare")}</Button>
             </CardContent>
           </Card>

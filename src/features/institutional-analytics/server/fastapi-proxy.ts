@@ -11,6 +11,8 @@ function administratorClaims(request: Request) {
 
 export async function proxyInstitutionalAnalytics(request: Request, backendPath: string) {
   const claims = administratorClaims(request);
+  const studentId = request.headers.get("x-luma-student-id");
+  if (!studentId) return Response.json({ detail: "Verified subscription identity is required." }, { status: 401 });
   if (!claims.adminId || !claims.role || !claims.institutionId) {
     return Response.json({ detail: "Verified administrator session is required." }, { status: 401 });
   }
@@ -25,6 +27,7 @@ export async function proxyInstitutionalAnalytics(request: Request, backendPath:
       cache: "no-store",
       signal: controller.signal,
       headers: {
+        "X-Luma-Student-Id": studentId,
         "X-Luma-Admin-Id": claims.adminId,
         "X-Luma-Admin-Role": claims.role,
         "X-Luma-Institution-Id": claims.institutionId,

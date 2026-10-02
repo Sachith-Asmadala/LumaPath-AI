@@ -548,9 +548,17 @@ button. Focus mode offers **Aurora**, **Ocean**, and **Dawn** backgrounds with a
 pause control; scene preferences are saved in this browser and reduced-motion
 preferences are respected.
 
-A dismissible **LumaPath Plus** introduction appears on the first workspace visit
-per local student. Plus is a future-plan preview; all implemented tools remain free
-and no checkout is connected. The public landing page is unchanged.
+A dismissible **LumaPath Pro** introduction appears on the first workspace visit
+per local student. `/pricing` (also `/plans` and `/settings/subscription`) explains
+Free, Pro and Institution, shows persisted usage, and offers a development-only
+**Competition Demo Plan** switcher. Plan changes use the API and SQLite; no billing
+or payment gateway is connected. The public landing page is unchanged.
+
+Free keeps the complete basic student journey. Pro adds higher analysis and
+assistant limits, saved comparison scenarios, regional insights and adaptive
+replanning. Institution adds analytics, governance and mentoring with the existing
+role/consent checks. See [Monetisation MVP](docs/monetisation.md) for exact quotas,
+API enforcement, demo setup and production requirements.
 
 ---
 

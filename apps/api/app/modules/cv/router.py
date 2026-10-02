@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ..subscriptions.service import EntitlementService, get_entitlements
+
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from ...core.config import settings
@@ -57,8 +59,10 @@ def review_sections(document_id: str, request: UpdateCvSectionsRequest, principa
 
 
 @router.post("/documents/{document_id}/analysis", response_model=CvAnalysisResponse)
-def analyze_cv(document_id: str, principal: Principal = Depends(current_principal)) -> CvAnalysisResponse:
-    return service.analyze(principal.student_id, document_id)
+def analyze_cv(document_id: str, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)) -> CvAnalysisResponse:
+    service.get(principal.student_id, document_id)  # Ownership before metering.
+    with ent.meter(principal.student_id, "cv_analyses"):
+        return service.analyze(principal.student_id, document_id)
 
 
 @router.post("/documents/{document_id}/suggestions/{suggestion_id}", response_model=CvSuggestion)

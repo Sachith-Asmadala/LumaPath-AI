@@ -40,7 +40,7 @@ export default function OverviewRoute() {
       </TabsContent>
       <TabsContent value="growth" className={styles.tabContent}><div className={styles.growthHeading}><p className="workspace-eyebrow">THE BIGGER PICTURE</p><h2>Small steps. Meaningful progress.</h2><p>See how today’s work connects to where you want to go.</p></div><div className={styles.growthGrid}><CareerReadinessCard /><MiniCareerPath /></div><section className={styles.weekly}><h2>Your week in perspective</h2><WeeklyProgressStrip /></section><CareerIntelligencePreview /></TabsContent>
     </Tabs>
-    <footer className={styles.footer}><span>Built around your pace.</span><Link href="/plans"><Sparkles size={14} />Discover what’s next with Plus<ArrowRight size={14} /></Link></footer>
+    <footer className={styles.footer}><span>Built around your pace.</span><Link href="/plans"><Sparkles size={14} />Discover what’s next with Pro<ArrowRight size={14} /></Link></footer>
     <PriorityExplanationSheet open={explanationOpen} onOpenChange={setExplanationOpen} />
   </div>;
 }

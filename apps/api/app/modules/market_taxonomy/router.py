@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from ..subscriptions.dependencies import taxonomy_access
+from ..subscriptions.service import EntitlementService, get_entitlements
+
 from fastapi import APIRouter, Depends, Query
 
 from ...core.config import settings
@@ -19,7 +22,7 @@ from .schemas import (
 )
 from .service import MarketTaxonomyService
 
-router=APIRouter(prefix="/v1/market-taxonomy",tags=["market-taxonomy"])
+router=APIRouter(prefix="/v1/market-taxonomy",tags=["market-taxonomy"],dependencies=[Depends(taxonomy_access)])
 _career_repository=CareerRepository(settings.database_path)
 _repository=MarketTaxonomyRepository(settings.database_path)
 _career_service=CareerService(_career_repository)
@@ -61,7 +64,10 @@ def rollback(request: TaxonomyRollbackRequest, p: TaxonomyCuratorPrincipal = Dep
     return _service.rollback(p, request)
 
 @router.get("/student/profile-comparison/{role_id}",response_model=ProfileComparisonResponse)
-def compare(role_id:str,region_code:str|None=Query(default=None),p:Principal=Depends(current_principal)): return _service.compare_profiles(p.student_id,role_id,region_code)
+def compare(role_id:str,region_code:str|None=Query(default=None),p:Principal=Depends(current_principal),ent:EntitlementService=Depends(get_entitlements)):
+    if region_code:
+        ent.require(p.student_id, "regional_comparison")
+    return _service.compare_profiles(p.student_id,role_id,region_code)
 @router.get("/student/updates",response_model=list[StudentTaxonomyUpdateView])
 def updates(p:Principal=Depends(current_principal)): return _service.student_updates(p.student_id)
 @router.post("/student/updates/{impact_id}/decision",response_model=StudentTaxonomyUpdateView)
