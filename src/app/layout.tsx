@@ -8,6 +8,7 @@ import "@fontsource-variable/red-hat-display";
 import "./globals.css";
 import "./public.css";
 import "./workspace.css";
+import "./ambient.css";
 
 export const metadata: Metadata = {
   title: {
@@ -33,14 +34,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f6f5f0" },
-    { media: "(prefers-color-scheme: dark)", color: "#1c2322" },
+    { media: "(prefers-color-scheme: dark)", color: "#090909" },
   ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider><LocaleProvider>{children}</LocaleProvider></DemoProvider></ThemeProvider></body>
+      {/* Extensions such as Grammarly add body attributes before hydration. Suppression is limited to this element. */}
+      <body suppressHydrationWarning><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider><LocaleProvider>{children}</LocaleProvider></DemoProvider></ThemeProvider></body>
     </html>
   );
 }

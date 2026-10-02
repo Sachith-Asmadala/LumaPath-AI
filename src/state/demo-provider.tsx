@@ -489,6 +489,9 @@ interface DemoContextValue {
   submitSkillReassessment: (skillId: string, answers: Record<string, string>, retake?: boolean) => boolean;
   state: DemoState;
   onboardingReady: boolean;
+  signedOut: boolean;
+  signOut: () => void;
+  resumeSession: () => void;
   updateOnboarding: (patch: Partial<OnboardingState>) => void;
   completeOnboarding: () => boolean;
   submitAssessment: (answers: Record<string, string>) => boolean;
@@ -528,6 +531,8 @@ interface DemoContextValue {
   setSimulationAnnouncement: (announcement: string) => void;
 }
 
+// Prototype navigation state only; verified authentication belongs on the server.
+const signedOutStorageKey = "lumapath-signed-out-v1";
 const DemoContext = createContext<DemoContextValue | null>(null);
 
 const replanSteps = ["Evaluating open tasks…", "Protecting deadlines…", "Recalculating available time…", "Rebuilding schedule…"];
@@ -540,10 +545,12 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(demoReducer, undefined, demoDataAdapter.load);
   const [competitionResetVersion, setCompetitionResetVersion] = useState(0);
   const [onboardingReady, setOnboardingReady] = useState(false);
+  const [signedOut, setSignedOut] = useState(false);
   const runId = useRef(0);
   const running = useRef(false);
 
   useEffect(() => {
+    try { setSignedOut(localStorage.getItem(signedOutStorageKey) === "true"); } catch { /* Keep in-memory access when storage is blocked. */ }
     const stored = readStoredDemoState();
     if (stored) {
       dispatch({ type: "hydrate-demo", state: stored });
@@ -568,6 +575,27 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       try { if (state.onboarding.name || state.onboarding.currentModules) window.localStorage.setItem(onboardingDraftStorageKey, JSON.stringify(state.onboarding)); } catch { /* Keep the in-memory draft. */ }
     }
   }, [onboardingReady, state]);
+
+  useEffect(() => {
+    const syncAccess = (event: StorageEvent) => {
+      if (event.key === signedOutStorageKey) setSignedOut(event.newValue === "true");
+    };
+    window.addEventListener("storage", syncAccess);
+    return () => window.removeEventListener("storage", syncAccess);
+  }, []);
+
+  const signOut = useCallback(() => {
+    runId.current += 1;
+    running.current = false;
+    dispatch({ type: "simulation", patch: { kind: null, step: "", result: [], message: null } });
+    try { localStorage.setItem(signedOutStorageKey, "true"); } catch { /* Sign out in memory if storage is blocked. */ }
+    setSignedOut(true);
+  }, []);
+
+  const resumeSession = useCallback(() => {
+    try { localStorage.removeItem(signedOutStorageKey); } catch { /* Resume in memory if storage is blocked. */ }
+    setSignedOut(false);
+  }, []);
 
   const updateOnboarding = useCallback((patch: Partial<OnboardingState>) => dispatch({ type: "update-onboarding", patch }), []);
   const completeOnboarding = useCallback(() => {
@@ -707,10 +735,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(`lumapath-plus-welcome-v1:${fresh.student.id}`, "seen");
       storeDemoState(fresh);
     } catch { /* The reset still works in memory when storage is blocked. */ }
+    resumeSession();
     dispatch({ type: "hydrate-demo", state: fresh });
     setCompetitionResetVersion(version=>version+1);
     window.dispatchEvent(new Event("lumapath:competition-reset"));
-  }, [state.student.id]);
+  }, [state.student.id, resumeSession]);
 
   const moveCompetitionDeadline = useCallback(async () => {
     if (!state.competition || state.competition.deadlineChanged || running.current) return;
@@ -841,6 +870,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     learningAction, submitSkillReassessment,
     state,
     onboardingReady,
+    signedOut,
+    signOut,
+    resumeSession,
     updateOnboarding,
     completeOnboarding,
     submitAssessment,
@@ -878,7 +910,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [learningAction, submitSkillReassessment, state, onboardingReady, competitionResetVersion, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, startCompetitionDemo, moveCompetitionDeadline, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, addTasks, applyImportedCalendarActions, applyApprovedPathwayActions, importLmsAssignments, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [learningAction, submitSkillReassessment, state, onboardingReady, signedOut, signOut, resumeSession, competitionResetVersion, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, startCompetitionDemo, moveCompetitionDeadline, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, addTasks, applyImportedCalendarActions, applyApprovedPathwayActions, importLmsAssignments, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
