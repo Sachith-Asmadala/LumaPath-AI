@@ -25,6 +25,8 @@ STUDENT = "student-sachith"
 
 
 def main() -> None:
+    if settings.environment not in {"development", "demo", "test"}:
+        raise SystemExit("Synthetic seed actions are disabled outside development/demo/test.")
     now = datetime.now(timezone.utc).replace(microsecond=0)
     repo = IntelligenceRepository(settings.database_path)
     pathways = PathwayRepository(settings.database_path)

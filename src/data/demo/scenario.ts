@@ -13,3 +13,11 @@ export function scenarioWeekLabel(): string {
   const format = (offset: number) => new Date(`${scenarioDate(offset)}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   return `${format(0)} – ${format(6)}`;
 }
+
+/** Competition dates are scoped to its synthetic student; ordinary scenarios stay unchanged. */
+export function stateScenarioDate(state: { competition?: { date: string } }, offset = 0): string {
+  if (!state.competition) return scenarioDate(offset);
+  const date = new Date(`${state.competition.date}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + offset);
+  return date.toISOString().slice(0, 10);
+}

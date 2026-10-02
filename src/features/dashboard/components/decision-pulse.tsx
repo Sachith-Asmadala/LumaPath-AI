@@ -41,7 +41,7 @@ export function DecisionPulse({ floating = false }: { floating?: boolean }) {
     aria-label="Decision Engine updates"
   >
     <div className="rounded-2xl border border-primary/20 bg-primary/[0.045] px-4 py-3.5 sm:px-5">
-      <p className="flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles className="size-4" aria-hidden="true" />{isCapacity ? simulation.kind === "capacity" ? "LumaPath is adapting your day" : "Capacity changed" : isLearningPath ? "Learning path added" : isDeadlineImport ? "University deadlines synced" : "LumaPath Decision Engine"}</p>
+      <p className="flex items-center gap-2 text-xs font-semibold text-primary"><Sparkles className="size-4" aria-hidden="true" />{isCapacity ? simulation.kind === "capacity" ? "LumaPath is adapting your day" : "Capacity changed" : isLearningPath ? "Learning path added" : isDeadlineImport ? "University deadlines synced" : simulation.message === "Deadline plan adapted" ? "Deadline changed · plan adapted" : "LumaPath Decision Engine"}</p>
       {simulation.kind === "capacity" ? <ol className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[0.68rem]" aria-label="Capacity update steps">
         {capacityStages.map((label, index) => {
           const status = index <= activeStage ? "complete" : index === activeStage + 1 ? "current" : "pending";

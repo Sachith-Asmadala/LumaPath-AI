@@ -1,0 +1,28 @@
+{
+  "version": "competition-v1",
+  "date": "2026-10-05",
+  "now": "2026-10-05T03:30:00+00:00",
+  "student": {"id":"competition-student","name":"Sachith","initials":"S","targetRole":"DevOps Engineer","university":"Luma University"},
+  "opportunityId": "competition-junior-devops",
+  "comparisonRoles": ["devops-engineer","cloud-engineer"],
+  "capacityMinutes": 90,
+  "skills": [
+    {"id":"git","name":"Git","proficiency":85,"status":"verified","title":"GitHub release automation project","verification":"verified"},
+    {"id":"linux","name":"Linux","proficiency":82,"status":"verified","title":"Linux server administration lab","verification":"verified"},
+    {"id":"docker","name":"Docker","proficiency":45,"status":"in-progress","title":"Container networking practice","verification":"observed"},
+    {"id":"cicd","name":"CI/CD","proficiency":25,"status":"locked","title":"CI pipeline baseline assessment","verification":"observed"},
+    {"id":"cloud","name":"Cloud","proficiency":40,"status":"available","title":"Cloud foundations coursework","verification":"self-reported"}
+  ],
+  "tasks": [
+    {"id":"se-assignment","title":"Software Engineering Assignment","category":"Academic","status":"in-progress","estimatedMinutes":60,"dueAt":"2026-10-07T23:59:00+05:30","progress":45,"difficulty":3,"careerSkillIds":["git","cicd"],"riskScore":82,"careerRelevance":70,"description":"Finish the integration tests and architecture notes for the team API."},
+    {"id":"statistics-quiz","title":"Statistics Quiz","category":"Academic","status":"upcoming","estimatedMinutes":30,"dueAt":"2026-10-06T17:00:00+05:30","progress":25,"difficulty":2,"careerSkillIds":[],"riskScore":52,"careerRelevance":30,"description":"Review sampling and probability questions."},
+    {"id":"graphics-lab","title":"Computer Graphics Lab","category":"Academic","status":"upcoming","estimatedMinutes":45,"dueAt":"2026-10-09T17:00:00+05:30","progress":20,"difficulty":3,"careerSkillIds":[],"riskScore":35,"careerRelevance":35,"description":"Complete the transformation and shading exercises."},
+    {"id":"docker-practice","title":"Docker Practice","category":"Career","status":"in-progress","estimatedMinutes":45,"dueAt":"2026-10-09T20:00:00+05:30","progress":45,"difficulty":2,"careerSkillIds":["docker"],"riskScore":38,"careerRelevance":90,"description":"Connect two containers and record a reproducible README."}
+  ],
+  "blocks": [
+    {"id":"competition-docker","taskId":"docker-practice","title":"Docker Practice","category":"Career","startAt":"2026-10-05T16:00:00+05:30","endAt":"2026-10-05T16:45:00+05:30"},
+    {"id":"competition-stats","taskId":"statistics-quiz","title":"Statistics Quiz","category":"Academic","startAt":"2026-10-05T17:00:00+05:30","endAt":"2026-10-05T17:30:00+05:30"},
+    {"id":"competition-se","taskId":"se-assignment","title":"Software Engineering Assignment","category":"Academic","startAt":"2026-10-07T16:00:00+05:30","endAt":"2026-10-07T17:00:00+05:30"},
+    {"id":"competition-graphics","taskId":"graphics-lab","title":"Computer Graphics Lab","category":"Academic","startAt":"2026-10-08T16:00:00+05:30","endAt":"2026-10-08T16:45:00+05:30"}
+  ]
+}

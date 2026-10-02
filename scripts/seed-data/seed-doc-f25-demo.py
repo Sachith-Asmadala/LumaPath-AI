@@ -30,6 +30,8 @@ def uid(value: str) -> str:
 
 
 def main() -> None:
+    if settings.environment not in {"development", "demo", "test"}:
+        raise SystemExit("Synthetic seed actions are disabled outside development/demo/test.")
     db = settings.database_path
     institution = "luma-demo-university"
     cohort_id = "demo-se-year-3"

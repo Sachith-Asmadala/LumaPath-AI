@@ -51,7 +51,7 @@ trap 'exit 143' TERM
 pids+=("$!")
 .venv/bin/python -c 'from dotenv import load_dotenv; import runpy; load_dotenv(".env"); runpy.run_module("apps.worker.jobs.notifications.loop", run_name="__main__")' &
 pids+=("$!")
-node node_modules/next/dist/bin/next dev --turbopack --port 3000 &
+node node_modules/next/dist/bin/next dev --turbopack --hostname 127.0.0.1 --port 3000 &
 pids+=("$!")
 
 echo "Starting LumaPath: http://localhost:3000"

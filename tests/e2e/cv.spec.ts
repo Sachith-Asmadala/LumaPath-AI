@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { seedExistingStudent } from "./seed-existing-student";
 
 const headers = { "content-type": "application/json" };
-let cv: Record<string, any> | null = null;
+let cv: Record<string, unknown> | null = null;
 
 const sections = [
   { key: "contact", title: "Contact", content: "Student Name\nstudent@example.com" },

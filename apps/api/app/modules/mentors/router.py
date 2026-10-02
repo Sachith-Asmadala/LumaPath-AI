@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from ..subscriptions.service import EntitlementService, get_entitlements
+from ..subscriptions.dependencies import mentor_access
+
 from fastapi import APIRouter, Depends, Header
 
 from ...core.config import settings
@@ -28,7 +31,8 @@ def consent_preview(request: ConsentPreviewRequest, principal: Principal = Depen
 
 
 @student_router.post("/relationships", response_model=CreateRelationshipResponse, status_code=201)
-def create_relationship(request: CreateRelationshipRequest, principal: Principal = Depends(current_principal)):
+def create_relationship(request: CreateRelationshipRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "institution_mentoring")
     return service.create_relationship(principal.student_id, request)
 
 
@@ -53,7 +57,8 @@ def revoke_relationship(relationship_id: str, request: RevokeRelationshipRequest
 
 
 @student_router.post("/relationships/{relationship_id}/guidance-requests", response_model=GuidanceRequestResponse, status_code=201)
-def guidance_request(relationship_id: str, request: GuidanceRequestCreate, principal: Principal = Depends(current_principal)):
+def guidance_request(relationship_id: str, request: GuidanceRequestCreate, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "institution_mentoring")
     return service.create_guidance_request(principal.student_id, relationship_id, request)
 
 
@@ -83,15 +88,18 @@ def access_history(relationship_id: str, principal: Principal = Depends(current_
 
 
 @mentor_router.post("/invitations/accept", response_model=AcceptInvitationResponse)
-def accept_invitation(request: AcceptInvitationRequest):
+def accept_invitation(request: AcceptInvitationRequest, ent: EntitlementService = Depends(get_entitlements)):
+    invitation = repository.by_invitation_hash(service._hash_token(request.invitation_token))
+    if invitation:
+        ent.require(invitation["student_id"], "institution_mentoring")
     return service.accept_invitation(request)
 
 
-@mentor_router.get("/relationships/{relationship_id}", response_model=MentorViewResponse)
+@mentor_router.get("/relationships/{relationship_id}", response_model=MentorViewResponse, dependencies=[Depends(mentor_access)])
 def mentor_view(relationship_id: str, x_luma_mentor_token: str | None = Header(default=None, alias="X-Luma-Mentor-Token")):
     return service.mentor_view(relationship_id, x_luma_mentor_token or "")
 
 
-@mentor_router.post("/relationships/{relationship_id}/recommendations", response_model=RecommendationResponse, status_code=201)
+@mentor_router.post("/relationships/{relationship_id}/recommendations", response_model=RecommendationResponse, status_code=201, dependencies=[Depends(mentor_access)])
 def mentor_recommendation(relationship_id: str, request: RecommendationCreate, x_luma_mentor_token: str | None = Header(default=None, alias="X-Luma-Mentor-Token")):
     return service.mentor_recommend(relationship_id, x_luma_mentor_token or "", request)

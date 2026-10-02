@@ -1,3 +1,4 @@
+import { apiErrorMessage, demoStudentHeaders } from "@/features/subscriptions/entitlements";
 import {
   isCohortList,
   isGovernance,
@@ -20,9 +21,9 @@ async function requestJson(path: string, init: RequestInit = {}, timeoutMs = 12_
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(path, { ...init, cache: "no-store", signal: controller.signal });
+    const response = await fetch(path, { ...init, cache: "no-store", headers: { ...demoStudentHeaders(), ...init.headers }, signal: controller.signal });
     const body = await response.json().catch(() => null) as { detail?: string } | null;
-    if (!response.ok) throw new InstitutionalAnalyticsApiError(body?.detail ?? `Institutional analytics request failed (${response.status}).`, response.status);
+    if (!response.ok) throw new InstitutionalAnalyticsApiError(apiErrorMessage(body, `Institutional analytics request failed (${response.status}).`), response.status);
     return body;
   } catch (error) {
     if (error instanceof InstitutionalAnalyticsApiError) throw error;
@@ -65,10 +66,10 @@ export async function getInstitutionalGovernance(): Promise<Governance> {
 
 export async function downloadInstitutionalExport(cohortId: string, start: string, end: string, timezone = "Asia/Colombo") {
   const query = new URLSearchParams({ cohort_id: cohortId, start, end, timezone });
-  const response = await fetch(`/api/institutional-analytics/export?${query}`, { cache: "no-store" });
+  const response = await fetch(`/api/institutional-analytics/export?${query}`, { cache: "no-store", headers: demoStudentHeaders() });
   if (!response.ok) {
     const body = await response.json().catch(() => null) as { detail?: string } | null;
-    throw new InstitutionalAnalyticsApiError(body?.detail ?? "Aggregate export failed.", response.status);
+    throw new InstitutionalAnalyticsApiError(apiErrorMessage(body, "Aggregate export failed."), response.status);
   }
   const blob = await response.blob();
   const disposition = response.headers.get("content-disposition") ?? "";

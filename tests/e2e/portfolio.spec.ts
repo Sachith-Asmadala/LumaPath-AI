@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { seedExistingStudent } from "./seed-existing-student";
 
 const headers = { "content-type": "application/json" };
-let project: Record<string, any> | null = null;
+let project: Record<string, unknown> | null = null;
 
 function facts() {
   return { technologies: ["Docker", "GitHub Actions"], languages: ["Python"], topics: ["containers"], has_readme: true, has_tests: true, has_documentation: false, has_ci: true, has_docker: true, has_iac: false, has_kubernetes: false, has_monitoring: false, last_activity_at: null };

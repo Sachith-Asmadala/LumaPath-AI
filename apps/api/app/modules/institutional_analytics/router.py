@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..subscriptions.dependencies import institution_access
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from ...core.config import settings
@@ -17,7 +19,7 @@ from .schemas import (
 )
 from .service import InstitutionalAnalyticsService
 
-router = APIRouter(prefix="/v1/institutional-analytics", tags=["institutional-analytics"])
+router = APIRouter(prefix="/v1/institutional-analytics", tags=["institutional-analytics"], dependencies=[Depends(institution_access)])
 _repository = InstitutionalAnalyticsRepository(
     settings.database_path,
     settings.institutional_analytics_subject_key_secret,

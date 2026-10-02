@@ -1,5 +1,6 @@
 "use client";
 
+import { ProBadge } from "@/features/subscriptions/components/pro-badge";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -27,6 +28,7 @@ import {
 } from "@/features/market-taxonomy/services/market-taxonomy";
 import { useLocale } from "@/i18n";
 import { useDemo } from "@/state/demo-provider";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
 
 const REGION_OPTIONS = ["none", "lk"] as const;
 
@@ -34,12 +36,14 @@ function pct(value: number) { return `${Math.round(value * 100)}%`; }
 
 export default function MarketSignalsPage() {
   const { state } = useDemo();
+  const { subscription } = useSubscription();
+  const canGovern = subscription?.entitlements.taxonomy_governance?.enabled === true;
   const { t, formatDate } = useLocale();
   const studentId = state.student.id;
   const [tab, setTab] = useState("student");
   const [roles, setRoles] = useState<CareerScenarioRole[]>([]);
   const [roleId, setRoleId] = useState("devops-engineer");
-  const [region, setRegion] = useState("lk");
+  const [region, setRegion] = useState("none");
   const [comparison, setComparison] = useState<ProfileComparison | null>(null);
   const [updates, setUpdates] = useState<StudentTaxonomyUpdate[]>([]);
   const [studentLoading, setStudentLoading] = useState(true);
@@ -101,7 +105,7 @@ export default function MarketSignalsPage() {
   }, [t]);
 
   useEffect(() => { void loadStudent(); }, [loadStudent]);
-  useEffect(() => { if (tab === "curator") void loadCurator(); }, [tab, loadCurator]);
+  useEffect(() => { if (tab === "curator" && canGovern) void loadCurator(); }, [tab, loadCurator, canGovern]);
 
   const decideUpdate = async (decisionValue: "keep_current" | "recalculate" | "dismiss") => {
     if (!selectedUpdate || !studentId || busy) return;
@@ -151,17 +155,17 @@ export default function MarketSignalsPage() {
         <Badge variant="outline" className="w-fit rounded-xl px-3 py-2"><ShieldCheck className="mr-1.5 size-3.5 text-primary" />{t("marketSignals.humanReviewed")}</Badge>
       </div>
 
-      <Tabs value={tab} onValueChange={setTab} className="mt-5">
+      <Tabs value={canGovern ? tab : "student"} onValueChange={setTab} className="mt-5">
         <TabsList className="h-10 rounded-xl bg-muted/45 p-1">
           <TabsTrigger value="student" className="rounded-lg text-xs">{t("marketSignals.studentView")}</TabsTrigger>
-          <TabsTrigger value="curator" className="rounded-lg text-xs">{t("marketSignals.curatorView")}</TabsTrigger>
+          {canGovern && <TabsTrigger value="curator" className="rounded-lg text-xs">{t("marketSignals.curatorView")}</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="student" className="mt-4 space-y-4">
           <Card className="rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
             <CardContent className="grid gap-3 p-4 sm:p-5 lg:grid-cols-[1fr_0.8fr_auto] lg:items-end">
               <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.career")}</label><Select value={roleId} onValueChange={setRoleId}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{roles.map((role) => <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>)}</SelectContent></Select></div>
-              <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.profile")}</label><Select value={region} onValueChange={setRegion}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{REGION_OPTIONS.map((item) => <SelectItem key={item} value={item}>{item === "none" ? t("marketSignals.internationalOnly") : t("marketSignals.sriLanka")}</SelectItem>)}</SelectContent></Select></div>
+              <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.profile")}<ProBadge /></label><Select value={region} onValueChange={setRegion}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{REGION_OPTIONS.map((item) => <SelectItem key={item} value={item}>{item === "none" ? t("marketSignals.internationalOnly") : t("marketSignals.sriLanka")}</SelectItem>)}</SelectContent></Select></div>
               <Button className="h-10 rounded-xl" onClick={() => void refreshComparison()} disabled={studentLoading || !roleId}><RefreshCw className={`size-3.5 ${studentLoading ? "animate-spin" : ""}`} />{t("marketSignals.compare")}</Button>
             </CardContent>
           </Card>

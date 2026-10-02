@@ -1,3 +1,4 @@
+import { apiErrorMessage } from "@/features/subscriptions/entitlements";
 import type { DemoState } from "@/data/demo/types";
 
 export type MentorConsentCategory = "academic_summary" | "career_goal" | "career_readiness" | "roadmap";
@@ -78,7 +79,7 @@ export async function mentorStudentRequest<T>(path: string, studentId: string, i
     headers: { "X-Luma-Student-Id": studentId, ...(init?.body ? { "Content-Type": "application/json" } : {}), ...(init?.headers ?? {}) },
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.detail ?? "Mentor support request failed.");
+  if (!response.ok) throw new Error(apiErrorMessage(body, "Mentor support request failed."));
   return body as T;
 }
 
@@ -88,6 +89,6 @@ export async function mentorAccessRequest<T>(path: string, accessToken?: string,
     headers: { ...(accessToken ? { "X-Luma-Mentor-Token": accessToken } : {}), ...(init?.body ? { "Content-Type": "application/json" } : {}), ...(init?.headers ?? {}) },
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.detail ?? "Mentor access request failed.");
+  if (!response.ok) throw new Error(apiErrorMessage(body, "Mentor access request failed."));
   return body as T;
 }

@@ -1,3 +1,4 @@
+import { apiErrorMessage, demoStudentHeaders } from "@/features/subscriptions/entitlements";
 import type { ChangeProposal, MarketGovernance, MarketSource, ProfileComparison, SkillSignal, StudentTaxonomyUpdate, TaxonomyVersion } from "@/features/market-taxonomy/domain/market-taxonomy";
 
 export class MarketTaxonomyApiError extends Error {
@@ -7,9 +8,9 @@ export class MarketTaxonomyApiError extends Error {
 async function jsonRequest<T>(path: string, studentId?: string, init: RequestInit = {}): Promise<T> {
   const controller = new AbortController(); const timeout = window.setTimeout(() => controller.abort(), 12_000);
   try {
-    const response = await fetch(path, { ...init, cache: "no-store", signal: controller.signal, headers: { ...(studentId ? { "X-Luma-Student-Id": studentId } : {}), ...(init.body ? { "Content-Type": "application/json" } : {}), ...(init.headers ?? {}) } });
+    const response = await fetch(path, { ...init, cache: "no-store", signal: controller.signal, headers: { ...demoStudentHeaders(), ...(studentId ? { "X-Luma-Student-Id": studentId } : {}), ...(init.body ? { "Content-Type": "application/json" } : {}), ...(init.headers ?? {}) } });
     const body = await response.json().catch(() => null) as { detail?: string } | T | null;
-    if (!response.ok) throw new MarketTaxonomyApiError((body as { detail?: string } | null)?.detail ?? `Market taxonomy request failed (${response.status}).`, response.status);
+    if (!response.ok) throw new MarketTaxonomyApiError(apiErrorMessage(body, `Market taxonomy request failed (${response.status}).`), response.status);
     return body as T;
   } catch (error) {
     if (error instanceof MarketTaxonomyApiError) throw error;

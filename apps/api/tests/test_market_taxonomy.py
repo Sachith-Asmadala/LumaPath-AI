@@ -285,13 +285,15 @@ def test_http_curator_and_student_boundaries(monkeypatch):
     service, *_ = build_service()
     monkeypatch.setattr(router_module, "_service", service)
     app = FastAPI(); app.include_router(router_module.router)
+    from apps.api.tests.entitlement_helpers import grant_test_plan
+    grant_test_plan(app, monkeypatch, service.repository.database_path, "student-http", "institution")
     client = TestClient(app)
-    curator_headers = {"X-Luma-Curator-Id":"curator-http","X-Luma-Curator-Role":"taxonomy_curator","X-Luma-Region-Scope":"international,lk"}
+    curator_headers = {"X-Luma-Student-Id":"student-http","X-Luma-Curator-Id":"curator-http","X-Luma-Curator-Role":"taxonomy_curator","X-Luma-Region-Scope":"international,lk"}
     student_headers = {"X-Luma-Student-Id":"student-http"}
     assert client.get("/v1/market-taxonomy/governance").status_code == 401
     assert client.get("/v1/market-taxonomy/governance", headers=curator_headers).status_code == 200
     assert client.get("/v1/market-taxonomy/student/profile-comparison/devops-engineer?region_code=lk", headers=student_headers).status_code == 200
-    assert client.get("/v1/market-taxonomy/student/updates", headers=curator_headers).status_code == 401
+    assert client.get("/v1/market-taxonomy/student/updates", headers={key:value for key,value in curator_headers.items() if key != "X-Luma-Student-Id"}).status_code == 401
 
 
 def test_governed_certification_and_technology_sources_are_retained_in_signal_provenance():

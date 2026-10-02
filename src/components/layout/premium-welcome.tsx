@@ -25,11 +25,11 @@ export function PremiumWelcome({ studentId }: { studentId: string }) {
   return <Dialog open={open} onOpenChange={(next) => { if (!next) dismiss(); }}>
     <DialogContent className="plus-welcome sm:max-w-[680px]">
       <div className="plus-welcome-art" aria-hidden="true"><div className="plus-orbit plus-orbit-one" /><div className="plus-orbit plus-orbit-two" /><div className="plus-orbit plus-orbit-three" /><span className="plus-art-icon"><Orbit size={44} strokeWidth={1} /></span><span className="plus-art-label">SMALL STEPS. BIG POSSIBILITIES.</span></div>
-      <div className="plus-welcome-copy"><p className="plus-eyebrow"><Sparkles size={14} />INTRODUCING LUMAPATH PLUS</p><DialogTitle className="text-3xl leading-tight tracking-tight sm:text-4xl">Make room for<br />your next chapter.</DialogTitle><DialogDescription className="mt-3 leading-6">Meet the future of your workspace. More perspective, more personal guidance, and more ways to grow.</DialogDescription>
-        <ul className="my-6 space-y-3 text-sm">{["Deeper learning and career insights", "More pathways to explore", "Progress that travels across devices"].map((item) => <li className="flex items-center gap-2.5" key={item}><Check size={16} className="text-primary" />{item}</li>)}</ul>
-        <Button asChild className="h-12 w-full rounded-xl"><Link href="/plans" onClick={dismiss}>Explore Plus<ArrowRight size={16} /></Link></Button>
+      <div className="plus-welcome-copy"><p className="plus-eyebrow"><Sparkles size={14} />INTRODUCING LUMAPATH PRO</p><DialogTitle className="text-3xl leading-tight tracking-tight sm:text-4xl">Make room for<br />your next chapter.</DialogTitle><DialogDescription className="mt-3 leading-6">Explore deeper intelligence, career comparisons, and adaptive planning. Keep your complete basic journey with Free.</DialogDescription>
+        <ul className="my-6 space-y-3 text-sm">{["Deeper learning and career insights", "Saved career scenarios and regional insights", "Higher CV, document, and assistant limits"].map((item) => <li className="flex items-center gap-2.5" key={item}><Check size={16} className="text-primary" />{item}</li>)}</ul>
+        <Button asChild className="h-12 w-full rounded-xl"><Link href="/pricing" onClick={dismiss}>Explore Pro<ArrowRight size={16} /></Link></Button>
         <Button variant="ghost" onClick={dismiss} className="mt-2 h-11 w-full rounded-xl">Continue with Free</Button>
-        <p className="mt-3 text-center text-xs leading-5 text-muted-foreground">Plus is coming soon. Your current tools are free.<br />No payment details needed.</p>
+        <p className="mt-3 text-center text-xs leading-5 text-muted-foreground">Pro adds higher limits and advanced tools.<br />No payment details needed for this demo.</p>
       </div>
     </DialogContent>
   </Dialog>;

@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { useLocale } from "@/i18n/locale-provider";
 import { NotificationPreferencesCard } from "@/features/notifications/components/notification-preferences-card";
 
 export default function SettingsPage() {
+  const { subscription } = useSubscription();
   const { state, resetDemo, learningAction } = useDemo();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
@@ -41,7 +43,7 @@ export default function SettingsPage() {
     <NotificationPreferencesCard />
     {settings.map(({ title, detail, icon: Icon }) => <Card key={title} className="flex items-start gap-3 rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5"><span className="grid size-9 shrink-0 place-items-center rounded-[11px] border border-border/75 bg-background/55 text-primary"><Icon className="size-4" /></span><div><h2 className="text-[0.76rem] font-medium text-foreground">{title}</h2><p className="mt-1 text-[0.66rem] leading-5 text-muted-foreground">{detail}</p></div></Card>)}
     <Card className="rounded-2xl border-border bg-surface-raised p-5 shadow-none"><h2 className="text-sm font-medium">{t("settings.localData")}</h2><p className="mt-2 text-xs leading-6 text-muted-foreground">{t("settings.localDataDescription")}</p><Button variant="outline" className="mt-3 min-h-11" disabled={!state.capacity.lifeLoadNote && !Object.keys(state.capacity.lifeLoadFactors ?? {}).length} onClick={() => learningAction({ type: "clear-life-load" })}>{t("settings.clearPrivate")}</Button><p className="mt-2 text-xs text-muted-foreground">{t("settings.clearPrivateHint")}</p></Card>
-    <Card className="rounded-2xl border-border bg-surface-raised p-5 shadow-none"><h2 className="text-sm font-medium">{t("settings.freePrototype")}</h2><p className="mt-2 text-xs leading-6 text-muted-foreground">{t("settings.freePrototypeDescription")}</p><Button asChild variant="outline" className="mt-3 min-h-11"><Link href="/plans">{t("settings.viewPlans")}</Link></Button></Card>
+    <Card className="rounded-2xl border-border bg-surface-raised p-5 shadow-none"><h2 className="text-sm font-medium">{subscription?.name ?? "My subscription"}</h2><p className="mt-2 text-xs leading-6 text-muted-foreground">Compare Free, Pro and Institution, and review your current allowances.</p><Button asChild variant="outline" className="mt-3 min-h-11"><Link href="/settings/subscription">{t("settings.viewPlans")}</Link></Button></Card>
     <Card className="flex flex-wrap items-center justify-between gap-3 rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5"><div><h2 className="text-sm font-medium text-foreground">{t("settings.resetTitle")}</h2><p className="mt-1 text-xs leading-5 text-muted-foreground">{t("settings.resetDescription")}</p></div><Button type="button" variant="outline" className="h-11 gap-2 rounded-xl" onClick={() => { resetDemo(); router.replace("/onboarding"); }}><RotateCcw className="size-4" aria-hidden="true" />{t("settings.resetTitle")}</Button></Card>
     <Card className="flex items-center gap-3 rounded-[16px] border-border/80 bg-surface-raised px-4 py-4 shadow-none sm:px-5"><div className="relative h-14 w-[155px] shrink-0 overflow-hidden"><BrandLogo size="md" className="absolute top-1/2 left-0 -translate-y-1/2" /></div><p className="text-[0.66rem] leading-5 text-muted-foreground">{t("settings.brandTagline")}</p></Card>
   </div></div>;

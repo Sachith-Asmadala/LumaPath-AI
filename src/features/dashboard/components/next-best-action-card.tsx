@@ -48,8 +48,8 @@ export function NextBestActionCard({ onExplain }: { onExplain: () => void }) {
   return (
     <Card className="h-full relative isolate overflow-hidden rounded-[20px] border border-primary/15 bg-surface-raised py-0 shadow-none">
       <div className="absolute inset-y-0 left-0 w-[2px] bg-primary/70" aria-hidden="true" />
-      <div className="flex h-full flex-col p-5 sm:p-6 lg:p-8">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 sm:mb-8 sm:gap-3">
+      <div className={`flex h-full flex-col ${state.competition ? "p-5" : "p-5 sm:p-6 lg:p-8"}`}>
+        <div className={`flex flex-wrap items-center justify-between gap-2 ${state.competition ? "mb-4" : "mb-4 sm:mb-8 sm:gap-3"}`}>
           <div className="flex items-center gap-2"><span className="grid size-7 place-items-center rounded-[10px] border border-primary/15 bg-primary/[0.06] text-primary"><Sparkles className="size-3.5" /></span><span className="type-eyebrow text-primary">{t("nba.label")}</span></div>
           <span className="flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/[0.06] px-2.5 py-1 text-[0.62rem] text-primary"><span className="size-1.5 rounded-full bg-primary" />{t("nba.recommended")}</span>
         </div>
@@ -66,10 +66,10 @@ export function NextBestActionCard({ onExplain }: { onExplain: () => void }) {
           <span className="inline-flex items-center gap-1.5">{t("nba.deadlineRisk")} <RiskBadge level={action.deadlineRisk} label={action.deadlineRisk} /></span>
           <span className="inline-flex items-center gap-1.5"><Compass className="size-3.5 text-pathway" aria-hidden="true" />{t("nba.careerImpact")} <b className="font-medium text-foreground">{action.careerImpact}</b></span>
         </div>
-        <div className="mt-3 flex items-baseline gap-2 sm:mt-5" role="group" aria-label={t("nba.priorityScoreAria", { score: formatNumber(action.score) })}>
+        {!state.competition && <div className="mt-3 flex items-baseline gap-2 sm:mt-5" role="group" aria-label={t("nba.priorityScoreAria", { score: formatNumber(action.score) })}>
           <span className="type-eyebrow text-muted-foreground">{t("nba.priorityScore")}</span>
           <AnimatePresence mode="wait" initial={false}><motion.span key={`${key}-${action.score}`} initial={{ opacity: 0, y: reduceMotion ? 0 : 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -4 }} transition={{ duration: reduceMotion ? 0.01 : 0.2 }} aria-hidden="true" className="font-mono text-lg font-semibold tracking-[-0.04em] text-primary">{formatNumber(action.score)}<span className="ml-1 text-xs font-normal text-muted-foreground">/ 100</span></motion.span></AnimatePresence>
-        </div>
+        </div>}
         <div className="mt-4 flex flex-wrap items-center gap-2.5 sm:mt-6">
           {action.durationMinutes > 0 ? <Button asChild className="h-10 rounded-[13px] px-4 text-[0.74rem] font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] transition-transform hover:-translate-y-0.5 active:translate-y-0">
             <Link href={`/focus?task=${encodeURIComponent(action.taskId)}`} aria-label={t("nba.startFocusFor", { task: task?.title ?? action.title })}><Timer className="size-4" /><span className="sm:hidden">{t("nba.startFocusShort")}</span><span className="hidden sm:inline">{t("nba.startFocus")}</span><ArrowRight className="ml-1 size-3.5" /></Link>

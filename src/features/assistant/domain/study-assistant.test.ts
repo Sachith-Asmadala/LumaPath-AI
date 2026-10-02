@@ -33,6 +33,7 @@ describe("Study Assistant structured output validation", () => {
   it("accepts the expected response contract and rejects unrestricted text", () => {
     const valid = {
       response_id: "resp-1", session_id: "session-1", mode: "concept_explanation", title: "Concept help", summary: "Summary",
+      requested_locale: "en", response_locale: "en", locale_fallback: false,
       blocks: [{ kind: "explanation", title: "Understand", body: "Body", items: [], quiz: [] }],
       context_used: [{ kind: "module", id: "module-db", label: "Database Systems" }], why_this: "Selected context", proposed_actions: [], citations: [], warnings: [], general_guidance: true,
     };

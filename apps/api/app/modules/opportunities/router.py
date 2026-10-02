@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from ..subscriptions.service import EntitlementService, get_entitlements
+
+from ..competition_demo.clock import competition_service
+
 from fastapi import APIRouter, Depends
 
 from ...core.config import settings
@@ -24,39 +28,41 @@ _service = OpportunityService(
 
 @router.post("/browse", response_model=OpportunityBrowseResponse)
 def browse(request: BrowseRequest, principal: Principal = Depends(current_principal)):
-    return _service.browse(principal.student_id, request)
+    return competition_service(_service, principal.student_id).browse(principal.student_id, request)
 
 
 @router.post("/{opportunity_id}/interactions", response_model=InteractionResponse)
 def interact(opportunity_id: str, request: InteractionRequest, principal: Principal = Depends(current_principal)):
-    return _service.interact(principal.student_id, opportunity_id, request)
+    return competition_service(_service, principal.student_id).interact(principal.student_id, opportunity_id, request)
 
 
 @router.post("/{opportunity_id}/plan-action", response_model=PreparationPlanResponse, status_code=201)
 def plan(opportunity_id: str, request: PreparationPlanRequest, principal: Principal = Depends(current_principal)):
-    return _service.plan(principal.student_id, opportunity_id, request)
+    return competition_service(_service, principal.student_id).plan(principal.student_id, opportunity_id, request)
 
 
 @router.post("/{opportunity_id}/preparation-plans", response_model=PreparationPlanView, status_code=201)
-def propose_preparation(opportunity_id: str, request: PreparationProposalRequest, principal: Principal = Depends(current_principal)):
-    return _service.propose_preparation(principal.student_id, opportunity_id, request)
+def propose_preparation(opportunity_id: str, request: PreparationProposalRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    with ent.meter(principal.student_id, "opportunity_readiness"):
+        return competition_service(_service, principal.student_id).propose_preparation(principal.student_id, opportunity_id, request)
 
 
 @router.post("/{opportunity_id}/preparation-plans/{plan_id}/approve", response_model=PreparationApproveResponse)
-def approve_preparation(opportunity_id: str, plan_id: str, request: PreparationApproveRequest, principal: Principal = Depends(current_principal)):
-    return _service.approve_preparation(principal.student_id, opportunity_id, plan_id, request)
+def approve_preparation(opportunity_id: str, plan_id: str, request: PreparationApproveRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "advanced_opportunity_preparation")
+    return competition_service(_service, principal.student_id).approve_preparation(principal.student_id, opportunity_id, plan_id, request)
 
 
 @router.get("/{opportunity_id}/tracking", response_model=ApplicationTrackingView | None)
 def get_tracking(opportunity_id: str, principal: Principal = Depends(current_principal)):
-    return _service.get_tracking(principal.student_id, opportunity_id)
+    return competition_service(_service, principal.student_id).get_tracking(principal.student_id, opportunity_id)
 
 
 @router.put("/{opportunity_id}/tracking", response_model=ApplicationTrackingView)
 def update_tracking(opportunity_id: str, request: TrackingUpdateRequest, principal: Principal = Depends(current_principal)):
-    return _service.update_tracking(principal.student_id, opportunity_id, request)
+    return competition_service(_service, principal.student_id).update_tracking(principal.student_id, opportunity_id, request)
 
 
 @router.get("/{opportunity_id}/internship-handoff", response_model=InternshipHandoffResponse)
 def handoff(opportunity_id: str, principal: Principal = Depends(current_principal)):
-    return _service.internship_handoff(principal.student_id, opportunity_id)
+    return competition_service(_service, principal.student_id).internship_handoff(principal.student_id, opportunity_id)

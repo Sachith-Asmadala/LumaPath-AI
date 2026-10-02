@@ -6,6 +6,7 @@ import type { NextConfig } from "next";
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const sharedConfig: NextConfig = {
+  devIndicators: false,
   turbopack: {
     root: projectRoot,
   },

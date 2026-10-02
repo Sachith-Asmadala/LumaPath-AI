@@ -215,6 +215,8 @@ def test_http_role_and_consent_matrix(monkeypatch, tmp_path):
     monkeypatch.setattr(mentor_router, "repository", repo)
     monkeypatch.setattr(mentor_router, "pathway_repository", pathways)
     monkeypatch.setattr(mentor_router, "service", service)
+    from apps.api.tests.entitlement_helpers import grant_test_plan
+    grant_test_plan(app, monkeypatch, repo.database_path, "student-http", "institution")
     client = TestClient(app)
     student = {"X-Luma-Student-Id": "student-http"}
     payload = create_request(categories=["career_goal"]).model_dump(mode="json")

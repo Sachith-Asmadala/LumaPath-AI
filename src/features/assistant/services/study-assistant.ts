@@ -1,3 +1,4 @@
+import { apiErrorMessage } from "@/features/subscriptions/entitlements";
 import type { ProposedAssistantAction, StudyAssistantRequest, StudyAssistantResponse } from "@/features/assistant/domain/study-assistant";
 import { isStudyAssistantResponse } from "@/features/assistant/domain/study-assistant";
 
@@ -18,7 +19,7 @@ async function apiFetch(path: string, studentId: string, init: RequestInit, time
       headers: { "Content-Type": "application/json", "X-Luma-Student-Id": studentId, ...(init.headers ?? {}) },
     });
     const body = await response.json().catch(() => null) as { detail?: string } | null;
-    if (!response.ok) throw new StudyAssistantApiError(body?.detail ?? `Study Assistant request failed (${response.status}).`, response.status);
+    if (!response.ok) throw new StudyAssistantApiError(apiErrorMessage(body, `Study Assistant request failed (${response.status}).`), response.status);
     return body;
   } catch (error) {
     if (error instanceof StudyAssistantApiError) throw error;

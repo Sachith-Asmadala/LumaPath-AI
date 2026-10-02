@@ -1,3 +1,4 @@
+import { apiErrorMessage } from "@/features/subscriptions/entitlements";
 import type { DocumentKind, DocumentProposedAction, PlannerValidationContext, StudentDocument } from "@/features/documents/domain/documents";
 import { isStudentDocument } from "@/features/documents/domain/documents";
 
@@ -17,7 +18,7 @@ async function documentFetch(path: string, studentId: string, init: RequestInit 
     if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
     const response = await fetch(path, { ...init, cache: "no-store", headers, signal: controller.signal });
     const body = await response.json().catch(() => null) as { detail?: string } | null;
-    if (!response.ok) throw new DocumentApiError(body?.detail ?? `Document request failed (${response.status}).`, response.status);
+    if (!response.ok) throw new DocumentApiError(apiErrorMessage(body, `Document request failed (${response.status}).`), response.status);
     return body;
   } catch (error) {
     if (error instanceof DocumentApiError) throw error;

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ...subscriptions.service import EntitlementService, get_entitlements
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from ....core.config import settings
@@ -38,10 +40,11 @@ def sync_context(snapshot: StudentAssistantContextSnapshot, principal: Principal
 
 
 @router.post("/respond", response_model=StudyAssistantResponse)
-def respond(request: StudyAssistantRequest, principal: Principal = Depends(current_principal)) -> StudyAssistantResponse:
+def respond(request: StudyAssistantRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)) -> StudyAssistantResponse:
     limiter.check(principal.student_id)
     try:
-        return service.respond(principal.student_id, request)
+        with ent.meter(principal.student_id, "assistant_requests"):
+            return service.respond(principal.student_id, request)
     except AssistantError as exc:
         raise _handle(exc) from exc
 

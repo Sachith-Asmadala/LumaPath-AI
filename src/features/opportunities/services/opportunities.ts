@@ -1,3 +1,4 @@
+import { apiErrorMessage } from "@/features/subscriptions/entitlements";
 import type {
   ApplicationTracking,
   InternshipHandoff,
@@ -18,7 +19,7 @@ async function api(path:string,studentId:string,init:RequestInit={}){
   try {
     const headers=new Headers(init.headers); headers.set("X-Luma-Student-Id",studentId); if(init.body) headers.set("Content-Type","application/json");
     const response=await fetch(path,{...init,headers,signal:controller.signal,cache:"no-store"}); const body=await response.json().catch(()=>null) as {detail?:string}|null;
-    if(!response.ok) throw new OpportunityApiError(body?.detail??`Opportunity request failed (${response.status}).`,response.status); return body;
+    if(!response.ok) throw new OpportunityApiError(apiErrorMessage(body, `Opportunity request failed (${response.status}).`),response.status); return body;
   } catch(error){
     if(error instanceof OpportunityApiError) throw error;
     if(error instanceof DOMException&&error.name==="AbortError") throw new OpportunityApiError("Opportunity service timed out. No feedback, application state or plan data was changed.");

@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Clock3, Sparkles, TriangleAlert } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDemo } from "@/state/demo-provider";
-import { scenarioDate } from "@/data/demo/scenario";
+import { stateScenarioDate } from "@/data/demo/scenario";
 import { riskLevel } from "@/features/planner/domain/priority";
 import { availableCapacity, selectTodayTimeline } from "@/features/dashboard/domain/dashboard";
 
@@ -17,9 +18,9 @@ function destination(startAt: string, today: string) {
 }
 
 export function AdaptiveDayPlan() {
-  const { state } = useDemo();
+  const { state, moveCompetitionDeadline } = useDemo();
   const reduced = useReducedMotion();
-  const today = scenarioDate();
+  const today = stateScenarioDate(state);
   const events = selectTodayTimeline(state, today);
   const available = availableCapacity(state.capacity);
   const hasConflict = events.some((event) => event.isConflict);
@@ -58,13 +59,15 @@ export function AdaptiveDayPlan() {
       <span className="flex items-center gap-1 text-xs text-muted-foreground"><Clock3 className="size-3" aria-hidden="true" />{Math.floor(available / 60)}h {available % 60 || ""}{available % 60 ? "m" : ""} open</span>
     </CardHeader>
     <CardContent className="px-4 pb-4 sm:px-5 sm:pb-5">
+      {state.competition && <div className="mb-3">{state.competition.deadlineChanged ? <section aria-label="Plan adaptation summary" className="rounded-xl border border-success/20 bg-success/[0.04] p-3"><p className="mb-2 text-[0.65rem] font-semibold tracking-wide text-success">PLAN ADAPTED</p>{state.planBlocks.filter(block=>block.adaptationReason&&block.previousStartAt).sort((a,b)=>a.startAt.localeCompare(b.startAt)).map(block=><div key={block.id} className="mt-2"><p className="text-xs font-medium">{block.title}</p><p className="mt-1 text-xs text-primary">{new Date(block.previousStartAt!).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"Asia/Colombo"})} → {new Date(block.startAt).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"Asia/Colombo"})}</p><p className="mt-1 text-[0.62rem] leading-4 text-muted-foreground">{block.adaptationReason}</p></div>)}</section> : <div className="rounded-xl border border-border bg-background/50 p-3"><p className="mb-2 text-xs leading-5 text-muted-foreground">What if the assignment deadline moves earlier?</p><Button size="sm" variant="outline" className="h-auto whitespace-normal rounded-lg py-2 text-xs" disabled={state.simulation.kind!==null} onClick={()=>void moveCompetitionDeadline()}>Move assignment deadline: Oct 7 → Oct 5</Button></div>}</div>}
+
       <AnimatePresence mode="wait" initial={false}>{hasConflict && <motion.div key={optimizing ? "optimizing" : "conflict"} role="status" initial={{ opacity: 0, y: reduced ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduced ? 0 : -8 }} transition={{ duration: reduced ? 0.01 : 0.18 }} className={`mb-3 flex items-center gap-2 rounded-xl border px-3 py-2 text-[0.68rem] ${optimizing ? "border-primary/25 bg-primary/[0.06] text-primary" : "border-warning/30 bg-warning/[0.07] text-warning"}`}>
         {optimizing ? <Sparkles className="size-3.5 shrink-0" aria-hidden="true" /> : <TriangleAlert className="size-3.5 shrink-0" aria-hidden="true" />}
         {optimizing ? "Optimizing schedule to protect the urgent deadline…" : "Schedule conflict · urgent deadline needs this slot"}
       </motion.div>}</AnimatePresence>
       <ol className="relative ml-1 space-y-1 border-l border-border pl-3" aria-label="Today's schedule">
         <AnimatePresence initial={false} mode="popLayout">
-          {events.map((event) => {
+          {(state.competition?.deadlineChanged ? events.filter(event=>!event.adaptationReason) : events).map((event) => {
             const task = state.tasks.find((item) => item.id === event.taskId);
             const moved = Boolean(event.previousStartAt && event.previousStartAt !== event.startAt);
             const rescheduled = !event.startAt.startsWith(today);

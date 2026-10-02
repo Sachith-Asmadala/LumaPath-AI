@@ -311,3 +311,13 @@ body:has(.workspace-shell) [data-sidebar="sidebar"] { background: var(--sidebar)
 .nav-section-content:not([hidden]) { animation: workspace-reveal 220ms ease both; }
 @keyframes workspace-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .nav-section-content:not([hidden]) { animation: none; } }
+/* The existing membership cards now display the three business-model tiers. */
+@media (min-width: 1100px) { .membership-grid[data-plans="three"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.competition-demo-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 24px 0; padding: 12px 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); font-size: .7rem; }
+.competition-demo-bar strong { display: block; font-weight: 500; color: var(--primary); }
+.competition-demo-bar small { display: block; margin-top: 3px; color: var(--muted-foreground); font-size: .65rem; }
+.competition-demo-bar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.competition-demo-bar nav a { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 9px; color: var(--muted-foreground); }
+.competition-demo-bar nav a[aria-current="page"] { background: var(--tint-lavender); color: var(--primary); }
+.competition-demo-bar button { height: 32px; font-size: .65rem; }

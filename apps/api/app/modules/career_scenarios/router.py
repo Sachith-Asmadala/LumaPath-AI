@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from contextlib import nullcontext
+from uuid import uuid4
+from ..subscriptions.service import EntitlementService, get_entitlements
+
+from ..competition_demo.clock import competition_service
+
 from fastapi import APIRouter, Depends
 
 from ...core.config import settings
@@ -13,7 +19,7 @@ from ..pathways.service import PathwayService
 from .repository import CareerScenarioRepository
 from .schemas import (
     ScenarioCreateRequest, ScenarioRecomputeRequest, ScenarioSaveRequest,
-    ScenarioSwitchRequest, ScenarioSwitchResponse, ScenarioView,
+    ScenarioSwitchRequest, ScenarioSwitchResponse, ScenarioView, ScenarioResultView,
 )
 from .service import CareerScenarioService
 
@@ -40,30 +46,64 @@ def roles(_: Principal = Depends(current_principal)):
 
 
 @router.post("", response_model=ScenarioView, status_code=201)
-def create(request: ScenarioCreateRequest, principal: Principal = Depends(current_principal)):
-    return _service.create(principal.student_id, request)
+def create(request: ScenarioCreateRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "comparison_roles", amount=len(request.role_ids))
+    slot = f"pending:{uuid4().hex}"
+    if request.save:
+        ent.require(principal.student_id, "scenario_history")
+    with ent.meter(principal.student_id, "career_comparisons"), (ent.resource(principal.student_id, "saved_scenarios", slot) if request.save else nullcontext()):
+        result = competition_service(_service, principal.student_id).create(principal.student_id, request)
+        if request.save:
+            ent.rename_resource(principal.student_id, "saved_scenarios", slot, result.id)
+        return result
 
 
 @router.get("/saved", response_model=list[ScenarioView])
-def saved(principal: Principal = Depends(current_principal)):
-    return _service.list_saved(principal.student_id)
+def saved(principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "scenario_history")
+    return competition_service(_service, principal.student_id).list_saved(principal.student_id)
 
 
 @router.get("/{scenario_id}", response_model=ScenarioView)
-def get(scenario_id: str, principal: Principal = Depends(current_principal)):
-    return _service.get(principal.student_id, scenario_id)
+def get(scenario_id: str, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    result = competition_service(_service, principal.student_id).get(principal.student_id, scenario_id)
+    if result.status == "saved":
+        ent.require(principal.student_id, "scenario_history")
+    return result
 
 
 @router.post("/{scenario_id}/recompute", response_model=ScenarioView, status_code=201)
-def recompute(scenario_id: str, request: ScenarioRecomputeRequest, principal: Principal = Depends(current_principal)):
-    return _service.recompute(principal.student_id, scenario_id, request)
+def recompute(scenario_id: str, request: ScenarioRecomputeRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    current = competition_service(_service, principal.student_id).get(principal.student_id, scenario_id)
+    if current.status == "saved":
+        ent.require(principal.student_id, "scenario_history")
+    ent.require(principal.student_id, "comparison_roles", amount=len(current.role_ids))
+    with ent.meter(principal.student_id, "career_comparisons"):
+        return competition_service(_service, principal.student_id).recompute(principal.student_id, scenario_id, request)
 
 
 @router.put("/{scenario_id}/saved", response_model=ScenarioView)
-def save(scenario_id: str, request: ScenarioSaveRequest, principal: Principal = Depends(current_principal)):
-    return _service.save(principal.student_id, scenario_id, request)
+def save(scenario_id: str, request: ScenarioSaveRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    competition_service(_service, principal.student_id).get(principal.student_id, scenario_id)
+    if request.saved:
+        ent.require(principal.student_id, "scenario_history")
+        with ent.resource(principal.student_id, "saved_scenarios", scenario_id):
+            return competition_service(_service, principal.student_id).save(principal.student_id, scenario_id, request)
+    result = competition_service(_service, principal.student_id).save(principal.student_id, scenario_id, request)
+    ent.release_resource(principal.student_id, "saved_scenarios", scenario_id)
+    return result
 
 
 @router.post("/{scenario_id}/switch-draft", response_model=ScenarioSwitchResponse, status_code=201)
-def switch_draft(scenario_id: str, request: ScenarioSwitchRequest, principal: Principal = Depends(current_principal)):
-    return _service.switch_draft(principal.student_id, scenario_id, request)
+def switch_draft(scenario_id: str, request: ScenarioSwitchRequest, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    current = competition_service(_service, principal.student_id).get(principal.student_id, scenario_id)
+    if current.status == "saved":
+        ent.require(principal.student_id, "scenario_history")
+    ent.require(principal.student_id, "comparison_roles", amount=len(current.role_ids))
+    return competition_service(_service, principal.student_id).switch_draft(principal.student_id, scenario_id, request)
+
+
+@router.get("/{scenario_id}/history", response_model=list[ScenarioResultView])
+def history(scenario_id: str, principal: Principal = Depends(current_principal), ent: EntitlementService = Depends(get_entitlements)):
+    ent.require(principal.student_id, "scenario_history")
+    return competition_service(_service, principal.student_id).history(principal.student_id, scenario_id)

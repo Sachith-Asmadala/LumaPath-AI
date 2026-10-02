@@ -7,11 +7,11 @@ async function enter(page: Page) {
   await page.getByRole("button", { name: "Continue with Free", exact: true }).click();
 }
 
-test("Plus introduction is dismissible and stays dismissed on return", async ({ page }) => {
+test("Pro introduction is dismissible and stays dismissed on return", async ({ page }) => {
   await seedExistingStudent(page, { showWelcome: true });
   await page.goto("/overview");
   const welcome = page.getByRole("dialog");
-  await expect(welcome).toContainText("Plus is coming soon");
+  await expect(welcome).toContainText("INTRODUCING LUMAPATH PRO");
   await page.keyboard.press("Escape");
   await expect(welcome).toBeHidden();
   await page.reload();
@@ -19,8 +19,8 @@ test("Plus introduction is dismissible and stays dismissed on return", async ({ 
   await page.waitForTimeout(1200);
   await expect(welcome).toBeHidden();
   await page.goto("/plans");
-  await expect(page.getByRole("heading", { name: "LumaPath Plus", exact: true })).toBeVisible();
-  await expect(page.getByText("pricing to be announced")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "LumaPath Pro", exact: true })).toBeVisible();
+  await expect(page.getByText(/pricing to be announced/)).toBeVisible();
 });
 
 test("overview separates daily actions from growth and keeps capacity accessible", async ({ page }) => {

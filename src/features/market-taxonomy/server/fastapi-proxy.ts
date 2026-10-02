@@ -29,9 +29,11 @@ export async function proxyStudentMarketTaxonomy(request: Request, backendPath: 
 
 export async function proxyCuratorMarketTaxonomy(request: Request, backendPath: string) {
   const development = process.env.NODE_ENV !== "production";
+  const studentId = request.headers.get("x-luma-student-id");
+  if (!studentId) return Response.json({ detail: "Verified subscription identity is required." }, { status: 401 });
   const curatorId = request.headers.get("x-luma-curator-id") ?? (development ? process.env.LUMAPATH_DEMO_CURATOR_ID ?? "taxonomy-reviewer-demo" : null);
   const role = request.headers.get("x-luma-curator-role") ?? (development ? process.env.LUMAPATH_DEMO_CURATOR_ROLE ?? "taxonomy_reviewer" : null);
   const regionScope = request.headers.get("x-luma-region-scope") ?? (development ? process.env.LUMAPATH_DEMO_REGION_SCOPE ?? "international,lk" : null);
   if (!curatorId || !role || !regionScope) return Response.json({ detail: "Verified taxonomy curator session is required." }, { status: 401 });
-  return forward(request, backendPath, { "X-Luma-Curator-Id": curatorId, "X-Luma-Curator-Role": role, "X-Luma-Region-Scope": regionScope }, "Market taxonomy curation service is unavailable. No proposal was changed.");
+  return forward(request, backendPath, { "X-Luma-Student-Id": studentId, "X-Luma-Curator-Id": curatorId, "X-Luma-Curator-Role": role, "X-Luma-Region-Scope": regionScope }, "Market taxonomy curation service is unavailable. No proposal was changed.");
 }
