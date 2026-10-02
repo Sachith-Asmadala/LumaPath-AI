@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { EvidenceStatus, RiskLevel, SkillStatus, TaskCategory } from "@/lib/demo-data/types";
+import type { EvidenceStatus, RiskLevel, SkillStatus, TaskCategory } from "@/data/demo/types";
 
 const riskStyles: Record<RiskLevel, string> = {
   critical: "border-risk/30 bg-risk/10 text-risk",

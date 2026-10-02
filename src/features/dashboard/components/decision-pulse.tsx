@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { useDemo } from "@/lib/state/demo-provider";
-import { capacityStages } from "@/lib/domain/dashboard";
+import { useDemo } from "@/state/demo-provider";
+import { capacityStages } from "@/features/dashboard/domain/dashboard";
 
 /** Shared, non-blocking feedback for decisions made anywhere in the demo workspace. */
 export function DecisionPulse({ floating = false }: { floating?: boolean }) {

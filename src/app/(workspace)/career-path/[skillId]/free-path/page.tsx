@@ -7,10 +7,10 @@ import { ArrowLeft, CheckCircle2, ExternalLink, ListChecks } from "lucide-react"
 import Loading from "@/app/loading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { freePathForSkill, freePathWeeks } from "@/lib/demo-data/free-learning-paths";
-import { useDemo } from "@/lib/state/demo-provider";
+import { freePathForSkill, freePathWeeks } from "@/data/demo/free-learning-paths";
+import { useDemo } from "@/state/demo-provider";
 import { LearningPathCompletionCard } from "@/features/career/components/learning-path-completion";
-import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
+import { selectLearningPathCompletion } from "@/features/career/domain/skill-reassessment";
 
 export default function FreeLearningPathPage() {
   const { skillId } = useParams<{ skillId: string }>();

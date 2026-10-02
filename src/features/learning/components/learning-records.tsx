@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { completionEligibility, externalCertificateEvidence, type ExternalCertificateInput } from "@/lib/domain/learning";
-import { useDemo } from "@/lib/state/demo-provider";
+import { completionEligibility, externalCertificateEvidence, type ExternalCertificateInput } from "@/features/learning/domain/learning";
+import { useDemo } from "@/state/demo-provider";
 
 export function LearningRecords() {
   const { state, learningAction } = useDemo();

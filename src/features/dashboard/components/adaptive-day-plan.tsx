@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Clock3, Sparkles, TriangleAlert } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDemo } from "@/lib/state/demo-provider";
-import { scenarioDate } from "@/lib/demo-data/scenario";
-import { riskLevel } from "@/lib/domain/priority";
-import { availableCapacity, selectTodayTimeline } from "@/lib/domain/dashboard";
+import { useDemo } from "@/state/demo-provider";
+import { scenarioDate } from "@/data/demo/scenario";
+import { riskLevel } from "@/features/planner/domain/priority";
+import { availableCapacity, selectTodayTimeline } from "@/features/dashboard/domain/dashboard";
 
 function destination(startAt: string, today: string) {
   const time = startAt.slice(11, 16);

@@ -4,7 +4,7 @@ import { BookOpenCheck, ChartNoAxesCombined, Compass } from "lucide-react";
 import { Reveal } from "@/components/motion/animated";
 import { TypographyH1, TypographyP } from "@/components/shared/typography";
 import { SkillGapList } from "@/features/skills/components/skill-gap-list";
-import { useDemo } from "@/lib/state/demo-provider";
+import { useDemo } from "@/state/demo-provider";
 
 export default function SkillsPage() {
   const { state } = useDemo();

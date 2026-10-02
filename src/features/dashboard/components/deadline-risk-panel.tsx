@@ -6,10 +6,10 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { AlertTriangle, ArrowRight, CalendarClock, ChevronDown, ChevronUp, CircleDot, Clock3, GitBranch, Gauge, RotateCcw, Sparkles, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { riskLevel } from "@/lib/domain/priority";
+import { riskLevel } from "@/features/planner/domain/priority";
 import { AnimatedCounter, AnimatedProgress, MotionButton } from "@/components/motion/animated";
-import { useDemo } from "@/lib/state/demo-provider";
-import { availableCapacity, selectDeadlineRiskTasks } from "@/lib/domain/dashboard";
+import { useDemo } from "@/state/demo-provider";
+import { availableCapacity, selectDeadlineRiskTasks } from "@/features/dashboard/domain/dashboard";
 
 export function DeadlineRiskPanel() {
   const { state, applyRecoveryPlan } = useDemo();

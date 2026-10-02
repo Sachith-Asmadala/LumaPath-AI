@@ -11,10 +11,12 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { canCompleteOnboarding, moduleNames } from "@/lib/demo-data/onboarding";
-import type { CareerGoal, LearningBudget, LearningStyle, StudentGoal } from "@/lib/demo-data/types";
-import { useDemo } from "@/lib/state/demo-provider";
-import { nextStudentJourneyRoute } from "@/lib/domain/student-journey";
+import { canCompleteOnboarding, moduleNames } from "@/data/demo/onboarding";
+import type { CareerGoal, LearningBudget, LearningStyle, StudentGoal } from "@/data/demo/types";
+import { useDemo } from "@/state/demo-provider";
+import { nextStudentJourneyRoute } from "@/features/onboarding/domain/student-journey";
+import { localeOptions } from "@/i18n/config";
+import { useLocale } from "@/i18n/locale-provider";
 
 const steps = [
   { label: "Basic Profile", shortLabel: "Profile", icon: GraduationCap },
@@ -25,6 +27,9 @@ const careerGoals: CareerGoal[] = ["DevOps Engineer", "Backend Engineer", "AI En
 const budgets: LearningBudget[] = ["free only", "under $20/month", "flexible"];
 const learningStyles: LearningStyle[] = ["video", "hands-on", "reading", "projects"];
 const studentGoals: StudentGoal[] = ["internship", "entry-level job", "certification"];
+const budgetMessageKey: Record<LearningBudget, string> = { "free only": "onboarding.budget.free", "under $20/month": "onboarding.budget.under20", flexible: "onboarding.budget.flexible" };
+const learningStyleMessageKey: Record<LearningStyle, string> = { video: "onboarding.style.video", "hands-on": "onboarding.style.handsOn", reading: "onboarding.style.reading", projects: "onboarding.style.projects" };
+const goalMessageKey: Record<StudentGoal, string> = { internship: "onboarding.goal.internship", "entry-level job": "onboarding.goal.entry", certification: "onboarding.goal.certification" };
 
 const fieldClass = "h-11 w-full rounded-xl border-border/80 bg-background/65 px-3 text-sm";
 const choiceClass = "min-h-12 rounded-xl border px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -33,6 +38,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const { state, onboardingReady, updateOnboarding, completeOnboarding } = useDemo();
+  const { locale, setLocale, t } = useLocale();
   const draft = state.onboarding;
   const step = draft.draftStep ?? 0;
   const setStep = (value: number) => updateOnboarding({ draftStep: value });
@@ -56,29 +62,35 @@ export default function OnboardingPage() {
       <div className="relative mx-auto w-full max-w-[860px]">
         <div className="mb-7 flex items-center justify-between gap-4 sm:mb-9">
           <div className="relative h-16 w-[155px] shrink-0 overflow-hidden"><BrandLogo size="md" decorative priority className="absolute top-1/2 left-0 -translate-y-1/2" /></div>
-          <span className="rounded-full border border-border/80 bg-card/70 px-3 py-1.5 text-xs font-medium text-muted-foreground">Student setup · {step + 1} of 3</span>
+          <span className="rounded-full border border-border/80 bg-card/70 px-3 py-1.5 text-xs font-medium text-muted-foreground">{t("onboarding.setup", { step: step + 1 })}</span>
         </div>
 
         <div className="mb-6 max-w-[660px]">
-          <p className="type-eyebrow mb-2 text-primary">Your path starts here</p>
-          <h1 className="font-heading text-[clamp(1.8rem,4vw,2.65rem)] font-semibold leading-tight tracking-[-0.04em] text-foreground">Build a plan that fits your starting point.</h1>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">Tell us about your studies, career direction, and how you like to learn.</p>
+          <p className="type-eyebrow mb-2 text-primary">LumaPath</p>
+          <h1 className="font-heading text-[clamp(1.8rem,4vw,2.65rem)] font-semibold leading-tight tracking-[-0.04em] text-foreground">{t("onboarding.profileDescription")}</h1>
+          <div className="mt-5 rounded-2xl border border-border/80 bg-card/60 p-4">
+            <Label className="text-xs font-medium">{t("onboarding.interfaceLanguage")}</Label>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("onboarding.interfaceLanguageHint")}</p>
+            <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={t("onboarding.interfaceLanguage")}>
+              {localeOptions.map((option) => <button key={option.code} type="button" role="radio" aria-checked={locale === option.code} onClick={() => setLocale(option.code)} className={`${choiceClass} min-h-10 py-2 ${locale === option.code ? "border-primary/55 bg-primary/[0.08] text-foreground" : "border-border bg-background/55 text-muted-foreground"}`}>{option.nativeLabel}</button>)}
+            </div>
+          </div>
         </div>
 
         <Card className="gap-0 rounded-[22px] border border-border/85 bg-surface-raised py-0 shadow-[0_18px_50px_-38px_rgba(0,0,0,0.45)]">
           <div className="border-b border-border/75 px-5 pt-5 pb-6 sm:px-8 sm:pt-7">
-            <ol className="grid grid-cols-3 gap-2" aria-label="Onboarding steps">
-              {steps.map(({ label, shortLabel, icon: Icon }, index) => <li key={label} aria-current={index === step ? "step" : undefined} className="min-w-0">
+            <ol className="grid grid-cols-3 gap-2" aria-label={t("onboarding.stepsLabel")}>
+              {steps.map(({ label, icon: Icon }, index) => { const translatedLabel = index === 0 ? t("onboarding.profile") : index === 1 ? t("onboarding.careerGoal") : t("onboarding.learningPreferences"); return <li key={label} aria-current={index === step ? "step" : undefined} className="min-w-0">
                 <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:gap-3">
                   <span className={`grid size-9 shrink-0 place-items-center rounded-xl border sm:size-10 ${index < step ? "border-success/30 bg-success/10 text-success" : index === step ? "border-primary/40 bg-primary/10 text-primary" : "border-border bg-background/60 text-muted-foreground"}`}>
                     {index < step ? <Check className="size-4" aria-hidden="true" /> : <Icon className="size-4" aria-hidden="true" />}
                   </span>
-                  <span className={`hidden text-xs font-medium leading-tight sm:block ${index === step ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
-                  <span className={`text-[0.7rem] font-medium sm:hidden ${index === step ? "text-foreground" : "text-muted-foreground"}`}>{shortLabel}</span>
+                  <span className={`hidden text-xs font-medium leading-tight sm:block ${index === step ? "text-foreground" : "text-muted-foreground"}`}>{translatedLabel}</span>
+                  <span className={`text-[0.7rem] font-medium sm:hidden ${index === step ? "text-foreground" : "text-muted-foreground"}`}>{translatedLabel}</span>
                 </div>
-              </li>)}
+              </li>; })}
             </ol>
-            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-background/80" role="progressbar" aria-label="Onboarding progress" aria-valuemin={0} aria-valuemax={3} aria-valuenow={step + 1}>
+            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-background/80" role="progressbar" aria-label={t("onboarding.progressLabel")} aria-valuemin={0} aria-valuemax={3} aria-valuenow={step + 1}>
               <motion.div initial={false} className="h-full rounded-full bg-primary" animate={{ width: `${((step + 1) / 3) * 100}%` }} transition={{ duration: reduceMotion ? 0 : 0.28 }} />
             </div>
           </div>
@@ -87,43 +99,43 @@ export default function OnboardingPage() {
             <AnimatePresence mode="wait" initial={false}>
               <motion.section key={step} initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }} transition={{ duration: reduceMotion ? 0.01 : 0.22 }} aria-labelledby="onboarding-step-title">
                 {step === 0 && <>
-                  <div className="mb-6"><p className="type-eyebrow text-primary">01 / Student context</p><h2 id="onboarding-step-title" className="mt-1 font-heading text-xl font-semibold text-foreground">Basic Profile</h2><p className="mt-1 text-sm text-muted-foreground">Start with the academic context that shapes your plan.</p></div>
+                  <div className="mb-6"><p className="type-eyebrow text-primary">{t("onboarding.stepStudentContext")}</p><h2 id="onboarding-step-title" className="mt-1 font-heading text-xl font-semibold text-foreground">{t("onboarding.profile")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("onboarding.profileDescription")}</p></div>
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <Field id="student-name" label="Full name"><Input id="student-name" autoComplete="name" value={draft.name} onChange={(event) => updateOnboarding({ name: event.target.value })} placeholder="Your name" className={fieldClass} /></Field>
-                    <Field id="university" label="University"><Input id="university" autoComplete="organization" value={draft.university} onChange={(event) => updateOnboarding({ university: event.target.value })} placeholder="Your university" className={fieldClass} /></Field>
-                    <Field id="degree" label="Degree"><Input id="degree" value={draft.degree} onChange={(event) => updateOnboarding({ degree: event.target.value })} placeholder="e.g. Computer Science" className={fieldClass} /></Field>
+                    <Field id="student-name" label={t("onboarding.name")}><Input id="student-name" autoComplete="name" value={draft.name} onChange={(event) => updateOnboarding({ name: event.target.value })} placeholder={t("onboarding.namePlaceholder")} className={fieldClass} /></Field>
+                    <Field id="university" label={t("onboarding.university")}><Input id="university" autoComplete="organization" value={draft.university} onChange={(event) => updateOnboarding({ university: event.target.value })} placeholder={t("onboarding.universityPlaceholder")} className={fieldClass} /></Field>
+                    <Field id="degree" label={t("onboarding.degree")}><Input id="degree" value={draft.degree} onChange={(event) => updateOnboarding({ degree: event.target.value })} placeholder={t("onboarding.degreePlaceholder")} className={fieldClass} /></Field>
                     <div className="grid grid-cols-2 gap-3">
-                      <Field id="academic-year" label="Academic year"><select id="academic-year" value={draft.academicYear} onChange={(event) => updateOnboarding({ academicYear: event.target.value })} className={fieldClass}><option value="">Select year</option>{[1, 2, 3, 4, 5].map((year) => <option key={year} value={`Year ${year}`}>Year {year}</option>)}</select></Field>
-                      <Field id="semester" label="Semester"><select id="semester" value={draft.semester} onChange={(event) => updateOnboarding({ semester: event.target.value })} className={fieldClass}><option value="">Select</option>{[1, 2, 3].map((semester) => <option key={semester} value={`Semester ${semester}`}>Semester {semester}</option>)}</select></Field>
+                      <Field id="academic-year" label={t("onboarding.academicYear")}><select id="academic-year" value={draft.academicYear} onChange={(event) => updateOnboarding({ academicYear: event.target.value })} className={fieldClass}><option value="">{t("onboarding.selectYear")}</option>{[1, 2, 3, 4, 5].map((year) => <option key={year} value={`Year ${year}`}>{t("onboarding.yearOption", { year })}</option>)}</select></Field>
+                      <Field id="semester" label={t("onboarding.semester")}><select id="semester" value={draft.semester} onChange={(event) => updateOnboarding({ semester: event.target.value })} className={fieldClass}><option value="">{t("onboarding.select")}</option>{[1, 2, 3].map((semester) => <option key={semester} value={`Semester ${semester}`}>{t("onboarding.semesterOption", { semester })}</option>)}</select></Field>
                     </div>
-                    <div className="sm:col-span-2"><Field id="modules" label="Current modules"><Textarea id="modules" value={draft.currentModules} onChange={(event) => updateOnboarding({ currentModules: event.target.value })} placeholder="e.g. Databases, Software Engineering, Cloud Computing" className="min-h-24 rounded-xl border-border/80 bg-background/65 px-3 py-3 text-sm" /><p className="mt-1.5 text-xs text-muted-foreground">Separate modules with commas or new lines.</p></Field></div>
+                    <div className="sm:col-span-2"><Field id="modules" label={t("onboarding.modules")}><Textarea id="modules" value={draft.currentModules} onChange={(event) => updateOnboarding({ currentModules: event.target.value })} placeholder={t("onboarding.modulesPlaceholder")} className="min-h-24 rounded-xl border-border/80 bg-background/65 px-3 py-3 text-sm" /><p className="mt-1.5 text-xs text-muted-foreground">{t("onboarding.modulesHint")}</p></Field></div>
                   </div>
                 </>}
                 {step === 1 && <>
-                  <div className="mb-6"><p className="type-eyebrow text-primary">02 / Direction</p><h2 id="onboarding-step-title" className="mt-1 font-heading text-xl font-semibold text-foreground">Career Goal</h2><p className="mt-1 text-sm text-muted-foreground">Choose the role you want to work toward.</p></div>
-                  <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Career goal">
+                  <div className="mb-6"><p className="type-eyebrow text-primary">{t("onboarding.stepDirection")}</p><h2 id="onboarding-step-title" className="mt-1 font-heading text-xl font-semibold text-foreground">{t("onboarding.careerGoal")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("onboarding.careerDescription")}</p></div>
+                  <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label={t("onboarding.careerGoalGroup")}>
                     {careerGoals.map((goal) => {
                       const supported = goal === "DevOps Engineer";
                       const selected = draft.careerGoal === goal;
                       return <button key={goal} type="button" role="radio" aria-checked={selected} disabled={!supported} onClick={() => updateOnboarding({ careerGoal: goal })} className={`${choiceClass} flex items-center justify-between gap-3 ${selected ? "border-primary/55 bg-primary/[0.07] text-foreground" : "border-border bg-background/55 text-muted-foreground"} disabled:cursor-not-allowed disabled:opacity-55`}>
-                        <span className="font-medium">{goal}</span><span className={`text-xs ${supported ? "text-primary" : "text-muted-foreground"}`}>{supported ? selected ? "Selected" : "Available" : "Coming soon"}</span>
+                        <span className="font-medium">{goal}</span><span className={`text-xs ${supported ? "text-primary" : "text-muted-foreground"}`}>{supported ? selected ? t("common.selected") : t("common.available") : t("common.comingSoon")}</span>
                       </button>;
                     })}
                   </div>
-                  <details className="mt-5 rounded-xl border border-border p-4"><summary className="cursor-pointer text-sm font-medium">Your knowledge and interests (optional)</summary><p className="mt-3 text-xs leading-5 text-muted-foreground">Use this for context. Your assessment will determine skill scores.</p><div className="mt-4 grid gap-3 sm:grid-cols-2">{["Programming", "Linux", "Git", "Networking", "Docker", "Cloud"].map((skill) => <Field key={skill} id={`knowledge-${skill}`} label={skill}><select id={`knowledge-${skill}`} className={fieldClass} value={draft.knowledge?.[skill] ?? ""} onChange={(event) => updateOnboarding({ knowledge: { ...draft.knowledge, [skill]: event.target.value as "beginner" | "basic" | "intermediate" | "advanced" } })}><option value="">Not specified</option>{["beginner", "basic", "intermediate", "advanced"].map((level) => <option key={level} value={level}>{level}</option>)}</select></Field>)}</div><div className="mt-5"><ChoiceGroup label="What interests you?">{["Automation", "Cloud", "Coding", "Security", "Data", "Design"].map((interest) => <Choice key={interest} selected={Boolean(draft.interests?.includes(interest))} onClick={() => updateOnboarding({ interests: draft.interests?.includes(interest) ? draft.interests.filter((item) => item !== interest) : [...(draft.interests ?? []), interest] })}>{interest}</Choice>)}</ChoiceGroup></div></details>
-                  <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-pathway/20 bg-pathway/[0.055] p-3 text-sm leading-5 text-foreground/85"><Sparkles className="mt-0.5 size-4 shrink-0 text-pathway" aria-hidden="true" />The DevOps path is fully supported in this prototype. More paths are on the way.</div>
+                  <details className="mt-5 rounded-xl border border-border p-4"><summary className="cursor-pointer text-sm font-medium">{t("onboarding.knowledgeSummary")}</summary><p className="mt-3 text-xs leading-5 text-muted-foreground">{t("onboarding.knowledgeHint")}</p><div className="mt-4 grid gap-3 sm:grid-cols-2">{["Programming", "Linux", "Git", "Networking", "Docker", "Cloud"].map((skill) => <Field key={skill} id={`knowledge-${skill}`} label={skill}><select id={`knowledge-${skill}`} className={fieldClass} value={draft.knowledge?.[skill] ?? ""} onChange={(event) => updateOnboarding({ knowledge: { ...draft.knowledge, [skill]: event.target.value as "beginner" | "basic" | "intermediate" | "advanced" } })}><option value="">{t("onboarding.notSpecified")}</option>{["beginner", "basic", "intermediate", "advanced"].map((level) => <option key={level} value={level}>{t(`onboarding.level.${level}`)}</option>)}</select></Field>)}</div><div className="mt-5"><ChoiceGroup label={t("onboarding.interests")}>{["Automation", "Cloud", "Coding", "Security", "Data", "Design"].map((interest) => <Choice key={interest} selected={Boolean(draft.interests?.includes(interest))} onClick={() => updateOnboarding({ interests: draft.interests?.includes(interest) ? draft.interests.filter((item) => item !== interest) : [...(draft.interests ?? []), interest] })}>{interest}</Choice>)}</ChoiceGroup></div></details>
+                  <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-pathway/20 bg-pathway/[0.055] p-3 text-sm leading-5 text-foreground/85"><Sparkles className="mt-0.5 size-4 shrink-0 text-pathway" aria-hidden="true" />{t("onboarding.pathSupport")}</div>
                 </>}
                 {step === 2 && <>
-                  <div className="mb-6"><p className="type-eyebrow text-primary">03 / Your learning rhythm</p><h2 id="onboarding-step-title" className="mt-1 font-heading text-xl font-semibold text-foreground">Learning Preferences</h2><p className="mt-1 text-sm text-muted-foreground">Choose a pace and format you can keep up with.</p></div>
+                  <div className="mb-6"><p className="type-eyebrow text-primary">{t("onboarding.stepLearningRhythm")}</p><h2 id="onboarding-step-title" className="mt-1 font-heading text-xl font-semibold text-foreground">{t("onboarding.learningPreferences")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("onboarding.learningDescription")}</p></div>
                   <div className="space-y-6">
                     <div className="grid gap-5 sm:grid-cols-2">
-                      <Field id="weekly-hours" label="Weekly learning hours"><Input id="weekly-hours" type="number" inputMode="numeric" min={1} max={40} value={draft.weeklyLearningHours} onChange={(event) => updateOnboarding({ weeklyLearningHours: Number(event.target.value) })} className={fieldClass} /></Field>
-                      <Field id="language" label="Learning language"><Input id="language" value={draft.language} onChange={(event) => updateOnboarding({ language: event.target.value })} placeholder="e.g. English" className={fieldClass} /></Field>
+                      <Field id="weekly-hours" label={t("onboarding.weeklyHours")}><Input id="weekly-hours" type="number" inputMode="numeric" min={1} max={40} value={draft.weeklyLearningHours} onChange={(event) => updateOnboarding({ weeklyLearningHours: Number(event.target.value) })} className={fieldClass} /></Field>
+                      <Field id="language" label={t("onboarding.learningLanguage")}><Input id="language" value={draft.language} onChange={(event) => updateOnboarding({ language: event.target.value })} placeholder={t("onboarding.learningLanguagePlaceholder")} className={fieldClass} /><p className="mt-1.5 text-xs text-muted-foreground">{t("onboarding.learningLanguageHint")}</p></Field>
                     </div>
-                    <ChoiceGroup label="Monthly learning budget">{budgets.map((budget) => <Choice key={budget} selected={draft.budget === budget} onClick={() => updateOnboarding({ budget })}>{budget}</Choice>)}</ChoiceGroup>
-                    <ChoiceGroup label="Preferred learning formats" hint="Select one or more">{learningStyles.map((style) => <Choice key={style} selected={draft.preferredLearning.includes(style)} onClick={() => updateOnboarding({ preferredLearning: draft.preferredLearning.includes(style) ? draft.preferredLearning.filter((item) => item !== style) : [...draft.preferredLearning, style] })}>{style}</Choice>)}</ChoiceGroup>
-                    <ChoiceGroup label="Certificate importance">{(["required", "preferred", "not important"] as const).map((certificatePreference) => <Choice key={certificatePreference} selected={draft.certificatePreference === certificatePreference} onClick={() => updateOnboarding({ certificatePreference })}>{certificatePreference}</Choice>)}</ChoiceGroup>
-                    <ChoiceGroup label="Main goal">{studentGoals.map((goal) => <Choice key={goal} selected={draft.goal === goal} onClick={() => updateOnboarding({ goal })}>{goal}</Choice>)}</ChoiceGroup>
+                    <ChoiceGroup label={t("onboarding.monthlyBudget")}>{budgets.map((budget) => <Choice key={budget} selected={draft.budget === budget} onClick={() => updateOnboarding({ budget })}>{t(budgetMessageKey[budget])}</Choice>)}</ChoiceGroup>
+                    <ChoiceGroup label={t("onboarding.preferredFormats")} hint={t("onboarding.selectOneMore")}>{learningStyles.map((style) => <Choice key={style} selected={draft.preferredLearning.includes(style)} onClick={() => updateOnboarding({ preferredLearning: draft.preferredLearning.includes(style) ? draft.preferredLearning.filter((item) => item !== style) : [...draft.preferredLearning, style] })}>{t(learningStyleMessageKey[style])}</Choice>)}</ChoiceGroup>
+                    <ChoiceGroup label={t("onboarding.certificateImportance")}>{(["required", "preferred", "not important"] as const).map((certificatePreference) => <Choice key={certificatePreference} selected={draft.certificatePreference === certificatePreference} onClick={() => updateOnboarding({ certificatePreference })}>{t(`onboarding.certificate.${certificatePreference === "not important" ? "notImportant" : certificatePreference}`)}</Choice>)}</ChoiceGroup>
+                    <ChoiceGroup label={t("onboarding.mainGoal")}>{studentGoals.map((goal) => <Choice key={goal} selected={draft.goal === goal} onClick={() => updateOnboarding({ goal })}>{t(goalMessageKey[goal])}</Choice>)}</ChoiceGroup>
                   </div>
                 </>}
               </motion.section>
@@ -131,11 +143,11 @@ export default function OnboardingPage() {
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/75 px-5 py-5 sm:px-8">
-            <Button type="button" variant="ghost" onClick={() => setStep(step - 1)} disabled={step === 0} className="h-11 gap-2 px-3 text-sm"><ArrowLeft className="size-4" />Back</Button>
-            <div className="flex items-center gap-3"><span className="hidden text-xs text-muted-foreground sm:inline">{stepReady ? "Ready to continue" : "Complete this step to continue"}</span><Button type="button" onClick={continueFlow} disabled={!stepReady} className="h-11 gap-2 rounded-xl px-5 text-sm font-semibold">{step === 2 ? "Assess My Starting Point" : "Continue"}<ArrowRight className="size-4" /></Button></div>
+            <Button type="button" variant="ghost" onClick={() => setStep(step - 1)} disabled={step === 0} className="h-11 gap-2 px-3 text-sm"><ArrowLeft className="size-4" />{t("common.back")}</Button>
+            <div className="flex items-center gap-3"><span className="hidden text-xs text-muted-foreground sm:inline">{stepReady ? t("onboarding.ready") : t("onboarding.completeStep")}</span><Button type="button" onClick={continueFlow} disabled={!stepReady} className="h-11 gap-2 rounded-xl px-5 text-sm font-semibold">{step === 2 ? t("onboarding.assess") : t("common.continue")}<ArrowRight className="size-4" /></Button></div>
           </div>
         </Card>
-        <p className="mt-5 text-center text-xs text-muted-foreground">Your draft is saved in this browser so you can return later.</p>
+        <p className="mt-5 text-center text-xs text-muted-foreground">{t("onboarding.draftSaved")}</p>
       </div>
     </main>
   );

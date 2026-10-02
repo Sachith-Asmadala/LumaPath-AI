@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loading from "@/app/loading";
 import { WorkspaceShell } from "@/components/layout/navigation";
-import { useDemo } from "@/lib/state/demo-provider";
+import { useDemo } from "@/state/demo-provider";
 
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();

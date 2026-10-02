@@ -1,10 +1,10 @@
 "use client";
 
-import { demoScenario } from "@/lib/demo-data/scenario";
+import { demoScenario } from "@/data/demo/scenario";
 import { Sparkles } from "lucide-react";
 import { TypographyH1, TypographyP } from "@/components/shared/typography";
-import { useDemo } from "@/lib/state/demo-provider";
-import { availableCapacity, isLowCapacity, selectCurrentCareerSkill, selectDeadlineRiskTasks } from "@/lib/domain/dashboard";
+import { useDemo } from "@/state/demo-provider";
+import { availableCapacity, isLowCapacity, selectCurrentCareerSkill, selectDeadlineRiskTasks } from "@/features/dashboard/domain/dashboard";
 
 function formatDuration(minutes: number) {
   if (minutes <= 0) return "0m";

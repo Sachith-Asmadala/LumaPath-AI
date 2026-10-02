@@ -6,9 +6,9 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
-import { reassessmentQuestions } from "@/lib/domain/path-assessments";
-import { useDemo } from "@/lib/state/demo-provider";
+import { selectLearningPathCompletion } from "@/features/career/domain/skill-reassessment";
+import { reassessmentQuestions } from "@/features/career/domain/path-assessments";
+import { useDemo } from "@/state/demo-provider";
 
 export function SkillVerification({ skillId }: { skillId: string }) {
   const questions = reassessmentQuestions(skillId);

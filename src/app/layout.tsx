@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
-import { brand } from "@/lib/brand";
-import { DemoProvider } from "@/lib/state/demo-provider";
+import { brand } from "@/config/brand";
+import { DemoProvider } from "@/state/demo-provider";
+import { LocaleProvider } from "@/i18n/locale-provider";
 import "@fontsource-variable/onest";
 import "@fontsource-variable/red-hat-display";
 import "./globals.css";
@@ -39,7 +40,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider>{children}</DemoProvider></ThemeProvider></body>
+      <body><ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange><DemoProvider><LocaleProvider>{children}</LocaleProvider></DemoProvider></ThemeProvider></body>
     </html>
   );
 }

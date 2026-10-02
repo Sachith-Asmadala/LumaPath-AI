@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { BrandIcon } from "@/components/brand/brand-icon";
-import { brand } from "@/lib/brand";
+import { brand } from "@/config/brand";
 import { cn } from "@/lib/utils";
 
 type BrandLogoProps = {

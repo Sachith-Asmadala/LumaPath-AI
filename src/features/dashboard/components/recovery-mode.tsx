@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { ArrowRight, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDemo } from "@/lib/state/demo-provider";
-import { buildRecoveryCandidate, recoveryPreviewRows, type RecoveryChoice } from "@/lib/domain/recovery-mode";
+import { useDemo } from "@/state/demo-provider";
+import { buildRecoveryCandidate, recoveryPreviewRows, type RecoveryChoice } from "@/features/planner/domain/recovery-mode";
 
 const choices: { id: Exclude<RecoveryChoice, "keep">; label: string }[] = [
   { id: "critical", label: "Protect only critical deadlines" },

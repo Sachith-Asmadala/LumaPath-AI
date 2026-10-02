@@ -1,0 +1,16 @@
+export type EvidenceType="manual_project"|"repository"|"live_demo"|"certificate"|"assessment"|"mentor_validation";
+export type EvidenceStatus="verified"|"observed"|"reviewed"|"self_declared"|"stale"|"disputed"|"expired";
+export interface EvidenceProvenance{source:string;source_ref:string;source_url:string|null;issuer:string|null;acquired_at:string|null;expires_at:string|null;observed_at:string;last_reviewed_at:string|null;reference_hash:string;}
+export interface PassportEvidence{id:string;skill_id:string;skill_name:string;evidence_type:EvidenceType;title:string;verification_status:EvidenceStatus;confidence:number;proficiency:number|null;freshness:"fresh"|"stale"|"expired"|"disputed";readiness_contribution:number;provenance:EvidenceProvenance;correction_note:string;can_edit:boolean;can_revalidate:boolean;}
+export interface PassportSkill{skill_id:string;skill_name:string;required_proficiency:number|null;assessed_proficiency:number|null;readiness_score:number;status:"supported"|"limited"|"unsupported"|"disputed";evidence:PassportEvidence[];gap_explanation:string;}
+export interface PassportDashboard{generated_at:string;skills:PassportSkill[];total_evidence:number;verified_or_observed:number;stale_or_expired:number;disputed:number;disclaimer:string;}
+export interface EvidenceShare{id:string;label:string;evidence_ids:string[];created_at:string;expires_at:string;revoked_at:string|null;status:"active"|"expired"|"revoked";access_count:number;}
+export interface PublicEvidenceProvenance{source:string;source_url:string|null;issuer:string|null;acquired_at:string|null;expires_at:string|null;observed_at:string;last_reviewed_at:string|null;reference_hash:string;}
+export interface PublicPassportEvidence{id:string;skill_id:string;skill_name:string;evidence_type:EvidenceType;title:string;verification_status:EvidenceStatus;confidence:number;proficiency:number|null;freshness:"fresh"|"stale"|"expired"|"disputed";provenance:PublicEvidenceProvenance;}
+export interface PublicEvidenceShare{share_id:string;label:string;generated_at:string;expires_at:string;evidence:PublicPassportEvidence[];disclaimer:string;}
+export interface MentorValidationRequest{id:string;relationship_id:string;mentor_label:string;skill_id:string;skill_name:string;status:"pending"|"validated"|"uncertain"|"disputed"|"cancelled";request_note:string;mentor_note:string;created_at:string;responded_at:string|null;}
+export interface EvidenceAccessAudit{id:number;actor_type:string;event_type:string;evidence_ids:string[];detail:string;occurred_at:string;}
+export interface CertificatePayload{skill_id:string;title:string;issuer:string;acquired_at:string|null;expires_at:string|null;credential_reference:string;source_url:string|null;proficiency:number|null;}
+export const statusTone=(status:EvidenceStatus)=> status==="verified"||status==="observed"||status==="reviewed"?"text-success border-success/20 bg-success/[0.04]":status==="disputed"?"text-destructive border-destructive/20 bg-destructive/[0.04]":status==="stale"||status==="expired"?"text-warning border-warning/20 bg-warning/[0.04]":"text-primary border-primary/20 bg-primary/[0.04]";
+
+export const EVIDENCE_TYPES:EvidenceType[]=["manual_project","repository","live_demo","certificate","assessment","mentor_validation"];

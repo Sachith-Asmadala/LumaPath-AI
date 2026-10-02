@@ -1,10 +1,10 @@
 "use client";
 
-import { ViewSwitch } from "@/components/workspace/workspace-controls";
+import { ViewSwitch } from "@/features/workspace/components/workspace-controls";
 import { useMemo, useState } from "react";
 import { Background, Controls, MarkerType, ReactFlow, type Edge, type Node } from "@xyflow/react";
-import { useDemo } from "@/lib/state/demo-provider";
-import { roadmapUnlocks } from "@/lib/domain/personalized-roadmap";
+import { useDemo } from "@/state/demo-provider";
+import { roadmapUnlocks } from "@/features/career/domain/personalized-roadmap";
 import { CareerSkillCard, CareerSkillNode, type CareerFlowNode } from "@/features/career/components/career-skill-node";
 import { Card, CardContent } from "@/components/ui/card";
 

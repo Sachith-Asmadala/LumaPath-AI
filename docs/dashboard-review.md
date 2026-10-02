@@ -25,9 +25,9 @@ New components:
 
 New shared helpers and tests:
 
-- `src/lib/demo-data/scenario.ts`: one scenario clock, offset dates and week labels.
-- `src/lib/domain/dashboard.ts`: presets, phased adaptation, recovery and progress selectors.
-- `src/lib/domain/dashboard.test.ts`: state and domain regression coverage.
+- `src/data/demo/scenario.ts`: one scenario clock, offset dates and week labels.
+- `src/features/dashboard/domain/dashboard.ts`: presets, phased adaptation, recovery and progress selectors.
+- `src/features/dashboard/domain/dashboard.test.ts`: state and domain regression coverage.
 - `tests/e2e/overview.spec.ts`: full Overview journey and 390px/820px reduced-motion checks.
 
 Modified existing components:
@@ -36,16 +36,16 @@ Modified existing components:
 - All eight original files in `src/features/dashboard/components/`: wording, presets, simplified hero, risk details, animated timeline, readiness feedback, explanation and progress.
 - `src/components/layout/navigation.tsx`, `top-bar.tsx`: shared pulse, Copilot visibility and date labels.
 - `src/components/motion/animated.tsx`, `page-transition.tsx`: decimal-safe counters, animated readiness, accessible outgoing pages.
-- `src/components/ai-copilot/copilot-drawer.tsx`: current recommendation and schedule context.
+- `src/features/assistant/components/copilot-drawer.tsx`: current recommendation and schedule context.
 - `src/features/career/components/career-skill-node.tsx`: reduced-motion layout handling.
 - `src/features/planner/components/planner-calendar.tsx`, `task-editor-dialog.tsx`: scenario dates.
 - `src/app/(workspace)/planner/page.tsx`, `analytics/page.tsx`, `career-path/page.tsx`: dates, shared metrics, pathway wording and totals.
 
 Modified shared state/configuration:
 
-- `src/lib/state/demo-provider.tsx`: phased actions, shared feedback, idempotent verification and consistent task completion.
-- `src/lib/demo-data/types.ts`, `seed.ts`: movement history, scenario dates and consistent initial counters/risk.
-- `src/lib/domain/planner.ts`, `priority.ts`: centralized dates, bounded low-capacity blocks and scores derived from supplied factors.
+- `src/state/demo-provider.tsx`: phased actions, shared feedback, idempotent verification and consistent task completion.
+- `src/data/demo/types.ts`, `seed.ts`: movement history, scenario dates and consistent initial counters/risk.
+- `src/features/planner/domain/planner.ts`, `priority.ts`: centralized dates, bounded low-capacity blocks and scores derived from supplied factors.
 - `tests/e2e/demo-journey.spec.ts`: preserved regression journey using the new controls.
 - `vitest.config.mts`: JSX transform for reducer tests.
 - `playwright.config.ts`: bounded concurrency and a route-compilation timeout.

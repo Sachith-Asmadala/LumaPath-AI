@@ -6,9 +6,9 @@ import { motion, useReducedMotion } from "motion/react";
 import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useDemo } from "@/lib/state/demo-provider";
-import type { CareerSkill } from "@/lib/demo-data/types";
-import { selectLearningPathCompletion } from "@/lib/domain/skill-reassessment";
+import { useDemo } from "@/state/demo-provider";
+import type { CareerSkill } from "@/data/demo/types";
+import { selectLearningPathCompletion } from "@/features/career/domain/skill-reassessment";
 
 type CareerNodeData = { skill: CareerSkill; prerequisites: string[]; unlocks: string[]; recommended: boolean; personalized: boolean };
 export type CareerFlowNode = Node<CareerNodeData, "careerSkill">;

@@ -64,7 +64,7 @@ export const AnimatedProgress = memo(function AnimatedProgress({ value, classNam
   );
 });
 
-export const AnimatedCounter = memo(function AnimatedCounter({ value, suffix = "", className, animateOnMount = false }: { value: number; suffix?: string; className?: string; animateOnMount?: boolean }) {
+export const AnimatedCounter = memo(function AnimatedCounter({ value, suffix = "", className, animateOnMount = false, formatValue }: { value: number; suffix?: string; className?: string; animateOnMount?: boolean; formatValue?: (value: number) => string }) {
   const reduceMotion = useReducedMotion();
   const [display, setDisplay] = useState(animateOnMount ? 0 : value);
   const current = useRef(display);
@@ -89,7 +89,7 @@ export const AnimatedCounter = memo(function AnimatedCounter({ value, suffix = "
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
   }, [value, reduceMotion]);
-  return <span className={className}>{display}{suffix}</span>;
+  return <span className={className}>{formatValue ? formatValue(display) : display}{suffix}</span>;
 });
 
 export function ScoreRing({ value, size = 132, stroke = 8, className, animateOnMount = false }: { value: number; size?: number; stroke?: number; className?: string; animateOnMount?: boolean }) {
