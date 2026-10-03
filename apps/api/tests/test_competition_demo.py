@@ -18,6 +18,8 @@ from apps.api.app.modules.pathways.repository import PathwayRepository
 from apps.api.app.modules.evidence_passport.repository import EvidencePassportRepository
 from apps.api.app.modules.subscriptions.repository import SubscriptionRepository
 from apps.api.app.modules.subscriptions.service import EntitlementService
+from apps.api.app.modules.notifications.repository import NotificationRepository
+from apps.api.app.modules.notifications.service import NotificationService
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -34,6 +36,12 @@ def seed(path):
 def test_reset_restores_missing_records_clears_preparation_and_preserves_other_students(tmp_path):
     path = tmp_path / "demo.db"
     first = seed(path)
+    inbox = NotificationService(NotificationRepository(str(path)), now=lambda: clock.SCENARIO_NOW).inbox(clock.STUDENT_ID)
+    assert len(inbox.items) == 4
+    assert inbox.unread_count == 3
+    assert any("two remaining test cases" in item.description for item in inbox.items)
+    assert first["opportunity"]["starts_on"] > first["opportunity"]["closes_on"]
+    assert len(first["opportunity"]["application_steps"]) == 3
     assert {check["label"]: check["status"] for check in first["opportunity"]["eligibility_checks"]} == {"Git": "met", "Docker": "unmet", "AWS fundamentals": "unknown"}
     service = OpportunityService(OpportunityRepository(str(path)), now=lambda: clock.SCENARIO_NOW, pathway_repository=PathwayRepository(str(path)), evidence_repository=EvidencePassportRepository(str(path)))
     proposal = service.propose_preparation(clock.STUDENT_ID, first["opportunity"]["id"], PreparationProposalRequest(
@@ -58,7 +66,7 @@ def test_reset_restores_missing_records_clears_preparation_and_preserves_other_s
         assert db.execute("SELECT COUNT(*) FROM usage_counters WHERE subject_id='another-student'").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM opportunities WHERE id='competition-junior-devops'").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM opportunity_requirements WHERE opportunity_id='competition-junior-devops'").fetchone()[0] == 3
-        assert db.execute("SELECT COUNT(*) FROM articles WHERE source_id='competition-learning'").fetchone()[0] == 2
+        assert db.execute("SELECT COUNT(*) FROM articles WHERE source_id='competition-learning'").fetchone()[0] == 6
 
 
 def test_production_reset_is_unavailable_and_clock_is_scoped(monkeypatch):

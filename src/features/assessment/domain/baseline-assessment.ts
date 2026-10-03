@@ -1,3 +1,4 @@
+import { withKnowledgeResponses } from "@/features/assessment/domain/knowledge-responses";
 import type { BaselineAssessmentResult, BaselineSkill } from "@/data/demo/types";
 
 export interface BaselineQuestion {
@@ -11,7 +12,7 @@ export interface BaselineQuestion {
 
 export const baselineSkills: readonly BaselineSkill[] = ["Linux", "Git", "Networking", "Docker", "CI/CD", "Cloud"];
 
-export const baselineQuestions: readonly BaselineQuestion[] = [
+export const baselineQuestions: readonly BaselineQuestion[] = ([
   { id: "linux-permissions", skill: "Linux", question: "Which command makes deploy.sh executable for its owner?", options: ["chmod u+x deploy.sh", "chmod u-x deploy.sh", "chown +x deploy.sh", "sudo run deploy.sh"], correctAnswer: "chmod u+x deploy.sh", weight: 1 },
   { id: "linux-ports", skill: "Linux", question: "Which command shows processes listening on TCP ports?", options: ["ss -ltnp", "ls -la", "df -h", "cat /etc/hosts"], correctAnswer: "ss -ltnp", weight: 2 },
   { id: "git-branch", skill: "Git", question: "Which command creates and switches to a new branch named feature/api?", options: ["git switch -c feature/api", "git switch feature/api", "git commit feature/api", "git fetch feature/api"], correctAnswer: "git switch -c feature/api", weight: 1 },
@@ -24,7 +25,7 @@ export const baselineQuestions: readonly BaselineQuestion[] = [
   { id: "cicd-secrets", skill: "CI/CD", question: "Where should a CI pipeline keep deployment credentials?", options: ["In the CI platform's secret store", "Committed in the repository", "In a public build artifact", "In the README"], correctAnswer: "In the CI platform's secret store", weight: 2 },
   { id: "cloud-scale", skill: "Cloud", question: "What does horizontal scaling add to an application?", options: ["More running instances", "More memory to one instance", "A longer timeout", "A larger disk on one instance"], correctAnswer: "More running instances", weight: 1 },
   { id: "cloud-privilege", skill: "Cloud", question: "What does the principle of least privilege require?", options: ["Grant only the permissions needed for a task", "Give every service administrator access", "Share one credential across all services", "Disable audit logs after deployment"], correctAnswer: "Grant only the permissions needed for a task", weight: 2 },
-];
+] satisfies BaselineQuestion[]).map(question => ({ ...question, options: withKnowledgeResponses(question.options) }));
 
 export function scoreBaselineAssessment(answers: Record<string, string>): BaselineAssessmentResult | null {
   if (!baselineQuestions.every((question) => question.options.includes(answers[question.id]))) return null;

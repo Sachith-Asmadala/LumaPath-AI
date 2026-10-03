@@ -13,6 +13,9 @@ import type { LifeLoadFactor, LifeLoadImpact } from "@/data/demo/types";
 import { lifeLoadFactorOptions, lifeLoadImpacts } from "@/features/capacity/domain/life-load";
 import { contextualReply } from "@/features/assistant/domain/contextual-reply";
 import { RecoveryMode } from "@/features/dashboard/components/recovery-mode";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
+import { useProExperience } from "@/features/subscriptions/components/pro-experience-provider";
 
 const timeOptions = [90, 120, 150, 180, 270, 300, 360];
 import { capacityPresets, capacityStages, availableCapacity, isLowCapacity } from "@/features/dashboard/domain/dashboard";
@@ -30,7 +33,10 @@ function formatAvailable(minutes: number) {
 }
 
 export function CapacityCheckIn() {
-  const { state, updateCapacity } = useDemo();
+  const { state, saveCapacity } = useDemo();
+  const { subscription } = useSubscription();
+  const { preferences } = useProExperience();
+  const automatic = hasProFeatures(subscription?.plan) && preferences.automaticPlanning;
   const [draft, setDraft] = useState<StudentCapacity>(state.capacity);
   const [busy, setBusy] = useState(false);
   useEffect(() => setDraft(state.capacity), [state.capacity]);
@@ -47,7 +53,7 @@ export function CapacityCheckIn() {
   const updateImpact = (factor: LifeLoadFactor, impact: LifeLoadImpact) => setDraft((previous) => ({ ...previous, lifeLoadFactors: { ...previous.lifeLoadFactors, [factor]: impact } }));
   const submit = async () => {
     setBusy(true);
-    await updateCapacity(draft);
+    saveCapacity(draft);
     setBusy(false);
   };
 
@@ -55,7 +61,7 @@ export function CapacityCheckIn() {
     <Card className="rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
       <CardHeader className="px-4 pt-4 sm:px-5 sm:pt-5">
         <div className="flex items-start justify-between gap-3">
-          <div><p className="type-eyebrow mb-2 text-muted-foreground">Daily input</p><CardTitle className="type-section-title flex items-center gap-2"><Activity className="size-4 text-primary" aria-hidden="true" />Life Load Check-In</CardTitle><p className="mt-1.5 text-xs text-muted-foreground">Share what affects your time today. Your plan adapts to your capacity.</p></div>
+          <div><p className="type-eyebrow mb-2 text-muted-foreground">Daily input</p><CardTitle className="type-section-title flex items-center gap-2"><Activity className="size-4 text-primary" aria-hidden="true" />Life Load Check-In</CardTitle><p className="mt-1.5 text-xs text-muted-foreground">{automatic ? "Share what affects your time today. Pro will adapt your flexible plan automatically." : "Save your available time, then arrange your study blocks manually in Planner."}</p></div>
           <span className="rounded-[11px] border border-border/70 bg-background/60 px-2 py-1 text-[0.6rem] font-mono text-muted-foreground">TODAY</span>
         </div>
       </CardHeader>
@@ -109,8 +115,8 @@ export function CapacityCheckIn() {
         </details>
         {/suicid|self.harm|kill myself|hurt myself|end my life|immediate danger|not safe right now/i.test(draft.lifeLoadNote ?? "") && <p role="status" className="rounded-xl border border-border p-3 text-sm leading-6">{contextualReply(draft.lifeLoadNote ?? "", "/overview", state)}</p>}
         {isLow && <p className="text-[0.62rem] text-warning">A smaller plan will protect your highest priority.</p>}
-        <MotionButton onClick={submit} disabled={busy || state.simulation.kind !== null} className="h-9 w-full rounded-[12px] text-xs font-semibold" aria-label="Update the plan with this capacity">
-          <RefreshCw className={`size-3.5 ${busy ? "animate-spin motion-reduce:animate-none" : ""}`} aria-hidden="true" />{busy ? state.simulation.step ?? "Updating your plan…" : "Update My Plan"}
+        <MotionButton onClick={submit} disabled={busy || state.simulation.kind !== null} className="h-9 w-full rounded-[12px] text-xs font-semibold" aria-label={automatic ? "Update the plan with this capacity" : "Save my capacity"}>
+          <RefreshCw className={`size-3.5 ${busy ? "animate-spin motion-reduce:animate-none" : ""}`} aria-hidden="true" />{busy ? state.simulation.step ?? "Updating your plan…" : automatic ? "Update My Plan" : "Save capacity"}
         </MotionButton>
         {busy && <div className="rounded-xl border border-primary/15 bg-primary/[0.035] p-3 text-xs"><p className="mb-2 font-medium text-primary">LumaPath is adapting your day</p><ol className="space-y-1.5">{capacityStages.map((step, index) => { const current = capacityStages.indexOf(state.simulation.step ?? ""); return <li key={step} className={`flex items-center gap-2 transition-colors duration-200 motion-reduce:transition-none ${index <= current + 1 ? "text-foreground" : "text-muted-foreground"}`}><span aria-hidden="true" className={`grid size-4 shrink-0 place-items-center rounded-full text-[0.67rem] ${index <= current ? "bg-primary/15 text-primary" : index === current + 1 ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}>{index <= current ? "✓" : index === current + 1 ? "●" : "○"}</span>{step}</li>; })}</ol></div>}
         {state.recoveryPending && <RecoveryMode />}

@@ -11,7 +11,7 @@ describe("workspace collections", () => {
     const before = structuredClone(state.tasks);
     const result = selectTaskCollection(state.tasks, { view: "active", query: "database", category: "Academic", sort: "deadline" });
     expect(result.length).toBeGreaterThan(0);
-    expect(result.every((task) => task.category === "Academic" && task.title.toLowerCase().includes("database"))).toBe(true);
+    expect(result.every((task) => task.category === "Academic" && task.status !== "completed" && `${task.title} ${task.description} ${task.module ?? ""}`.toLowerCase().includes("database"))).toBe(true);
     expect(state.tasks).toEqual(before);
     const sorted = selectTaskCollection(state.tasks, { view: "all", query: "", category: "all", sort: "duration" });
     expect(sorted.map((task) => task.estimatedMinutes)).toEqual([...state.tasks].map((task) => task.estimatedMinutes).sort((a, b) => a - b));

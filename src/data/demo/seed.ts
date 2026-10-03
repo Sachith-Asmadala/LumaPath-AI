@@ -46,10 +46,12 @@ export const demoTasks: Task[] = [
     dueAt: at(scenarioDate(2), "23:59"),
     progress: 58,
     difficulty: 4,
-    careerSkillIds: ["sql", "cloud"],
+    careerSkillIds: ["cloud"],
+    module: "Database Systems",
+    source: "University LMS (demo)",
     riskScore: 86,
     careerRelevance: 61,
-    description: "Finish the query plan and document the indexing trade-offs.",
+    description: "CS302 Assignment 2: optimise the library borrowing database. Compare EXPLAIN ANALYZE output before and after adding composite indexes, include five SQL queries, and submit a 1,200-word report with the schema diagram. Worth 20% of the module grade.",
   },
   {
     id: "docker-lab",
@@ -61,9 +63,10 @@ export const demoTasks: Task[] = [
     progress: 61,
     difficulty: 3,
     careerSkillIds: ["docker"],
+    source: "Personal learning plan",
     riskScore: 44,
     careerRelevance: 91,
-    description: "Connect the app and database containers on a custom bridge network.",
+    description: "Connect a FastAPI service and PostgreSQL container on a custom bridge network. Check service-name resolution, keep the database port private, and document a clean startup with Docker Compose. The API works locally; networking and the README still need attention.",
   },
   {
     id: "se-presentation",
@@ -74,10 +77,12 @@ export const demoTasks: Task[] = [
     dueAt: at(scenarioDate(2), "17:00"),
     progress: 44,
     difficulty: 3,
-    careerSkillIds: ["interview"],
+    careerSkillIds: ["git"],
+    module: "Software Engineering",
+    source: "University LMS (demo)",
     riskScore: 44,
     careerRelevance: 54,
-    description: "Rehearse the architecture walkthrough and tighten the final slide.",
+    description: "Prepare the team's 10-minute campus room-booking API presentation. Explain the service boundaries, show the Git pull-request workflow, and rehearse the live booking demo. Bring three slides on testing and individual contributions; each teammate answers one question.",
   },
   {
     id: "aws-fundamentals",
@@ -91,7 +96,7 @@ export const demoTasks: Task[] = [
     careerSkillIds: ["cloud"],
     riskScore: 31,
     careerRelevance: 83,
-    description: "Review IAM policies and complete the shared-responsibility module.",
+    description: "Review IAM users, roles, least-privilege policies, and the shared-responsibility model. Write a short comparison of EC2 and S3 responsibilities, then complete the practice questions. Use a local policy example; no paid cloud account is needed.",
   },
   {
     id: "portfolio-readme",
@@ -117,9 +122,11 @@ export const demoTasks: Task[] = [
     progress: 47,
     difficulty: 4,
     careerSkillIds: ["cloud", "terraform"],
+    module: "Cloud Computing",
+    source: "University LMS (demo)",
     riskScore: 68,
     careerRelevance: 79,
-    description: "Map the deployment topology and verify network boundaries.",
+    description: "Draw a two-tier web application with public and private subnets, a load balancer, and a managed database. Explain security-group rules, failure handling, and a student-budget deployment. Submit the topology diagram and a 600-word design rationale.",
   },
   {
     id: "docker-certification",
@@ -135,6 +142,14 @@ export const demoTasks: Task[] = [
     careerRelevance: 70,
     description: "Review image lifecycle, storage, and container networking.",
   },
+  { id: "statistics-problem-set", title: "Statistics Problem Set 4", category: "Academic", status: "in-progress", estimatedMinutes: 60, dueAt: at(scenarioDate(4), "17:00"), progress: 35, difficulty: 3, careerSkillIds: [], riskScore: 46, careerRelevance: 25, module: "Applied Statistics", source: "University LMS (demo)", description: "Complete eight questions on confidence intervals and hypothesis testing. Show calculations, state the assumptions, and interpret the results for the campus survey dataset. Questions 1–3 are drafted; check the two-tailed test before submission." },
+  { id: "networks-worksheet", title: "Subnetting & Routing Worksheet", category: "Academic", status: "upcoming", estimatedMinutes: 45, dueAt: at(scenarioDate(5), "12:00"), progress: 0, difficulty: 2, careerSkillIds: ["linux"], riskScore: 28, careerRelevance: 76, module: "Computer Networks", source: "University LMS (demo)", description: "Design address ranges for four departments using VLSM, identify the default gateways, and trace a packet through two routers. Submit the completed worksheet and a screenshot of the local network simulation." },
+  { id: "internship-cv", title: "Tailor CV for a DevOps Internship", category: "Internship", status: "in-progress", estimatedMinutes: 45, dueAt: at(scenarioDate(6), "18:00"), progress: 40, difficulty: 2, careerSkillIds: ["git", "docker"], riskScore: 32, careerRelevance: 92, source: "Career centre (demo)", description: "Adapt the one-page CV for the sample Northstar Labs role. Link the containerized API and release-automation projects, describe your own contributions, and check that every skills claim has supporting evidence. Ask a peer to review before applying." },
+  { id: "weekly-review", title: "Weekly Review & Next Week's Plan", category: "Personal", status: "upcoming", estimatedMinutes: 30, dueAt: at(scenarioDate(6), "20:30"), progress: 0, difficulty: 1, careerSkillIds: [], riskScore: 12, careerRelevance: 20, source: "Personal routine", description: "Check the next LMS deadlines, note which study estimates ran over, and reserve time for next week's team meeting. Keep Sunday evening free after the review." },
+  { id: "linux-permissions-lab", title: "Linux Permissions & Process Lab", category: "Academic", status: "completed", estimatedMinutes: 75, dueAt: at(scenarioDate(-4), "17:00"), completedAt: at(scenarioDate(-4), "15:45"), progress: 100, difficulty: 3, careerSkillIds: ["linux"], riskScore: 0, careerRelevance: 88, module: "Operating Systems", source: "University LMS (demo)", description: "Submitted the permissions worksheet and shell transcript. Practised chmod, process inspection, and service logs; corrected the group permission issue after the tutor's feedback." },
+  { id: "git-release-workflow", title: "Git Release Workflow Practice", category: "Career", status: "completed", estimatedMinutes: 60, dueAt: at(scenarioDate(-3), "20:00"), completedAt: at(scenarioDate(-3), "19:30"), progress: 100, difficulty: 2, careerSkillIds: ["git"], riskScore: 0, careerRelevance: 90, description: "Merged a feature branch through a reviewed pull request, resolved a test conflict, and tagged v0.2.0 of the sample API. Saved the release notes and command history as project evidence." },
+  { id: "database-normalization", title: "Database Normalization Exercises", category: "Academic", status: "completed", estimatedMinutes: 60, dueAt: at(scenarioDate(-2), "18:00"), completedAt: at(scenarioDate(-2), "11:00"), progress: 100, difficulty: 3, careerSkillIds: [], riskScore: 0, careerRelevance: 45, module: "Database Systems", description: "Decomposed the borrowing records into 3NF and documented functional dependencies. Tutor feedback: explain why the final decomposition is lossless." },
+  { id: "docker-image-build", title: "Build a Smaller Docker Image", category: "Career", status: "completed", estimatedMinutes: 45, dueAt: at(scenarioDate(-1), "18:00"), completedAt: at(scenarioDate(-1), "16:45"), progress: 100, difficulty: 2, careerSkillIds: ["docker"], riskScore: 0, careerRelevance: 86, description: "Added a .dockerignore, pinned the base image, and moved build dependencies into a separate stage. Recorded the before/after image sizes and a successful local smoke test." },
 ];
 
 export const demoPlanBlocks: PlanBlock[] = [
@@ -143,6 +158,21 @@ export const demoPlanBlocks: PlanBlock[] = [
   { id: "block-database", taskId: "database-assignment", title: "Database Assignment", category: "Academic", startAt: at(monday, "14:00"), endAt: at(monday, "15:30") },
   { id: "block-aws", taskId: "aws-fundamentals", title: "AWS Fundamentals", category: "Career", startAt: at(monday, "18:00"), endAt: at(monday, "19:00") },
   { id: "block-review", taskId: "se-presentation", title: "Revision block", category: "Academic", startAt: at(monday, "20:30"), endAt: at(monday, "21:15") },
+  { id: "lecture-tuesday", taskId: null, title: "Database Systems · Lecture", category: "Academic", startAt: at(scenarioDate(1), "09:00"), endAt: at(scenarioDate(1), "10:30"), isFixed: true },
+  { id: "team-meeting", taskId: null, title: "Room-booking API · Team Stand-up", category: "Academic", startAt: at(scenarioDate(1), "13:00"), endAt: at(scenarioDate(1), "13:30"), isFixed: true },
+  { id: "lecture-wednesday", taskId: null, title: "Applied Statistics · Tutorial", category: "Academic", startAt: at(scenarioDate(2), "10:00"), endAt: at(scenarioDate(2), "11:00"), isFixed: true },
+  { id: "presentation-slot", taskId: null, title: "Software Engineering · Team Presentations", category: "Academic", startAt: at(scenarioDate(2), "14:00"), endAt: at(scenarioDate(2), "15:00"), isFixed: true },
+  { id: "block-cloud-lab", taskId: "cloud-architecture-lab", title: "Cloud Architecture Lab", category: "Academic", startAt: at(scenarioDate(3), "13:00"), endAt: at(scenarioDate(3), "14:30") },
+  { id: "block-statistics", taskId: "statistics-problem-set", title: "Statistics Problem Set 4", category: "Academic", startAt: at(scenarioDate(4), "11:00"), endAt: at(scenarioDate(4), "12:00") },
+  { id: "block-networks", taskId: "networks-worksheet", title: "Subnetting & Routing Worksheet", category: "Academic", startAt: at(scenarioDate(5), "09:00"), endAt: at(scenarioDate(5), "09:45") },
+  { id: "block-portfolio", taskId: "portfolio-readme", title: "Portfolio README Improvement", category: "Career", startAt: at(scenarioDate(5), "14:00"), endAt: at(scenarioDate(5), "14:45") },
+  { id: "block-docker-practice", taskId: "docker-certification", title: "Docker Certification Practice", category: "Career", startAt: at(scenarioDate(6), "10:00"), endAt: at(scenarioDate(6), "10:55") },
+  { id: "block-internship-cv", taskId: "internship-cv", title: "Tailor CV for a DevOps Internship", category: "Internship", startAt: at(scenarioDate(6), "15:00"), endAt: at(scenarioDate(6), "15:45") },
+  { id: "block-weekly-review", taskId: "weekly-review", title: "Weekly Review & Next Week's Plan", category: "Personal", startAt: at(scenarioDate(6), "20:00"), endAt: at(scenarioDate(6), "20:30") },
+  { id: "history-linux", taskId: "linux-permissions-lab", title: "Linux Permissions & Process Lab", category: "Academic", startAt: at(scenarioDate(-4), "14:30"), endAt: at(scenarioDate(-4), "15:45") },
+  { id: "history-git", taskId: "git-release-workflow", title: "Git Release Workflow Practice", category: "Career", startAt: at(scenarioDate(-3), "18:30"), endAt: at(scenarioDate(-3), "19:30") },
+  { id: "history-database", taskId: "database-normalization", title: "Database Normalization Exercises", category: "Academic", startAt: at(scenarioDate(-2), "10:00"), endAt: at(scenarioDate(-2), "11:00") },
+  { id: "history-docker", taskId: "docker-image-build", title: "Build a Smaller Docker Image", category: "Career", startAt: at(scenarioDate(-1), "16:00"), endAt: at(scenarioDate(-1), "16:45") },
 ];
 
 export const demoCareerSkills: CareerSkill[] = [
@@ -182,18 +212,23 @@ export const demoIntelligenceItems: IntelligenceItem[] = [
   { id: "kubernetes-fundamentals", kind: "Learning article", title: "Complete Kubernetes Fundamentals", source: "LumaPath Learning Path", publishedAt: scenarioDate(-2), whyRelevant: "Kubernetes is your biggest skill opportunity. This guided path builds the foundations you need before taking on cluster operations.", durationMinutes: 50, status: "new" },
   { id: "kube-health-checks", kind: "Learning article", title: "Designing health checks that tell you something useful", source: "Platform Notes", publishedAt: scenarioDate(-3), whyRelevant: "Kubernetes is your next pathway milestone, so this gives you a concrete operational pattern to recognize as you study.", durationMinutes: 22, status: "new" },
   { id: "aws-iam-advisory", kind: "Security advisory", title: "A practical guide to safer IAM role boundaries", source: "Cloud Security Brief", publishedAt: scenarioDate(-4), whyRelevant: "AWS Fundamentals is on your plan this week; this connects IAM policy review to real deployment decisions.", durationMinutes: 30, status: "new" },
-  { id: "devops-internship", kind: "Internship", title: "DevOps Intern · ABC Technologies", source: "Career Intelligence", publishedAt: scenarioDate(-4), whyRelevant: "This role values Docker and Git evidence you already have, and highlights AWS as your clearest application gap.", durationMinutes: 40, status: "new" },
+  { id: "devops-internship", kind: "Internship", title: "DevOps Intern · Northstar Labs (demo)", source: "Career centre sample catalogue", publishedAt: scenarioDate(-4), whyRelevant: "This sample role values Docker and Git evidence you already have, and highlights AWS as your clearest application gap.", durationMinutes: 40, status: "new" },
   { id: "container-release", kind: "Tool release", title: "Container build caching patterns for faster CI", source: "Engineering Weekly", publishedAt: scenarioDate(-6), whyRelevant: "Your next pathway work is CI/CD, so this release shows where build speed and reproducibility meet.", durationMinutes: 25, status: "new" },
 ];
 
 export const demoOpportunities: Opportunity[] = [
-  { id: "abc-devops-intern", role: "DevOps Intern", organization: "ABC Technologies", match: 82, strengths: ["Linux", "Git", "Docker"], missingSkills: ["AWS", "Kubernetes"], closesAt: scenarioDate(6), recommendation: "You're almost ready. Complete AWS Fundamentals and improve your Docker project README before applying." },
+  { id: "abc-devops-intern", role: "DevOps Intern", organization: "Northstar Labs (demo)", match: 82, strengths: ["Linux", "Git", "Docker"], missingSkills: ["AWS", "Kubernetes"], closesAt: scenarioDate(16), recommendation: "Complete AWS Fundamentals and improve your Docker project README before applying to this sample role." },
+  { id: "cloud-support-intern", role: "Cloud Support Intern", organization: "HarborStack Systems (demo)", match: 71, strengths: ["Linux", "Git"], missingSkills: ["AWS", "Monitoring"], closesAt: scenarioDate(20), recommendation: "Practise troubleshooting a Linux service and explain an IAM policy in your portfolio notes. This sample hybrid role is based in Colombo." },
+  { id: "platform-hackathon", role: "Campus Platform Engineering Hackathon", organization: "Luma University Computing Society (demo)", match: 76, strengths: ["Git", "Docker"], missingSkills: ["CI/CD"], closesAt: scenarioDate(12), recommendation: "Join a team of three and build a reproducible deployment for a student service. Prepare a minimal CI pipeline before the sample event." },
 ];
 
 export const demoNotifications: Notification[] = [
   { id: "notify-deadline-risk", kind: "risk", title: "Database Assignment is at high risk", description: "There is still implementation work to complete before Wednesday.", href: "/planner", createdAt: scenarioAt(-2, "08:10:00"), read: false },
   { id: "notify-career-step", kind: "career", title: "Docker is your current pathway step", description: "Two prerequisites are ready when your lab is complete.", href: "/career-path", createdAt: scenarioAt(-2, "08:05:00"), read: false },
   { id: "notify-intel", kind: "intelligence", title: "A learning resource matches your next milestone", description: "The latest Kubernetes guide fits your DevOps pathway.", href: "/intelligence", createdAt: scenarioAt(-3, "18:00:00"), read: true },
+  { id: "notify-team-presentation", kind: "plan", title: "Team presentation rehearsal is on your plan", description: "Review the architecture slides and agree who runs the live API demo before Wednesday's presentation.", href: "/planner", createdAt: scenarioAt(-1, "19:15:00"), read: false },
+  { id: "notify-git-evidence", kind: "evidence", title: "Release workflow evidence added", description: "Your sample Git release notes and pull-request history are linked to the Git & Scripting milestone.", href: "/career-path", createdAt: scenarioAt(-3, "19:35:00"), read: true },
+  { id: "notify-cv-review", kind: "opportunity", title: "Leave time for a peer CV review", description: "The sample Northstar Labs internship closes on Oct 14. Your CV preparation block is scheduled for Sunday.", href: "/opportunities", createdAt: scenarioAt(-1, "12:00:00"), read: false },
 ];
 
 export function createDemoState(): DemoState {
@@ -237,8 +272,8 @@ export function createDemoState(): DemoState {
     opportunities: demoOpportunities.map((item) => ({ ...item, strengths: [...item.strengths], missingSkills: [...item.missingSkills] })),
     notifications: demoNotifications.map((item) => ({ ...item })),
     simulation: { kind: null, step: null, message: null, result: [], announcement: "" },
-    completedTaskCount: 0,
-    productiveMinutes: 0,
-    currentStreak: 0,
+    completedTaskCount: demoTasks.filter((task) => task.status === "completed").length,
+    productiveMinutes: demoTasks.filter((task) => task.status === "completed").reduce((minutes, task) => minutes + task.estimatedMinutes, 0),
+    currentStreak: 4,
   };
 }

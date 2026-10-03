@@ -8,6 +8,10 @@ import { workspaceLinks } from "./workspace-map";
 import { useDemo } from "@/state/demo-provider";
 import { useLocale } from "@/i18n/locale-provider";
 
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { useProExperience } from "@/features/subscriptions/components/pro-experience-provider";
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
+
 const commandItems = [
   { labelKey: "command.generatePlan", href: "/planner", icon: WandSparkles },
   { labelKey: "command.addAssignment", href: "/planner?add=assignment", icon: CalendarPlus },
@@ -16,6 +20,8 @@ const commandItems = [
 export function CommandPalette({ open, onOpenChange, onOpenCopilot }: { open: boolean; onOpenChange: (open: boolean) => void; onOpenCopilot: () => void }) {
   const router = useRouter();
   const { generatePlan } = useDemo();
+  const { subscription } = useSubscription();
+  const { recalculate, busy } = useProExperience();
   const { t } = useLocale();
   const navigate = useCallback((labelKey: string, href: string) => {
     onOpenChange(false);
@@ -39,6 +45,10 @@ export function CommandPalette({ open, onOpenChange, onOpenCopilot }: { open: bo
       <CommandInput placeholder={t("command.placeholder")} aria-label={t("command.placeholder")} />
       <CommandList className="max-h-[min(24rem,58dvh)]">
         <CommandEmpty>{t("command.empty")}</CommandEmpty>
+        {hasProFeatures(subscription?.plan) && <CommandGroup heading="LumaPath Pro · Intelligence actions">
+          {[['Compare careers', '/career-compare'], ['Check opportunity readiness', '/opportunities'], ['Review market changes', '/market-signals'], ['Analyze CV', '/cv']].map(([label, href]) => <CommandItem key={href} value={label} onSelect={() => navigate('', href)} className="min-h-11 rounded-lg px-3 text-sm"><Sparkles className="mr-2 size-4 text-primary" />{label}</CommandItem>)}
+          <CommandItem value="Recalculate my plan" disabled={busy} onSelect={() => { onOpenChange(false); void recalculate('Plan reviewed from quick actions'); router.push('/overview#pro-intelligence'); }} className="min-h-11 rounded-lg px-3 text-sm"><WandSparkles className="mr-2 size-4 text-primary" />Recalculate my plan</CommandItem>
+        </CommandGroup>}
         <CommandGroup heading="Quick actions">
           {commandItems.map(({ labelKey, href, icon: Icon }) => <CommandItem key={labelKey} value={t(labelKey)} onSelect={() => navigate(labelKey, href)} className="min-h-11 rounded-lg px-3 text-sm"><Icon className="mr-2 size-4 text-muted-foreground" />{t(labelKey)}</CommandItem>)}
         </CommandGroup>

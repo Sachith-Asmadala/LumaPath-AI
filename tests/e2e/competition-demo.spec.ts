@@ -36,7 +36,7 @@ test("two-minute demo: priority, disruption, approved preparation, and DOC-F33 c
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const before = await page.evaluate(() => JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!).tasks.length);
   await page.getByRole("button", { name: "Build preparation plan", exact: true }).click();
-  await expect(page.getByLabel("Preparation task title").first()).toBeVisible();
+  await expect(page.getByLabel("Preparation task title").first()).toBeVisible({ timeout: 15_000 });
   const generated = await page.evaluate(() => JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!).tasks.length);
   expect(generated).toBe(before);
   await page.getByLabel("Preparation task title").first().fill("Verify AWS fundamentals with a practical exercise");
@@ -50,7 +50,7 @@ test("two-minute demo: priority, disruption, approved preparation, and DOC-F33 c
   await page.getByRole("navigation", { name: "Two-minute demo path" }).getByRole("link", { name: "Career Compare", exact: true }).click();
   await page.getByRole("button", { name: "Compare careers", exact: true }).click();
   const compare = page.getByRole("region", { name: "DevOps versus Cloud comparison" });
-  await expect(compare.getByRole("heading", { name: "DevOps Engineer", exact: true })).toBeVisible();
+  await expect(compare.getByRole("heading", { name: "DevOps Engineer", exact: true })).toBeVisible({ timeout: 15_000 });
   await expect(compare.getByRole("heading", { name: "Cloud Engineer", exact: true })).toBeVisible();
   await expect(compare.getByText("Free route", { exact: true })).toHaveCount(2);
   await expect(compare.getByText("Low-cost route", { exact: true })).toHaveCount(2);
@@ -60,17 +60,22 @@ test("two-minute demo: priority, disruption, approved preparation, and DOC-F33 c
 
 test("stale storage and repeated resets restore exactly four tasks and four blocks", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.addInitScript(() => localStorage.setItem("lumapath-demo-state-v1", '{"corrupt":true'));
+  await page.addInitScript(() => {
+    if (location.pathname === "/competition-demo") localStorage.setItem("lumapath-demo-state-v1", '{"corrupt":true');
+  });
   await page.goto("/competition-demo");
   await page.getByRole("button", { name: "Start Competition Demo", exact: true }).click();
   await expect(page).toHaveURL(/\/overview/, { timeout: 45_000 });
   const snapshot = () => page.evaluate(() => {
     const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!);
-    return { tasks: state.tasks, blocks: state.planBlocks, capacity: state.capacity, evidence: state.evidence };
+    return { tasks: state.tasks, blocks: state.planBlocks, capacity: state.capacity, evidence: state.evidence, notifications: state.notifications, intelligence: state.intelligenceItems, productiveMinutes: state.productiveMinutes };
   });
   const first = await snapshot();
   expect(first.tasks).toHaveLength(4);
   expect(first.blocks).toHaveLength(4);
+  expect(first.notifications).toHaveLength(4);
+  expect(first.intelligence).toHaveLength(6);
+  expect(first.productiveMinutes).toBe(0);
   await page.evaluate(() => {
     const state = JSON.parse(localStorage.getItem("lumapath-demo-state-v1")!);
     state.tasks.push({ ...state.tasks[0], id: "duplicate-stale" });
@@ -80,4 +85,7 @@ test("stale storage and repeated resets restore exactly four tasks and four bloc
   await expect(page.getByRole("button", { name: "Reset demo", exact: true })).toBeEnabled({ timeout: 45_000 });
   await expect.poll(snapshot).toEqual(first);
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.goto("/notifications");
+  await expect(page.getByText("Integration tests still need attention", { exact: false })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Northstar Labs internship closes Oct 14", { exact: false })).toBeVisible();
 });

@@ -1,0 +1,5 @@
+Ubuntu
+Copyright 2011 Canonical Ltd.  Licensed under the Ubuntu Font Licence 1.0
+
+Source: https://pdf-lib.js.org/assets/ubuntu/Ubuntu-R.ttf
+Bundled under Ubuntu Font Licence 1.0; see Ubuntu-LICENSE.txt.

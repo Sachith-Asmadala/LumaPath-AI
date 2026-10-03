@@ -18,6 +18,8 @@ import { mentorStudentRequest, type MentorRelationship } from "@/features/mentor
 import { statusTone, type CertificatePayload, type EvidenceAccessAudit, type EvidenceShare, type MentorValidationRequest, type PassportDashboard, type PassportEvidence } from "@/features/evidence-passport/domain/evidence-passport";
 import { addCertificate, correctEvidence, createEvidenceShare, createMentorValidationRequest, deleteCertificate, exportEvidence, getEvidenceAccessHistory, getEvidencePassport, getMentorValidationRequests, listEvidenceShares, revalidateEvidence, revokeEvidenceShare, syncEvidencePassport, updateCertificate } from "@/features/evidence-passport/services/evidence-passport";
 
+import { ProEvidenceInsights } from "@/features/subscriptions/components/pro-intelligence-home";
+
 const blankCertificate: CertificatePayload={skill_id:"",title:"",issuer:"",acquired_at:null,expires_at:null,credential_reference:"",source_url:null,proficiency:null};
 
 export default function EvidencePage(){
@@ -48,6 +50,7 @@ export default function EvidencePage(){
   if(!data)return <div className="mx-auto max-w-[1180px] px-4 py-10"><Card className="rounded-2xl p-6"><p className="text-sm text-destructive">{error||t("evidencePassport.loadFailed")}</p><Button className="mt-4" onClick={()=>void load()}><RefreshCcw className="size-4"/>{t("common.retry")}</Button></Card></div>;
 
   return <div className="mx-auto w-full max-w-[1250px] px-4 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pt-8">
+    <ProEvidenceInsights passport={data} />
     <Reveal><div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><p className="type-eyebrow mb-2 flex items-center gap-2 text-success"><ShieldCheck className="size-3.5"/>{t("evidencePassport.eyebrow")}</p><TypographyH1>{t("evidencePassport.title")}</TypographyH1><TypographyP className="mt-2 max-w-3xl">{t("evidencePassport.subtitle")}</TypographyP></div><div className="flex flex-wrap gap-2"><Button variant="outline" disabled={busy} onClick={()=>void sync()}><RefreshCcw className="size-4"/>{t("evidencePassport.sync")}</Button><Button variant="outline" disabled={!selectedCount||busy} onClick={()=>void download()}><Download className="size-4"/>{t("evidencePassport.exportSelected",{count:formatNumber(selectedCount)})}</Button><Button disabled={!selectedCount||busy} onClick={()=>void createShare()}><Share2 className="size-4"/>{t("evidencePassport.shareSelected")}</Button></div></div></Reveal>
     {error&&<Card role="alert" className="mb-4 rounded-2xl border-destructive/20 bg-destructive/[0.03] p-4 text-sm text-destructive">{error}</Card>}
     {shareUrl&&<Card className="mb-4 rounded-2xl border-success/15 bg-success/[0.025] p-4"><p className="text-sm font-medium text-success">{t("evidencePassport.shareReady")}</p><div className="mt-2 flex flex-col gap-2 sm:flex-row"><Input readOnly value={shareUrl}/><Button variant="outline" onClick={()=>navigator.clipboard?.writeText(shareUrl)}>{t("evidencePassport.copyLink")}</Button></div><p className="mt-2 text-xs text-muted-foreground">{t("evidencePassport.sharePrivacy")}</p></Card>}

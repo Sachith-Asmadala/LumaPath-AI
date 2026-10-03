@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
 import { BrandIcon } from "@/components/brand/brand-icon";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { releaseLabel } from "@/lib/release";
 import { localeOptions } from "@/i18n/config";
 import { useLocale } from "@/i18n/locale-provider";
 import { NotificationPreferencesCard } from "@/features/notifications/components/notification-preferences-card";
+import { ProControls } from "@/features/subscriptions/components/pro-controls";
 import styles from "./settings.module.css";
 
 const themes = [{ id: "light", icon: Sun }, { id: "dark", icon: Moon }, { id: "system", icon: Monitor }] as const;
@@ -24,7 +26,9 @@ export default function SettingsPage() {
   const { subscription, loading } = useSubscription();
   const { state, resetDemo, learningAction, signOut } = useDemo();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { theme, forcedTheme, setTheme } = useTheme();
+  const allowDark = hasProFeatures(subscription?.plan);
+  const activeTheme = forcedTheme ?? theme;
   const { locale, setLocale, t } = useLocale();
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const links = [
@@ -64,11 +68,12 @@ export default function SettingsPage() {
         <Card className={styles.panel}>
           <div className={styles.sectionHeading}><span className={styles.sectionIcon}><SlidersHorizontal size={18} aria-hidden="true" /></span><div><h2 id="appearance-title">{t("settings.appearance")}</h2><p>{t("settings.appearanceDescription")}</p></div></div>
           <div role="group" aria-label={t("settings.themeLabel")} className={styles.themeGrid}>
-            {themes.map(({ id, icon: Icon }) => <button key={id} type="button" onClick={() => setTheme(id)} aria-pressed={mounted && theme === id} className={cn(styles.themeOption, mounted && theme === id && styles.selected)}>
+            {themes.map(({ id, icon: Icon }) => <button key={id} type="button" disabled={id !== "light" && !allowDark} onClick={() => setTheme(id)} aria-pressed={mounted && activeTheme === id} aria-label={`${t(`settings.theme.${id}`)}${id !== "light" && !allowDark ? " · Included with Pro" : ""}`} className={cn(styles.themeOption, "disabled:cursor-not-allowed disabled:opacity-60", mounted && activeTheme === id && styles.selected)}>
               <span className="theme-preview" data-theme={id} aria-hidden="true"><span /><span><i /><i /><i /></span></span>
-              <span className={styles.themeLabel}><Icon size={14} aria-hidden="true" /><span>{t(`settings.theme.${id}`)}</span><span className={styles.selectionDot} aria-hidden="true">{mounted && theme === id && <Check size={12} />}</span></span>
+              <span className={styles.themeLabel}><Icon size={14} aria-hidden="true" /><span>{t(`settings.theme.${id}`)}</span><span className={styles.selectionDot} aria-hidden="true">{id !== "light" && !allowDark ? <LockKeyhole size={12} /> : mounted && activeTheme === id && <Check size={12} />}</span></span>
             </button>)}
           </div>
+          <p className="mt-3 text-xs leading-5 text-muted-foreground">{allowDark ? "Pro includes light, dark, and system appearance." : <>Free includes light appearance. Dark and system appearance are included with Pro. <Link href="/checkout" className="font-medium text-primary underline underline-offset-4">Upgrade to Pro</Link></>}</p>
           <div className={styles.motionNote}><Accessibility size={17} aria-hidden="true" /><p>{t("settings.motionPreferenceDetail")}</p></div>
         </Card>
       </section>
@@ -84,6 +89,8 @@ export default function SettingsPage() {
         </Card>
       </section>
     </div>
+
+    <ProControls />
 
     <section id="settings-notifications" aria-label={t("settings.notifications")} className={styles.notifications}><NotificationPreferencesCard /></section>
 

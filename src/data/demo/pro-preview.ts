@@ -1,0 +1,37 @@
+// Presentation fixtures, separate from saved student work and live API results.
+// Numbers describe this synthetic DevOps student, not current market research.
+export const demoPlanUpdates = [
+  { id: "containers", category: "Learning", title: "Make your container build reproducible", minutes: 15, skill: "Docker", summary: "Pin the base image and keep build dependencies out of the runtime stage.", relevance: "The sample student's API already runs locally; a repeatable build is the next portfolio improvement.", nextStep: "Compare image sizes, run a smoke test, and attach the build log to your project evidence." },
+  { id: "reviews", category: "Career practice", title: "Turn a pull request into portfolio evidence", minutes: 10, skill: "Git", summary: "Explain the change, include a test result, and respond to review feedback.", relevance: "Git is a strength in the sample pathway. A reviewed change shows how that skill works in a team.", nextStep: "Add a short before-and-after explanation to the room-booking API pull request." },
+  { id: "linux", category: "Learning", title: "Diagnose a failing Linux service", minutes: 20, skill: "Linux", summary: "Read service status and journal logs before changing configuration.", relevance: "Linux fundamentals are verified; troubleshooting gives the student a useful internship interview example.", nextStep: "Record the failing service, root cause, fix, and verification command in a one-page runbook." },
+  { id: "pipeline", category: "Project practice", title: "Add a test gate to your release pipeline", minutes: 25, skill: "CI/CD", summary: "Run unit tests before publishing the container image.", relevance: "CI/CD is an evidence gap for the sample DevOps internship. This connects existing Git and Docker work.", nextStep: "Create a GitHub Actions workflow, show a failed test blocking a release, then save a passing run." },
+  { id: "iam", category: "Cloud foundations", title: "Practise least-privilege access", minutes: 20, skill: "Cloud", summary: "Describe a narrow read-only policy for one sample storage bucket.", relevance: "Cloud knowledge is partial in this scenario. A concrete permission example is stronger than listing AWS on a CV.", nextStep: "Write the sample policy locally and explain allowed and denied operations; no paid cloud account is needed." },
+  { id: "networking", category: "Learning", title: "Explain container-to-container networking", minutes: 15, skill: "Docker", summary: "Use service names to connect an API and database in a Compose network.", relevance: "The Docker lab includes network troubleshooting. Understanding DNS and ports helps close that gap.", nextStep: "Document the service name, internal port, health check, and a successful API-to-database request." },
+  { id: "interview", category: "Internship preparation", title: "Prepare a deployment incident story", minutes: 20, skill: "Interview", summary: "Structure a short explanation around the symptom, diagnosis, fix, and result.", relevance: "The sample Northstar Labs role asks for practical troubleshooting and clear communication.", nextStep: "Practise a two-minute answer using the Linux runbook; distinguish your contribution from the team's work." },
+  { id: "terraform", category: "Next milestone", title: "Preview infrastructure as code", minutes: 15, skill: "Terraform", summary: "Read a sample resource definition and identify its inputs and dependencies.", relevance: "This is a later pathway milestone after Docker and Cloud foundations, so it should not displace urgent academic work.", nextStep: "Keep this as a later learning option until the CI/CD evidence task is complete." },
+];
+
+export const demoCareerScenarios = [
+  { title: "DevOps internship route", roles: "DevOps Engineer · Cloud Engineer", hours: 6, duration: "12–16 weeks", effort: "72–96 hours", budget: "Free learning route", focus: "Docker → CI/CD → Cloud", history: "At 4 hours/week: 18–24 weeks. At 6 hours/week: 12–16 weeks.", note: "Linux and Git transfer to both roles. Prioritise a tested deployment pipeline before cloud certification." },
+  { title: "Backend portfolio route", roles: "Backend Engineer · DevOps Engineer", hours: 5, duration: "14–18 weeks", effort: "70–90 hours", budget: "Free learning route", focus: "API testing → SQL → Deployment", history: "Earlier draft: API only. Current draft: add integration tests and a reproducible deployment.", note: "Reuse the room-booking API. Build evidence of authentication, database migrations, and testing." },
+  { title: "Cloud foundations route", roles: "Cloud Engineer · DevOps Engineer", hours: 4, duration: "16–20 weeks", effort: "64–80 hours", budget: "Optional certification costs excluded", focus: "Networking → IAM → Infrastructure as code", history: "Earlier draft: certification first. Current draft: practise IAM and networking before exam preparation.", note: "Use local examples and free documentation first. Certification fees and provider prices remain unknown." },
+];
+
+export const demoRegionalMarkets = [
+  { region: "Sri Lanka", mode: "Colombo · Hybrid", sampleRoles: 18, matchedRoles: 7, skills: "Linux, Git, Docker", gap: "A tested CI/CD pipeline", detail: "Internship and junior roles in the sample favour practical project evidence and local availability." },
+  { region: "Singapore", mode: "On-site / Hybrid", sampleRoles: 24, matchedRoles: 5, skills: "Cloud, Networking, CI/CD", gap: "Cloud evidence and work eligibility", detail: "Technical fit alone is insufficient. Work authorisation and relocation readiness remain unknown." },
+  { region: "International remote", mode: "Remote · Time-zone overlap", sampleRoles: 32, matchedRoles: 9, skills: "Docker, CI/CD, Communication", gap: "Deployment runbook and team experience", detail: "The sample roles emphasise independent troubleshooting, documentation, and overlap with the team's working hours." },
+];
+
+export const demoPreparationSteps = [
+  { title: "Tailor the CV", minutes: 30, status: "Draft ready", output: "One-page CV linking the containerised API and reviewed Git work.", reason: "Use evidence-backed claims; keep unfinished cloud skills in the learning section." },
+  { title: "Show a working pipeline", minutes: 45, status: "Needs evidence", output: "Passing test run, container build log, and a short README.", reason: "Closes the sample internship's CI/CD requirement with something a reviewer can inspect." },
+  { title: "Practise troubleshooting", minutes: 20, status: "Next step", output: "Two-minute incident explanation based on the Linux service runbook.", reason: "Explain what failed, how you investigated it, and how you confirmed the fix." },
+  { title: "Review before applying", minutes: 15, status: "After evidence", output: "Checked links, accurate availability, and a peer-reviewed application.", reason: "Work eligibility and hiring decisions stay unknown; completing preparation does not guarantee selection." },
+];
+
+export const demoAdaptivePreview = [
+  { task: "Academic submission", before: "90 min tonight", after: "60 min tonight", reason: "Keep the submission essentials in today's limited capacity." },
+  { task: "Docker practice", before: "45 min tonight", after: "30 min Thursday", reason: "Move flexible learning after the urgent academic deadline." },
+  { task: "CV review", before: "30 min tonight", after: "30 min Friday", reason: "Keep the application review ahead of the sample closing date." },
+];

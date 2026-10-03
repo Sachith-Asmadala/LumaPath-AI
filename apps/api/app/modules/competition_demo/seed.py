@@ -3,7 +3,7 @@
 No scraping or real-student mutations. Existing services own pathway generation,
 evidence contracts, governed ingestion, opportunity evaluation, and entitlements.
 """
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from contextlib import contextmanager
 from uuid import uuid5, NAMESPACE_URL
@@ -30,6 +30,9 @@ from ..intelligence.service import IntelligenceService
 from ..intelligence.schemas import IngestionCandidate, ContentSkillInput
 from ..subscriptions.repository import SubscriptionRepository
 from ..subscriptions.service import EntitlementService
+from ..notifications.repository import NotificationRepository
+from ..notifications.service import NotificationService
+from ..notifications.schemas import CandidateInput, CandidateSyncRequest
 
 ROOT = Path(__file__).resolve().parents[5]
 MANIFEST_PATH = ROOT / "src/data/demo/competition-scenario.json"
@@ -39,7 +42,7 @@ MANIFEST_PATH = ROOT / "src/data/demo/competition-scenario.json"
 def stable_seed_identifiers():
     # This CLI runs outside the API process, so ordinary requests are unaffected.
     modules = [importlib.import_module(f"apps.api.app.modules.{name}") for name in [
-        "market_taxonomy.service", "careers.service", "pathways.service", "intelligence.service", "opportunities.service", "subscriptions.service",
+        "market_taxonomy.service", "careers.service", "pathways.service", "opportunities.service", "subscriptions.service",
     ]]
     originals = [(module, getattr(module, "uuid4", None)) for module in modules]
     def factory(name):
@@ -82,7 +85,7 @@ def clear_student(database_path):
                     db.execute(f"DELETE FROM {quoted} WHERE {identity}=?", (STUDENT_ID,))
 
 
-def seed_intelligence(database_path, pathways):
+def seed_intelligence(database_path, pathways, manifest):
     repo = IntelligenceRepository(database_path)
     now = SCENARIO_NOW
     source_id = "competition-learning"
@@ -92,20 +95,28 @@ def seed_intelligence(database_path, pathways):
             (id,name,base_url,allowed_domains_json,categories_json,source_type,trust_score,trust_status,
              storage_policy,max_excerpt_chars,max_age_days,terms_url,created_at,updated_at)
             VALUES (?,?,?,?,?, 'official_documentation',90,'approved','metadata_excerpt',500,30,?,?,?)
-            ON CONFLICT(id) DO UPDATE SET trust_status='approved',updated_at=excluded.updated_at""",
-            (source_id, "Luma Learning Library", "https://example.org/lumapath-competition", json.dumps(["example.org"]), json.dumps(["learning_article"]), "https://example.org/lumapath-competition/terms", now.isoformat(), now.isoformat()))
-        # Existing fixture articles are reused, including other students' saved references.
-        existing = db.execute("SELECT COUNT(*) FROM articles WHERE source_id=?", (source_id,)).fetchone()[0]
-        if existing == 2:
-            return
+            ON CONFLICT(id) DO UPDATE SET name=excluded.name,trust_status='approved',updated_at=excluded.updated_at""",
+            (source_id, "Luma Learning Library (demo)", "https://example.org/lumapath-competition", json.dumps(["example.org"]), json.dumps(["learning_article"]), "https://example.org/lumapath-competition/terms", now.isoformat(), now.isoformat()))
     service = IntelligenceService(repo, pathways, now=lambda: now)
-    candidates = [IngestionCandidate(source_id=source_id, category="learning_article", title=title,
-        excerpt="Synthetic learning metadata curated for the competition scenario.",
-        canonical_url=f"https://example.org/lumapath-competition/{skill}", published_at=now-timedelta(days=1),
-        topics=["devops",skill], skills=[ContentSkillInput(skill_id=skill, relationship="primary")],
-        target_roles=["DevOps Engineer"], difficulty="beginner", reading_minutes=15)
-        for skill,title in [("docker","Build a reproducible container workflow"),("cicd","Take your first CI pipeline from test to release")]]
-    service.ingest_candidates(source_id,candidates)
+    # Article IDs are derived from URLs; ingestion-run IDs remain unique across repairs.
+    candidates = [IngestionCandidate(source_id=source_id, category="learning_article", title=item["title"],
+        excerpt=f"Demo learning scenario: {item['excerpt']}",
+        canonical_url=f"https://example.org/lumapath-competition/{item['id']}", published_at=item["publishedAt"],
+        topics=["devops",item["skillId"]], skills=[ContentSkillInput(skill_id=item["skillId"], relationship="primary")],
+        target_roles=["DevOps Engineer"], difficulty="beginner", reading_minutes=item["readingMinutes"])
+        for item in manifest["intelligence"]]
+    pending = []
+    with sqlite3.connect(database_path) as db:
+        for candidate in candidates:
+            existing = db.execute("SELECT id FROM articles WHERE source_id=? AND canonical_url=?", (source_id, candidate.canonical_url)).fetchone()
+            if existing:
+                # Refresh fixture text while preserving saved references and moderation state.
+                db.execute("UPDATE articles SET excerpt=?,reading_minutes=?,updated_at=? WHERE id=?",
+                    (candidate.excerpt, candidate.reading_minutes, now.isoformat(), existing[0]))
+            else:
+                pending.append(candidate)
+    if pending:
+        service.ingest_candidates(source_id,pending)
 
 
 def seed_market(database_path, career, pathways, pathway_service):
@@ -129,6 +140,26 @@ def seed_market(database_path, career, pathways, pathway_service):
         db.execute("DELETE FROM market_observations WHERE source_id=?",(source_id,))
     observation=helpers.observation(source_id,0.55,period_start=SCENARIO_NOW.date()-timedelta(days=35),observed_at=SCENARIO_NOW-timedelta(days=2),scope="international",region=None,sample=120)
     service.ingest(curator,ObservationIngestRequest(items=[observation]))
+
+
+def seed_notifications(database_path, manifest):
+    """Use the in-app policy pipeline to give the synthetic student an inbox history."""
+    repo = NotificationRepository(database_path)
+    types = {"risk": "risk", "plan": "study_session", "opportunity": "application_date", "evidence": "roadmap_milestone"}
+    for notice in sorted(manifest["notifications"], key=lambda item: item["createdAt"]):
+        occurred = datetime.fromisoformat(notice["createdAt"])
+        service = NotificationService(repo, now=lambda: occurred)
+        service.sync(STUDENT_ID, CandidateSyncRequest(items=[CandidateInput(
+            notification_type=types[notice["kind"]], source_type="system", source_id=notice["id"],
+            display_label=notice["title"], reason=notice["description"], action_href=notice["href"],
+            urgency="high" if notice["kind"] == "risk" else "normal", occurred_at=occurred,
+            expires_at=SCENARIO_NOW+timedelta(days=14), sensitive=True,
+            idempotency_key=f"{manifest['version']}:{notice['id']}",
+        )]))
+        if notice["read"]:
+            for delivery in repo.inbox(STUDENT_ID, include_dismissed=False):
+                if delivery["source_id"] == notice["id"]:
+                    service.mark(STUDENT_ID, delivery["id"], "opened")
 
 
 def reset_competition_demo(database_path):
@@ -167,9 +198,9 @@ def reset_competition_demo(database_path):
         original = dict(opportunities.get("devops-intern-2026"))
         original_version=original["requirement_version"]
         oid=manifest["opportunityId"]
-        original.update(id=oid,title="Junior DevOps Internship",provider="Northstar Labs",summary="Build release pipelines, practise containers and support a small cloud platform team.",
+        original.update(id=oid,title="Junior DevOps Internship",provider="Northstar Labs",summary="Sample 12-week internship with a Colombo platform team: maintain GitHub Actions checks, containerize a small API, and help investigate deployment failures with a mentor. Hybrid, three days on campus or in the office; practical Git evidence required, Docker practice expected, and AWS fundamentals reviewed during the interview.",
             source_url=f"https://example.org/lumapath-competition/{oid}",canonical_url=f"https://example.org/lumapath-competition/{oid}",source_name="Northstar Labs synthetic catalogue",requirement_version="competition-v1",
-            starts_on="2026-10-12",closes_on="2026-10-14",required_skills_json=json.dumps(["git","docker","aws"]),application_steps_json=json.dumps(["Prepare a CV and link the release automation project."]),source_checked_at=SCENARIO_NOW.isoformat(),source_expires_at=(SCENARIO_NOW+timedelta(days=30)).isoformat())
+            starts_on="2026-11-02",closes_on="2026-10-14",location_mode="hybrid",location="Colombo, Sri Lanka",required_skills_json=json.dumps(["git","docker","aws"]),application_steps_json=json.dumps(["Prepare a one-page CV and link the release automation project.", "Add reproducible setup, test commands, and networking notes to the container project README.", "Write 150 words explaining a failed build you diagnosed and how you fixed it."]),source_checked_at=SCENARIO_NOW.isoformat(),source_expires_at=(SCENARIO_NOW+timedelta(days=30)).isoformat())
         requirements=[]
         baseline=[dict(row) for row in opportunities.requirements("devops-intern-2026",original_version)]
         for skill,label in [("git","Git"),("docker","Docker"),("aws","AWS fundamentals")]:
@@ -177,8 +208,9 @@ def reset_competition_demo(database_path):
             row.update(id=f"competition-requirement-{skill}",opportunity_id=oid,requirement_version="competition-v1",requirement_key=f"skill:{skill}",expected_json=json.dumps({"skill_id":skill}),label=label,source_text=f"Demonstrate practical {label} knowledge through a project or verified assessment.",source_reference=original["source_url"])
             requirements.append(row)
         opportunities.seed([original],{oid:requirements})
-        seed_intelligence(database_path,pathways)
+        seed_intelligence(database_path,pathways,manifest)
         seed_market(database_path,career,pathways,pathway_service)
+        seed_notifications(database_path,manifest)
         EntitlementService(subscriptions,now=lambda: SCENARIO_NOW).set_demo_plan(STUDENT_ID,"pro")
         feed=service.browse(STUDENT_ID,BrowseRequest(context=RecommendationContext(target_role="DevOps Engineer")))
         opportunity=next(item for item in feed.items if item.id==oid)

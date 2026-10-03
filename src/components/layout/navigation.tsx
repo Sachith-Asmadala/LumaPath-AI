@@ -19,15 +19,18 @@ import { BrandIcon } from "@/components/brand/brand-icon";
 import { useLocale } from "@/i18n/locale-provider";
 import { NotificationProvider } from "@/features/notifications/components/notification-provider";
 import { AchievementProvider } from "@/features/achievements/components/achievement-provider";
-import { SubscriptionProvider, useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
+import { ProExperienceProvider } from "@/features/subscriptions/components/pro-experience-provider";
 import { homeLink, inboxLink, routeMatches, workspaceGroups, workspaceLinks } from "./workspace-map";
 import { DecisionPulse } from "@/features/dashboard/components/decision-pulse";
 import { PremiumWelcome } from "./premium-welcome";
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
-  return <SubscriptionProvider><TooltipProvider delayDuration={250}><NotificationProvider><AchievementProvider>
-    <SidebarProvider defaultOpen className="workspace-shell"><WorkspaceContent>{children}</WorkspaceContent></SidebarProvider>
-  </AchievementProvider></NotificationProvider></TooltipProvider></SubscriptionProvider>;
+  const { subscription } = useSubscription();
+  return <ProExperienceProvider><TooltipProvider delayDuration={250}><NotificationProvider><AchievementProvider>
+    <SidebarProvider defaultOpen className="workspace-shell" data-plan={hasProFeatures(subscription?.plan) ? "pro" : "free"}><WorkspaceContent>{children}</WorkspaceContent></SidebarProvider>
+  </AchievementProvider></NotificationProvider></TooltipProvider></ProExperienceProvider>;
 }
 
 function WorkspaceContent({ children }: { children: React.ReactNode }) {
@@ -36,6 +39,8 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
   const { isMobile, setOpenMobile, state: sidebarState } = useSidebar();
   const { state, competitionResetVersion } = useDemo();
   const { subscription } = useSubscription();
+  const hasPro = hasProFeatures(subscription?.plan);
+  const proDestination = process.env.NODE_ENV !== "production" && subscription?.demo_switch_enabled ? "/overview#plan-demo" : "/settings/subscription";
   const { t } = useLocale();
   const [commandOpen, setCommandOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
@@ -82,7 +87,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
             </div>;
           })}
         </div>
-        <Link href="/plans" onClick={closeMobile} className="sidebar-premium group-data-[collapsible=icon]:hidden"><span className="flex items-center justify-between"><Sparkles size={18} /><span className="premium-tag">EXPLORE PRO</span></span><strong>A little more possibility.</strong><span>Meet LumaPath Pro</span><ArrowUpRight size={17} className="absolute bottom-5 right-4" /></Link>
+        <Link href={hasPro ? proDestination : "/plans"} onClick={closeMobile} className="sidebar-premium group-data-[collapsible=icon]:hidden"><span className="flex items-center justify-between"><Sparkles size={18} /><span className="premium-tag">{hasPro ? "PRO UNLOCKED" : "EXPLORE PRO"}</span></span><strong>{hasPro ? "More room for your next step." : "A little more possibility."}</strong><span>{hasPro ? "Explore your Pro features" : "Meet LumaPath Pro"}</span><ArrowUpRight size={17} className="absolute bottom-5 right-4" /></Link>
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border px-3 py-4">
         <SidebarMenu><SidebarMenuItem><SidebarMenuButton asChild tooltip={t("nav.settings")} className="workspace-nav-link" isActive={pathname === "/settings"}><Link href="/settings" onClick={closeMobile}><Settings2 size={18} /><span>{t("nav.settings")}</span></Link></SidebarMenuButton></SidebarMenuItem></SidebarMenu>
@@ -100,7 +105,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
       </main>
       {!focus && <nav aria-label={t("nav.mobilePrimary")} className="workspace-mobile-nav">{[homeLink, workspaceGroups[0].links[1], workspaceGroups[0].links[2]].map(({ labelKey, href, icon: Icon }) => <Link key={href} href={href} aria-current={routeMatches(pathname, href) ? "page" : undefined}><Icon size={20} /><span>{t(labelKey)}</span></Link>)}<button onClick={() => setOpenMobile(true)}><Grid2X2 size={20} /><span>More</span></button></nav>}
     </SidebarInset>
-    {!focus && !state.competition && <PremiumWelcome studentId={state.student.id} />}
+    {!focus && !state.competition && subscription?.plan === "free" && <PremiumWelcome studentId={state.student.id} />}
     <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} onOpenCopilot={() => setCopilotOpen(true)} />
     <CopilotDrawer open={copilotOpen} onOpenChange={setCopilotOpen} route={pathname} />
     <Toaster position="bottom-right" richColors={false} closeButton />

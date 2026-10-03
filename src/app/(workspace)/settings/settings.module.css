@@ -31,7 +31,7 @@
 .sectionHeading p { margin-top: 5px; font-size: .74rem; line-height: 1.8; color: var(--muted-foreground); }
 .themeGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 4px; }
 .themeOption { min-width: 0; padding: 7px; border: 1px solid var(--border); border-radius: 15px; background: var(--background); text-align: left; cursor: pointer; transition: border-color .2s, background .2s, transform .2s; }
-.themeOption:hover { transform: translateY(-2px); border-color: var(--primary); }
+.themeOption:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--primary); }
 .themeOption :global(.theme-preview) { height: 100px; padding: 10px; gap: 7px; border-radius: 9px; }
 .themeOption :global(.theme-preview) > span:last-child { display: flex; flex-direction: column; gap: 6px; align-self: stretch; height: auto; padding: 10px 7px; background: #fdfcf8; border: 1px solid #dddfd4; }
 .themeOption :global(.theme-preview) i { display: block; height: 5px; background: #d1c8ed; border-radius: 2px; }

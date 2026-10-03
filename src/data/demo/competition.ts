@@ -1,6 +1,6 @@
 import scenario from "./competition-scenario.json";
 import { createDemoState } from "./seed";
-import type { DemoState, PlanBlock, Task } from "./types";
+import type { DemoState, Notification, PlanBlock, Task } from "./types";
 import type { OpportunityItem } from "@/features/opportunities/domain/opportunities";
 import { buildNextBestAction } from "@/features/planner/domain/priority";
 import { measuredReadiness } from "@/features/career/domain/readiness";
@@ -24,9 +24,12 @@ export function createCompetitionState(snapshot: CompetitionSnapshot): DemoState
   state.evidence = scenario.skills.map(skill => ({ id: `competition-evidence-${skill.id}`, skillId: skill.id, source: skill.id === "git" ? "GitHub project" : "Baseline assessment", label: skill.title, status: skill.verification === "verified" ? "verified" : "self-reported", confidence: skill.verification === "verified" ? 90 : 65, ...(skill.id === "git" ? { kind: "project" as const, url: "https://example.org/lumapath-competition/git-project" } : {}) }));
   state.activeAction = buildNextBestAction(state.tasks[0], { durationMinutes: 60, rationale: "The assignment is due soon and still needs integration tests. A 60-minute block fits today's limited capacity; Docker practice can follow once this academic deadline is protected." });
   state.readiness = measuredReadiness(state);
-  state.intelligenceItems = [];
-  state.opportunities = [];
-  state.notifications = [];
+  state.intelligenceItems = scenario.intelligence.map(item => ({ id: `competition-${item.id}`, kind: "Learning article", title: item.title, source: "Luma Learning Library (demo)", publishedAt: item.publishedAt, whyRelevant: item.excerpt, durationMinutes: item.readingMinutes, status: "new" }));
+  state.opportunities = [{ id: snapshot.opportunity.id, role: snapshot.opportunity.title, organization: snapshot.opportunity.provider, match: snapshot.opportunity.rank_score ?? 0, strengths: [...snapshot.opportunity.strengths], missingSkills: [...snapshot.opportunity.skill_gaps], closesAt: snapshot.opportunity.closes_on ?? "", recommendation: snapshot.opportunity.why_fit ?? snapshot.opportunity.summary }];
+  state.notifications = structuredClone(scenario.notifications) as Notification[];
+  state.completedTaskCount = 0;
+  state.productiveMinutes = 0;
+  state.currentStreak = 0;
   return state;
 }
 
