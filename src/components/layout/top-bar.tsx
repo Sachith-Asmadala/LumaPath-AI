@@ -1,4 +1,5 @@
 "use client";
+import { StudentAvatar } from "@/components/shared/student-avatar";
 
 import Link from "next/link";
 import { Bell, Command, Search, Sparkles, X } from "lucide-react";
@@ -64,7 +65,7 @@ export function TopBar({ title, onOpenCommand, onOpenCopilot }: { title: string;
         <Button onClick={onOpenCopilot} variant="outline" className="hidden md:inline-flex h-9 gap-2 rounded-[14px] border-primary/20 bg-primary/[0.045] px-3 text-xs font-medium text-primary transition-colors hover:bg-primary/10" aria-label={t("top.askLuma")}>
           <Sparkles className="size-3.5" aria-hidden="true" /><span className="hidden sm:inline">{t("top.askLuma")}</span>
         </Button>
-        <Link href="/settings" className="ml-0.5 hidden size-8 items-center justify-center rounded-full border border-border bg-secondary text-xs font-semibold text-primary transition-colors hover:border-primary/25 sm:flex" aria-label={`Open ${state.student.name}'s profile settings`}>{state.student.initials}</Link>
+        <Link href="/settings" className="ml-0.5 hidden size-8 items-center justify-center rounded-full border border-border bg-secondary text-xs font-semibold text-primary transition-colors hover:border-primary/25 sm:flex" aria-label={`Open ${state.student.name}'s profile settings`}><StudentAvatar student={state.student} /></Link>
       </div>
     </header>
   );

@@ -1,4 +1,5 @@
 "use client";
+import { StudentAvatar } from "@/components/shared/student-avatar";
 
 import { Accessibility, ArrowUpRight, Bell, Check, Globe2, GraduationCap, LockKeyhole, LogOut, Monitor, Moon, RotateCcw, ShieldCheck, SlidersHorizontal, Sparkles, Sun, UserRound } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -49,7 +50,7 @@ export default function SettingsPage() {
     <section id="settings-account" aria-label={t("settings.account")} className={styles.account}>
       <Card className={styles.profile}>
         <div className={styles.profileMain}>
-          <span className={styles.avatar} aria-hidden="true">{state.student.initials}</span>
+          <StudentAvatar student={state.student} className={styles.avatar} />
           <div className={styles.profileCopy}><p className={styles.eyebrow}>{t("settings.studentContext")}</p><h2>{state.student.name}</h2><p>{state.student.targetRole}</p>{state.onboarding.university && <p className={styles.university}><GraduationCap size={15} aria-hidden="true" />{state.onboarding.university}</p>}</div>
         </div>
         <div className={styles.accountFooter}><p>{t("settings.signOutDescription")}</p><Button type="button" variant="outline" className="h-11 shrink-0 gap-2 rounded-xl" onClick={() => { signOut(); router.replace("/login"); }}><LogOut size={15} aria-hidden="true" />{t("settings.signOut")}</Button></div>

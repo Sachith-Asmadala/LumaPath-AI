@@ -21,6 +21,7 @@ export function studentFromOnboarding(student: StudentProfile, draft: Onboarding
   return {
     ...student,
     id: "student-onboarded",
+    avatarUrl: student.id === "student-onboarded" ? student.avatarUrl : undefined,
     name,
     university: draft.university.trim(),
     targetRole: draft.careerGoal,

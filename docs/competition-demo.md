@@ -12,7 +12,7 @@
 
 ## B. Demo reset
 
-Open **http://localhost:3000/competition-demo** and click **Start Competition Demo**. Wait for Overview. Before repeating, click **Reset demo** in the synthetic-data banner. It restores four tasks/four blocks, clears prior preparation/comparisons/usage and preserves other students.
+Open **http://localhost:3000/competition-demo** and click **Start Competition Demo**. Wait for Overview. Before repeating, click **Reset demo** in the synthetic-data banner. It restores four tasks, four study blocks and three imported calendar events, clears prior preparation/comparisons/usage and preserves other students. It also restores the [sample portfolio, analyzed CVs, certificate photos and learning documents](demo-content.md).
 
 The reset repairs missing seeded records and replaces stale localStorage. If it reports a failure, verify the API is running and retry; do not present a failed reset as success. Backend-only seeding uses:
 

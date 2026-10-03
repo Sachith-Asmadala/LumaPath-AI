@@ -4,9 +4,10 @@ import type { DemoState, Notification, PlanBlock, Task } from "./types";
 import type { OpportunityItem } from "@/features/opportunities/domain/opportunities";
 import { buildNextBestAction } from "@/features/planner/domain/priority";
 import { measuredReadiness } from "@/features/career/domain/readiness";
+import { applyCalendarActions, type CalendarApplyAction } from "@/features/calendar/domain/calendar";
 const endAtMinutes = (startAt: string, minutes: number) => new Date(new Date(startAt).getTime() + minutes * 60_000).toISOString();
 
-export type CompetitionSnapshot = { version: string; student_id: string; scenario_date: string; synthetic: boolean; opportunity: OpportunityItem; plan: string; comparison_roles: import("@/features/career-scenarios/domain/career-scenarios").CareerScenarioRole[] };
+export type CompetitionSnapshot = { version: string; student_id: string; scenario_date: string; synthetic: boolean; opportunity: OpportunityItem; plan: string; calendar_actions?: CalendarApplyAction[]; comparison_roles: import("@/features/career-scenarios/domain/career-scenarios").CareerScenarioRole[] };
 export const competitionScenario = scenario;
 export function createCompetitionState(snapshot: CompetitionSnapshot): DemoState {
   if (snapshot.version !== scenario.version || snapshot.student_id !== scenario.student.id || snapshot.opportunity?.id !== scenario.opportunityId) throw new Error("The competition scenario could not be verified. Please reset again.");
@@ -30,7 +31,7 @@ export function createCompetitionState(snapshot: CompetitionSnapshot): DemoState
   state.completedTaskCount = 0;
   state.productiveMinutes = 0;
   state.currentStreak = 0;
-  return state;
+  return { ...state, ...applyCalendarActions(state, snapshot.calendar_actions ?? []) };
 }
 
 /** Apply the disruption to existing task/block contracts, without creating work. */

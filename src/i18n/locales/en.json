@@ -1990,5 +1990,22 @@
   "marketSignals.sendForReview": "Send for review",
   "marketSignals.signalMetadata": "{methodology} · last observation {days}d ago",
   "marketSignals.observationPeriod": "through {date}",
-  "marketSignals.candidateVersion": "Candidate {candidate} · base {base}"
+  "marketSignals.candidateVersion": "Candidate {candidate} · base {base}",
+  "demoFiles.title": "Sample demo files",
+  "demoFiles.cvDescription": "Two fictional CV versions are already analyzed. Download the originals to compare the starter CV with the internship draft.",
+  "demoFiles.learningDescription": "Explore the processed study materials below, or download the originals for your learning sessions.",
+  "demoFiles.calendarDescription": "This sample timetable is already imported. Preview the same file to see how sync preserves existing events.",
+  "demoFiles.starterCv": "Starter CV · PDF",
+  "demoFiles.internshipCv": "Internship CV · PDF",
+  "demoFiles.linux": "Linux study notes · PDF",
+  "demoFiles.docker": "Docker networking lab · PDF",
+  "demoFiles.cicd": "CI/CD release guide · PDF",
+  "demoFiles.timetable": "University timetable · ICS",
+  "calendar.historyTitle": "Sync history",
+  "calendar.noHistory": "Your calendar previews and completed imports will appear here.",
+  "calendar.historyCounts": "{imported} imported · {updated} updated · {skipped} skipped",
+  "calendar.syncStatus.committed": "Completed",
+  "calendar.syncStatus.preview_ready": "Ready for review",
+  "calendar.syncStatus.parsing": "Processing",
+  "calendar.syncStatus.failed": "Failed"
 }

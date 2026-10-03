@@ -15,6 +15,8 @@ import sqlite3
 from fastapi import HTTPException
 from ...core.config import settings
 from .clock import DEMO_ENVIRONMENTS, STUDENT_ID, SCENARIO_NOW
+from .content import seed_demo_content
+from ..documents.storage import LocalPrivateObjectStorage
 from ..careers.repository import CareerRepository
 from ..careers.service import CareerService
 from ..careers.schemas import SkillAssessmentRequest, SelfAssessmentInput, QuizEvidenceInput
@@ -43,6 +45,7 @@ def stable_seed_identifiers():
     # This CLI runs outside the API process, so ordinary requests are unaffected.
     modules = [importlib.import_module(f"apps.api.app.modules.{name}") for name in [
         "market_taxonomy.service", "careers.service", "pathways.service", "opportunities.service", "subscriptions.service",
+        "portfolio.service", "cv.service", "evidence_passport.service", "calendar.service",
     ]]
     originals = [(module, getattr(module, "uuid4", None)) for module in modules]
     def factory(name):
@@ -65,9 +68,13 @@ def stable_seed_identifiers():
 
 def clear_student(database_path):
     """Delete only the dedicated student's records and their pathway children."""
+    sources = []
     with sqlite3.connect(database_path, timeout=20) as db:
         db.execute("BEGIN IMMEDIATE")
         tables = [row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
+        for table, identity, storage in [("documents", "owner_id", settings.document_storage_path), ("cv_documents", "student_id", settings.cv_storage_path)]:
+            if table in tables:
+                sources.extend((storage, row[0]) for row in db.execute(f"SELECT storage_name FROM {table} WHERE {identity}=? AND storage_name IS NOT NULL", (STUDENT_ID,)))
         if "preparation_plans" in tables and "preparation_plan_items" in tables:
             db.execute("DELETE FROM preparation_plan_items WHERE plan_id IN (SELECT id FROM preparation_plans WHERE student_id=?)", (STUDENT_ID,))
         if "pathways" in tables:
@@ -80,9 +87,11 @@ def clear_student(database_path):
         for table in tables:
             quoted = '"' + table.replace('"', '""') + '"'
             columns = {row[1] for row in db.execute(f"PRAGMA table_info({quoted})")}
-            for identity in ("student_id", "subject_id"):
+            for identity in ("student_id", "subject_id", "owner_id"):
                 if identity in columns:
                     db.execute(f"DELETE FROM {quoted} WHERE {identity}=?", (STUDENT_ID,))
+    for storage, name in sources:
+        LocalPrivateObjectStorage(storage).delete(name)
 
 
 def seed_intelligence(database_path, pathways, manifest):
@@ -177,7 +186,7 @@ def reset_competition_demo(database_path):
         clear_student(database_path)
         career.assess(STUDENT_ID, SkillAssessmentRequest(target_role="DevOps Engineer",
             self_assessments=[SelfAssessmentInput(skill_id=skill["id"],proficiency=skill["proficiency"]) for skill in manifest["skills"]],
-            quiz_evidence=[QuizEvidenceInput(skill_id=skill["id"],score=skill["proficiency"],quiz_id=f"competition-baseline-{skill["id"]}") for skill in manifest["skills"]]))
+            quiz_evidence=[QuizEvidenceInput(skill_id=skill["id"],score=skill["proficiency"],quiz_id=f"competition-baseline-{skill["id"]}") for skill in manifest["skills"] if skill["verification"] == "verified"]))
         pathway_service = PathwayService(pathways, career_service=career, now=lambda: SCENARIO_NOW)
         draft = pathway_service.generate(STUDENT_ID, PathwayContextRequest(
             target_role="DevOps Engineer", goal="Prepare for a Junior DevOps Internship", pace="balanced", timezone="Asia/Colombo",
@@ -188,10 +197,10 @@ def reset_competition_demo(database_path):
         for skill in manifest["skills"]:
             identifier=f"competition-evidence-{skill['id']}"
             evidence.upsert_evidence(dict(id=identifier,student_id=STUDENT_ID,skill_id=skill["id"],skill_name=skill["name"],
-                evidence_type="project" if skill["id"]=="git" else "assessment",title=skill["title"],source_origin="competition-synthetic",
+                evidence_type="manual_project" if skill["id"]=="git" else "assessment",title=skill["title"],source_origin="competition-synthetic",
                 source_ref=identifier,source_url="https://example.org/lumapath-competition/git-project" if skill["id"]=="git" else None,
-                issuer=None,acquired_at=SCENARIO_NOW.isoformat(),expires_at=None,observed_at=SCENARIO_NOW.isoformat(),last_reviewed_at=SCENARIO_NOW.isoformat(),
-                reference_hash=uuid5(NAMESPACE_URL,identifier).hex,verification_status="verified" if skill["verification"]=="verified" else "self-reported",confidence=0.9 if skill["verification"]=="verified" else 0.65,
+                issuer=None,acquired_at=SCENARIO_NOW.date().isoformat(),expires_at=None,observed_at=SCENARIO_NOW.isoformat(),last_reviewed_at=SCENARIO_NOW.isoformat(),
+                reference_hash=uuid5(NAMESPACE_URL,identifier).hex,verification_status="verified" if skill["verification"]=="verified" else "self_declared",confidence=0.9 if skill["verification"]=="verified" else 0.65,
                 proficiency=skill["proficiency"],correction_note="",owner_disputed=0,source_missing=0,active=1,
                 metadata_json=json.dumps({"synthetic_fixture":True}),created_at=SCENARIO_NOW.isoformat(),updated_at=SCENARIO_NOW.isoformat()))
         # Clone the established opportunity/requirement contracts rather than a second engine.
@@ -211,9 +220,10 @@ def reset_competition_demo(database_path):
         seed_intelligence(database_path,pathways,manifest)
         seed_market(database_path,career,pathways,pathway_service)
         seed_notifications(database_path,manifest)
+        content = seed_demo_content(database_path, STUDENT_ID)
         EntitlementService(subscriptions,now=lambda: SCENARIO_NOW).set_demo_plan(STUDENT_ID,"pro")
         feed=service.browse(STUDENT_ID,BrowseRequest(context=RecommendationContext(target_role="DevOps Engineer")))
         opportunity=next(item for item in feed.items if item.id==oid)
     return {"version":manifest["version"],"student_id":STUDENT_ID,"scenario_date":manifest["date"],"synthetic":True,
-        "opportunity":opportunity.model_dump(mode="json"),"plan":"pro",
+        "opportunity":opportunity.model_dump(mode="json"),"plan":"pro", "calendar_actions":content["calendar_actions"],
         "comparison_roles":[role.model_dump(mode="json") for role in career.list_roles() if role.id in manifest["comparisonRoles"]]}

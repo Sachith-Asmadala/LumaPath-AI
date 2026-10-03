@@ -1,0 +1,21 @@
+SACHITH
+Colombo, Sri Lanka | sachith@example.com
+SAMPLE CV - Fictional demo student
+
+SUMMARY
+Computer Science student seeking a DevOps internship. Enjoys practical labs, troubleshooting and learning how software reaches users.
+
+EDUCATION
+BSc Computer Science, Luma University
+2024 - present | Year 3
+Modules: Software Engineering, Database Systems, Networking and Statistics.
+
+PROJECTS
+Campus Booking API - coursework project
+Built a Python API for reserving campus rooms and stored bookings in PostgreSQL. Used Git branches and pull requests to collaborate with classmates. Added tests for booking conflicts.
+
+SKILLS
+Python, SQL, Git, Linux basics, PostgreSQL
+
+OTHER
+Currently building confidence in release workflows. No professional employment history yet.

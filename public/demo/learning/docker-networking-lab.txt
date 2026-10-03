@@ -1,0 +1,19 @@
+Docker Networking - Practical Lab
+Luma University | Learning & Grow | Synthetic demo material
+
+Learning outcomes
+Create a reproducible API and PostgreSQL environment with Docker Compose.
+Explain service-name resolution within a Compose network.
+Troubleshoot readiness and keep credentials out of source control.
+
+Lab brief
+Build a FastAPI service with a GET /health endpoint. Define API and database services in compose.yaml. Services in the same Docker Compose network can address each other by service name; localhost inside a container refers to that container itself.
+
+Network configuration
+Use db as the database hostname for the API connection. Publish only the API port to the host. Keep the database port private and provide credentials through environment variables. Add a database health check before relying on its readiness.
+
+Verification
+Run docker compose up --build and inspect service logs. Confirm the API can connect to PostgreSQL and return a healthy response. Stop and recreate the containers to verify the setup is repeatable.
+
+Deliverables
+Submit compose.yaml, a sanitized configuration example and a README containing startup, test and troubleshooting commands. Include a brief explanation of why service-name resolution works. Allow 45 minutes for the lab and 15 minutes for the README.

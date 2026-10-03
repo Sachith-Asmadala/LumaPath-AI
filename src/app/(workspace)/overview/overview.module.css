@@ -72,5 +72,6 @@
 .competition .tabContent { padding-top: 14px; }
 .competition .sectionLabel { margin-bottom: 8px; }
 .competition .hero h2 { font-size: 1.5rem; }
-.competition .mainGrid { gap: 18px; }
+.competition .hero :global([aria-live="polite"]) { min-height: 6rem; }
+.competition .mainGrid { gap: 18px; align-items: start; }
 @media (max-width: 700px) { .competition .stat { padding: 12px 9px; } .competition .stat:first-child strong { font-size: .85rem; } }

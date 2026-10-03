@@ -1990,5 +1990,22 @@
   "marketSignals.sendForReview": "Send for review",
   "marketSignals.signalMetadata": "{methodology} · last observation {days}d ago",
   "marketSignals.observationPeriod": "through {date}",
-  "marketSignals.candidateVersion": "Candidate {candidate} · base {base}"
+  "marketSignals.candidateVersion": "Candidate {candidate} · base {base}",
+  "demoFiles.title": "மாதிரி விளக்கக் கோப்புகள்",
+  "demoFiles.cvDescription": "இரண்டு கற்பனை CV பதிப்புகள் ஏற்கனவே பகுப்பாய்வு செய்யப்பட்டுள்ளன. ஆரம்ப CV மற்றும் பயிற்சி வரைவை ஒப்பிட அசல் கோப்புகளைப் பதிவிறக்கவும்.",
+  "demoFiles.learningDescription": "கீழே உள்ள செயலாக்கப்பட்ட கற்றல் பொருட்களைப் பாருங்கள் அல்லது கற்றலுக்கான அசல் கோப்புகளைப் பதிவிறக்கவும்.",
+  "demoFiles.calendarDescription": "இந்த மாதிரி கால அட்டவணை ஏற்கனவே இறக்குமதி செய்யப்பட்டுள்ளது. தற்போதைய நிகழ்வுகள் எவ்வாறு பாதுகாக்கப்படுகின்றன என்பதைப் பார்க்க அதே கோப்பை முன்னோட்டமிடவும்.",
+  "demoFiles.starterCv": "ஆரம்ப CV · PDF",
+  "demoFiles.internshipCv": "பயிற்சி CV · PDF",
+  "demoFiles.linux": "Linux கற்றல் குறிப்புகள் · PDF",
+  "demoFiles.docker": "Docker வலையமைப்பு பயிற்சி · PDF",
+  "demoFiles.cicd": "CI/CD வெளியீட்டு வழிகாட்டி · PDF",
+  "demoFiles.timetable": "பல்கலைக்கழக கால அட்டவணை · ICS",
+  "calendar.historyTitle": "ஒத்திசைவு வரலாறு",
+  "calendar.noHistory": "நாட்காட்டி முன்னோட்டங்கள் மற்றும் முடிக்கப்பட்ட இறக்குமதிகள் இங்கே தோன்றும்.",
+  "calendar.historyCounts": "{imported} இறக்குமதி · {updated} புதுப்பிப்பு · {skipped} தவிர்ப்பு",
+  "calendar.syncStatus.committed": "முடிந்தது",
+  "calendar.syncStatus.preview_ready": "மதிப்பாய்வுக்குத் தயார்",
+  "calendar.syncStatus.parsing": "செயலாக்கம்",
+  "calendar.syncStatus.failed": "தோல்வி"
 }

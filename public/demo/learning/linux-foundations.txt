@@ -1,0 +1,19 @@
+Linux Foundations - Study Notes
+Luma University | Learning & Grow | Synthetic demo material
+
+Learning outcomes
+Explain file permissions and apply the principle of least privilege.
+Inspect listening ports and identify the process that owns a socket.
+Use logs to investigate a failed service without exposing credentials.
+
+File permissions
+Linux permission bits grant read, write and execute access to the owner, group and others. The command chmod u+x deploy.sh makes a deployment script executable for its owner. Avoid granting write access to every user when a narrower permission is sufficient.
+
+Processes and ports
+The command ss -ltnp lists listening TCP sockets and their processes. A service listening on 127.0.0.1 is accessible only from the local host. Bind an application to an appropriate interface only when network access is needed.
+
+Troubleshooting exercise
+Start a local API, inspect its listening port, and record the process identifier. Read the service logs, explain a failed startup and write a short recovery checklist. Estimated study time: 35 minutes.
+
+Reflection
+Explain why chmod 777 is usually an unsuitable default for a deployment script. Save only sanitized logs in your learning evidence.

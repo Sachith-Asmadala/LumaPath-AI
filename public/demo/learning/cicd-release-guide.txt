@@ -1,0 +1,19 @@
+CI/CD Release Checklist - Study Guide
+Luma University | Learning & Grow | Synthetic demo material
+
+Learning outcomes
+Describe the relationship between pull requests, automated tests and releases.
+Store deployment credentials securely and diagnose failed builds.
+Document a reproducible release and rollback procedure.
+
+Continuous integration
+Run automated tests for each pull request to catch regressions before deployment. Require a passing check before merging changes. Pin the runtime version so local and CI environments use the same interpreter.
+
+Release workflow
+Build a release from an explicit version tag after tests pass. Keep deployment credentials in the CI platform's secret store. Never commit tokens, passwords or private keys to the repository, build logs or public artifacts.
+
+Rollback and diagnosis
+Record the release version and retain the previous working artifact. When a build fails, inspect the first failing step and reproduce it locally. Separate test failures from packaging and environment failures before changing configuration.
+
+Practice
+Create a small test workflow, deliberately break one assertion and explain the failure. Restore the test, tag a sample release and write a rollback checklist. Estimated study time: 40 minutes.

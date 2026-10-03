@@ -126,6 +126,13 @@ class CalendarRepository:
         with self._connect() as db:
             return db.execute("SELECT * FROM integration_connections WHERE student_id=? ORDER BY updated_at DESC", (student_id,)).fetchall()
 
+    def list_sync_history(self, student_id: str):
+        with self._connect() as db:
+            return db.execute("""SELECT runs.*, connections.display_name AS connection_name
+                FROM calendar_sync_runs runs JOIN integration_connections connections ON connections.id=runs.connection_id
+                WHERE runs.student_id=? AND connections.student_id=?
+                ORDER BY runs.started_at DESC, runs.id DESC LIMIT 30""", (student_id, student_id)).fetchall()
+
     def update_connection(self, connection_id: str, **values):
         if not values: return self.get_connection(connection_id)
         allowed = {"display_name","status","sync_cursor","last_sync_at","revoked_at","updated_at","encrypted_credentials","scopes_json"}

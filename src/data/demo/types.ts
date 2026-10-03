@@ -72,6 +72,7 @@ export interface StudentProfile {
   targetRole: string;
   university: string;
   initials: string;
+  avatarUrl?: string;
 }
 
 export interface StudentCapacity {

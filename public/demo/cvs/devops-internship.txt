@@ -1,0 +1,31 @@
+SACHITH
+Colombo, Sri Lanka | sachith@example.com
+SAMPLE CV - Fictional demo student
+
+SUMMARY
+Computer Science student targeting a Junior DevOps internship. Project experience with Python, Git, Linux, Docker and GitHub Actions. Interested in reproducible environments, automated checks and clear operational documentation.
+
+EDUCATION
+BSc Computer Science, Luma University
+2024 - present | Year 3
+Relevant modules: Software Engineering, Database Systems, Networking and Statistics.
+
+PROJECTS
+GitHub Release Automation - personal learning project
+Created a GitHub Actions workflow that runs Python tests on pull requests and packages a release after a version tag. Documented branch protection, build failures and the rollback procedure.
+
+Campus Booking API - Software Engineering coursework
+Built a Python FastAPI service with PostgreSQL. Added automated tests for booking conflicts and API validation. Containerized the service with Docker Compose and documented environment variables and a repeatable local setup.
+
+Docker Networking Lab - personal learning project
+Connected an API and PostgreSQL through service-name discovery on a private Compose network. Added a database health check and documented troubleshooting commands. Infrastructure automation and orchestration are future learning goals.
+
+SKILLS
+Python, SQL, Git, Linux, Docker, Docker Compose, CI/CD, GitHub Actions, PostgreSQL
+
+CERTIFICATIONS
+Git & Release Automation - Luma Learning Academy, September 2026 (sample credential)
+Docker Foundations - Luma Learning Academy, September 2026 (sample credential)
+
+EXPERIENCE
+University team projects and independent learning labs. No professional employment history is claimed.

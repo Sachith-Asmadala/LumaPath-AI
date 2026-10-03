@@ -84,6 +84,8 @@ class EvidencePassportService:
         now=self.now().astimezone(timezone.utc); now_iso=now.isoformat()
         seen_portfolio:set[tuple[str,str,str]]=set(); seen_assessment:set[tuple[str,str,str]]=set()
         for row in self.repository.latest_portfolio_rows(student_id):
+            if row["status"] == "not_demonstrated":
+                continue
             skill_id=row["skill_id"]; skill_name=row["skill_name"] or self._skill_name(skill_id)
             repo=bool(row["source_repository_id"])
             source_ref=f"portfolio:{row['snapshot_id']}:{skill_id}"
