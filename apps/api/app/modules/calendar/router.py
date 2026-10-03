@@ -10,6 +10,7 @@ from .connectors import CredentialCipher
 from .repository import CalendarRepository
 from .schemas import CleanupRequest, CleanupResponse, CommitRequest, CommitResponse, ConnectionListResponse, ExistingRecordInput, ItemListResponse, OverrideRequest, CalendarItemResponse, PreviewResponse, RevokeResponse
 from .service import CalendarService
+from .schemas import SyncHistoryItem, SyncHistoryResponse
 
 router = APIRouter(prefix="/v1/calendar", tags=["calendar"])
 repository = CalendarRepository(settings.database_path)
@@ -41,6 +42,20 @@ def commit(run_id: str, request: CommitRequest, principal: Principal = Depends(c
 @router.get("/connections", response_model=ConnectionListResponse)
 def connections(principal: Principal = Depends(current_principal)):
     return service.list_connections(principal.student_id)
+
+
+@router.get("/sync-history", response_model=SyncHistoryResponse)
+def sync_history(principal: Principal = Depends(current_principal)):
+    items = []
+    for row in repository.list_sync_history(principal.student_id):
+        counts = json.loads(row["commit_json"]) if row["commit_json"] else {}
+        items.append(SyncHistoryItem(
+            id=row["id"], connection_id=row["connection_id"], connection_name=row["connection_name"],
+            status=row["status"], source_filename=row["source_filename"], source_format=row["source_format"],
+            started_at=row["started_at"], completed_at=row["completed_at"],
+            imported=counts.get("imported", 0), updated=counts.get("updated", 0), skipped=counts.get("skipped", 0),
+        ))
+    return SyncHistoryResponse(items=items)
 
 
 @router.post("/connections/{connection_id}/revoke", response_model=RevokeResponse)

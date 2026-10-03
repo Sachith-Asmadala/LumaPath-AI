@@ -1,4 +1,5 @@
 "use client";
+import { DemoFiles } from "@/features/competition/components/demo-files";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarClock, CalendarSync, CheckCircle2, FileUp, Link2, RefreshCw, ShieldAlert, Trash2, Unplug, Workflow } from "lucide-react";
@@ -11,8 +12,8 @@ import { TypographyH1, TypographyP } from "@/components/shared/typography";
 import { Reveal } from "@/components/motion/animated";
 import { useDemo } from "@/state/demo-provider";
 import { useLocale } from "@/i18n/locale-provider";
-import { buildCalendarExistingRecords, defaultCalendarDecision, type CalendarConnection, type CalendarDecision, type CalendarImportedItem, type CalendarPreview } from "@/features/calendar/domain/calendar";
-import { cleanupCalendarConnection, commitCalendar, listCalendarConnections, listCalendarItems, previewCalendar, revokeCalendarConnection } from "@/features/calendar/services/calendar";
+import { buildCalendarExistingRecords, defaultCalendarDecision, type CalendarConnection, type CalendarDecision, type CalendarImportedItem, type CalendarPreview, type CalendarSyncHistory } from "@/features/calendar/domain/calendar";
+import { cleanupCalendarConnection, commitCalendar, listCalendarConnections, listCalendarItems, listCalendarSyncHistory, previewCalendar, revokeCalendarConnection } from "@/features/calendar/services/calendar";
 
 const statusTone: Record<string,string> = { new: "border-success/25 text-success", changed: "border-warning/25 text-warning", duplicate: "border-primary/25 text-primary", conflict: "border-destructive/25 text-destructive", deleted: "border-destructive/25 text-destructive", unchanged: "border-border text-muted-foreground" };
 
@@ -21,6 +22,7 @@ export default function CalendarSyncPage() {
   const { t, formatDate, formatTime, formatNumber } = useLocale();
   const [connections, setConnections] = useState<CalendarConnection[]>([]);
   const [items, setItems] = useState<CalendarImportedItem[]>([]);
+  const [history, setHistory] = useState<CalendarSyncHistory[]>([]);
   const [preview, setPreview] = useState<CalendarPreview | null>(null);
   const [decisions, setDecisions] = useState<Record<string, CalendarDecision>>({});
   const [file, setFile] = useState<File | null>(null);
@@ -33,8 +35,8 @@ export default function CalendarSyncPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const [nextConnections, nextItems] = await Promise.all([listCalendarConnections(studentId), listCalendarItems(studentId)]);
-      setConnections(nextConnections); setItems(nextItems);
+      const [nextConnections, nextItems, nextHistory] = await Promise.all([listCalendarConnections(studentId), listCalendarItems(studentId), listCalendarSyncHistory(studentId)]);
+      setConnections(nextConnections); setItems(nextItems); setHistory(nextHistory); setError("");
     } catch (e) { setError(e instanceof Error ? e.message : t("calendar.unavailable")); }
   }, [studentId, t]);
 
@@ -96,6 +98,7 @@ export default function CalendarSyncPage() {
 
     {error && <div role="alert" className="mb-4 rounded-xl border border-destructive/25 bg-destructive/[0.04] px-4 py-3 text-sm text-destructive">{error}</div>}
 
+    <DemoFiles kind="calendar" />
     <div className="mb-5 grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
       <Card className="rounded-[20px] border-border/85 bg-surface-raised shadow-none"><CardHeader><CardTitle className="flex items-center gap-2 text-base"><FileUp className="size-4 text-primary" />{t("calendar.uploadTitle")}</CardTitle></CardHeader><CardContent className="space-y-4">
         <p className="text-xs leading-5 text-muted-foreground">{t("calendar.uploadDescription")}</p>
@@ -117,6 +120,14 @@ export default function CalendarSyncPage() {
     <section className="mb-5"><div className="mb-3"><h2 className="font-heading text-lg font-medium">{t("calendar.sourcesTitle")}</h2><p className="mt-1 text-xs text-muted-foreground">{t("calendar.sourcesDescription")}</p></div>{connections.length===0 ? <Card className="rounded-[18px] border-dashed bg-transparent p-6 text-sm text-muted-foreground">{t("calendar.noSources")}</Card> : <div className="grid gap-3 md:grid-cols-2">{connections.map((source)=><Card key={source.id} className="rounded-[18px] border-border/80 bg-surface-raised py-0 shadow-none"><CardContent className="p-4"><div className="flex items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><h3 className="text-sm font-medium">{source.display_name}</h3><Badge variant="outline" className="rounded-full">{source.status=== "active" ? t("calendar.active") : t("calendar.revokedStatus")}</Badge></div><p className="mt-1 text-xs text-muted-foreground">{source.source_type.replace("manual_","").toUpperCase()} · {source.default_timezone}</p><p className="mt-2 text-[0.68rem] text-muted-foreground">{source.last_sync_at ? t("calendar.lastSync", { date: `${formatDate(source.last_sync_at,{month:"short",day:"numeric"})} ${formatTime(source.last_sync_at)}` }) : t("calendar.notSynced")}</p></div><CalendarClock className="size-4 text-primary" /></div><div className="mt-4 flex flex-wrap gap-2">{source.status === "active" && <Button variant="outline" size="sm" disabled={busy} onClick={()=>void revoke(source.id)}><Unplug className="size-3.5" />{t("calendar.revoke")}</Button>}<Button variant="ghost" size="sm" disabled={busy} onClick={()=>void cleanup(source.id,false)}><Link2 className="size-3.5" />{t("calendar.deleteImportedKeep")}</Button><Button variant="ghost" size="sm" disabled={busy} className="text-destructive" onClick={()=>void cleanup(source.id,true)}><Trash2 className="size-3.5" />{t("calendar.deleteImportedRemove")}</Button></div></CardContent></Card>)}</div>}</section>
 
     <section className="pb-10"><div className="mb-3"><h2 className="font-heading text-lg font-medium">{t("calendar.importedTitle")}</h2><p className="mt-1 text-xs text-muted-foreground">{t("calendar.importedDescription")}</p></div>{items.length===0 ? <Card className="rounded-[18px] border-dashed bg-transparent p-6 text-sm text-muted-foreground">{t("calendar.noImported")}</Card> : <div className="space-y-2">{items.map((item)=><Card key={item.id} className={`rounded-[16px] border-border/80 bg-surface-raised py-0 shadow-none ${highlightId===item.id?"ring-1 ring-primary/40":""}`}><CardContent className="flex flex-col justify-between gap-3 p-4 sm:flex-row sm:items-center"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="truncate text-sm font-medium">{item.title}</p><Badge variant="outline" className="rounded-full">{t(`calendar.kind.${item.kind}`)}</Badge><Badge variant="outline" className="rounded-full text-primary">{item.source_badge}</Badge></div><p className="mt-1 text-xs text-muted-foreground">{formatDate(item.start_at,{month:"short",day:"numeric",year:"numeric"})} · {formatTime(item.start_at)} · {t(`calendar.importStatus.${item.import_status}`)}</p></div><div className="text-right text-[0.65rem] text-muted-foreground">{t("calendar.syncedAt", { date: `${formatDate(item.last_sync_at,{month:"short",day:"numeric"})} ${formatTime(item.last_sync_at)}` })}{item.override_fields.length>0 && <span className="mt-1 block text-warning">{t("calendar.personalOverrides")}</span>}</div></CardContent></Card>)}</div>}</section>
+    <section className="pb-10" aria-label={t("calendar.historyTitle")}>
+      <h2 className="mb-3 font-heading text-lg font-medium">{t("calendar.historyTitle")}</h2>
+      {history.length ? <div className="space-y-2">{history.map(run => <Card key={run.id} className="rounded-2xl border-border/80 bg-surface-raised p-4 shadow-none">
+        <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-sm font-medium">{run.connection_name}</p><Badge variant="outline">{t(`calendar.syncStatus.${run.status}`, undefined, run.status.replaceAll("_", " "))}</Badge></div>
+        <p className="mt-1 text-xs text-muted-foreground">{formatDate(run.started_at)} · {formatTime(run.started_at)} · {run.source_filename}</p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("calendar.historyCounts", { imported: run.imported, updated: run.updated, skipped: run.skipped })}</p>
+      </Card>)}</div> : <p className="rounded-2xl border border-dashed p-5 text-sm text-muted-foreground">{t("calendar.noHistory")}</p>}
+    </section>
   </div>;
 }
 

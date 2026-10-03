@@ -63,6 +63,13 @@ async function mockCalendar(page: Page) {
   await page.route("**/api/calendar/**", async (route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname;
+    if (path.endsWith("/api/calendar/sync-history") && request.method() === "GET") {
+      return route.fulfill({ status: 200, headers: jsonHeaders, body: JSON.stringify({ items: committed ? [{
+        id: "calsync-e2e", connection_id: connection.id, connection_name: connection.display_name,
+        status: "committed", source_filename: "academic.ics", source_format: "ics",
+        started_at: "2026-10-02T00:00:30Z", completed_at: "2026-10-02T00:01:00Z", imported: 1, updated: 0, skipped: 0,
+      }] : [] }) });
+    }
     if (path.endsWith("/api/calendar/connections") && request.method() === "GET") {
       return route.fulfill({ status: 200, headers: jsonHeaders, body: JSON.stringify({ items: committed ? [{ ...connection, last_sync_at: "2026-10-02T00:01:00Z" }] : [] }) });
     }
@@ -123,7 +130,8 @@ test("manual iCalendar preview requires review before applying a source-traceabl
   await page.getByRole("button", { name: /Apply selected changes/i }).click();
   await expect(page.getByText("Calendar · academic.ics", { exact: true })).toBeVisible();
 
-  await page.goto("/planner");
+  await page.goto("/planner?date=2026-10-25");
+  await page.getByRole("button", { name: "Agenda", exact: true }).click();
   await expect(page.getByText("Database Exam", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Calendar · academic.ics", { exact: true }).first()).toBeVisible();
 });

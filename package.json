@@ -18,7 +18,9 @@
     "test:api": "python -m pytest apps/api/tests",
     "verify:api": "python -m pytest apps/api/tests -q",
     "check:i18n": "node scripts/check-i18n.mjs",
-    "check:pseudo": "node scripts/check-pseudo-localization.mjs"
+    "check:pseudo": "node scripts/check-pseudo-localization.mjs",
+    "demo:assets": "node scripts/generate-demo-documents.mjs",
+    "demo:seed": ".venv/bin/python scripts/seed-data/seed-demo-content.py"
   },
   "dependencies": {
     "@fontsource-variable/onest": "^5.3.1",

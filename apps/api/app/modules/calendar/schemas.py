@@ -109,6 +109,24 @@ class CommitResponse(BaseModel):
     committed_at: datetime
 
 
+class SyncHistoryItem(BaseModel):
+    id: str
+    connection_id: str
+    connection_name: str
+    status: str
+    source_filename: str
+    source_format: str
+    started_at: datetime
+    completed_at: datetime | None
+    imported: int = 0
+    updated: int = 0
+    skipped: int = 0
+
+
+class SyncHistoryResponse(BaseModel):
+    items: list[SyncHistoryItem]
+
+
 class ConnectionResponse(BaseModel):
     id: str
     source_type: Literal["manual_ics", "manual_csv", "provider"]

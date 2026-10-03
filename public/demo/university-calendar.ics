@@ -1,0 +1,29 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//LumaPath//Synthetic University Timetable//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:demo-se-lecture@lumapath.example
+DTSTAMP:20261002T033000Z
+DTSTART;TZID=Asia/Colombo:20261006T090000
+DTEND;TZID=Asia/Colombo:20261006T100000
+SUMMARY:Software Engineering lecture
+DESCRIPTION:Sample lecture on API testing and release workflows.
+END:VEVENT
+BEGIN:VEVENT
+UID:demo-network-workshop@lumapath.example
+DTSTAMP:20261002T033000Z
+DTSTART;TZID=Asia/Colombo:20261008T140000
+DTEND;TZID=Asia/Colombo:20261008T150000
+SUMMARY:Docker networking workshop
+DESCRIPTION:Sample practical workshop on Compose service discovery.
+END:VEVENT
+BEGIN:VEVENT
+UID:demo-portfolio-review@lumapath.example
+DTSTAMP:20261002T033000Z
+DTSTART;TZID=Asia/Colombo:20261009T160000
+DTEND;TZID=Asia/Colombo:20261009T163000
+SUMMARY:Portfolio review session
+DESCRIPTION:Review the sample CV and project README with a study partner.
+END:VEVENT
+END:VCALENDAR

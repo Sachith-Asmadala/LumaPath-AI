@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[3]
 def seed(path):
     result = subprocess.run(
         [sys.executable, str(ROOT / "scripts/seed-data/seed-competition-demo.py"), "--database", str(path)],
-        cwd=ROOT, env={**os.environ, "LUMAPATH_ENV": "test"}, capture_output=True, text=True, timeout=35,
+        cwd=ROOT, env={**os.environ, "LUMAPATH_ENV": "test", "DOCUMENT_STORAGE_PATH": str(path.parent / "documents"), "CV_STORAGE_PATH": str(path.parent / "cvs")}, capture_output=True, text=True, timeout=35,
     )
     assert result.returncode == 0, result.stderr
     return json.loads(result.stdout)
@@ -59,7 +59,11 @@ def test_reset_restores_missing_records_clears_preparation_and_preserves_other_s
     third = seed(path)
     assert first == second == third
     with sqlite3.connect(path) as db:
-        assert db.execute("SELECT COUNT(*) FROM skill_evidence WHERE student_id=?", (clock.STUDENT_ID,)).fetchone()[0] == 5
+        assert db.execute("SELECT COUNT(*) FROM skill_evidence WHERE student_id=? AND source_origin='competition-synthetic'", (clock.STUDENT_ID,)).fetchone()[0] == 5
+        assert db.execute("SELECT COUNT(*) FROM evidence_certificates WHERE student_id=?", (clock.STUDENT_ID,)).fetchone()[0] == 2
+        assert db.execute("SELECT COUNT(*) FROM portfolio_projects WHERE student_id=?", (clock.STUDENT_ID,)).fetchone()[0] == 3
+        assert db.execute("SELECT COUNT(*) FROM cv_documents WHERE student_id=?", (clock.STUDENT_ID,)).fetchone()[0] == 2
+        assert db.execute("SELECT COUNT(*) FROM documents WHERE owner_id=?", (clock.STUDENT_ID,)).fetchone()[0] == 3
         assert db.execute("SELECT COUNT(*) FROM pathways WHERE student_id=?", (clock.STUDENT_ID,)).fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM preparation_plan_items").fetchone()[0] == 0
         assert db.execute("SELECT COUNT(*) FROM usage_counters WHERE subject_id=?", (clock.STUDENT_ID,)).fetchone()[0] == 0
@@ -67,6 +71,9 @@ def test_reset_restores_missing_records_clears_preparation_and_preserves_other_s
         assert db.execute("SELECT COUNT(*) FROM opportunities WHERE id='competition-junior-devops'").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM opportunity_requirements WHERE opportunity_id='competition-junior-devops'").fetchone()[0] == 3
         assert db.execute("SELECT COUNT(*) FROM articles WHERE source_id='competition-learning'").fetchone()[0] == 6
+    assert len(list((path.parent / "documents").iterdir())) == 3
+    assert len(list((path.parent / "cvs").iterdir())) == 2
+    assert len(first["calendar_actions"]) == 3
 
 
 def test_production_reset_is_unavailable_and_clock_is_scoped(monkeypatch):

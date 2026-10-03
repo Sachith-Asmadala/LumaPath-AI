@@ -4,6 +4,20 @@ export type CalendarItemKind = "lecture" | "exam" | "deadline" | "event" | "work
 export type CalendarChangeType = "new" | "unchanged" | "changed" | "duplicate" | "conflict" | "deleted";
 export type CalendarDecision = "import" | "update" | "link_existing" | "skip" | "keep_personal" | "remove_internal";
 
+export interface CalendarSyncHistory {
+  id: string;
+  connection_id: string;
+  connection_name: string;
+  status: string;
+  source_filename: string;
+  source_format: string;
+  started_at: string;
+  completed_at: string | null;
+  imported: number;
+  updated: number;
+  skipped: number;
+}
+
 export interface CalendarExistingRecord {
   internal_id: string;
   record_type: "task" | "planner_event";

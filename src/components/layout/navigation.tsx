@@ -1,4 +1,5 @@
 "use client";
+import { StudentAvatar } from "@/components/shared/student-avatar";
 
 import { CompetitionDemoBar } from "@/features/competition/components/demo-controls";
 import Link from "next/link";
@@ -91,7 +92,7 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border px-3 py-4">
         <SidebarMenu><SidebarMenuItem><SidebarMenuButton asChild tooltip={t("nav.settings")} className="workspace-nav-link" isActive={pathname === "/settings"}><Link href="/settings" onClick={closeMobile}><Settings2 size={18} /><span>{t("nav.settings")}</span></Link></SidebarMenuButton></SidebarMenuItem></SidebarMenu>
-        <Link href="/settings" onClick={closeMobile} className="sidebar-profile"><span className="profile-initials">{state.student.initials}</span><span className="min-w-0 group-data-[collapsible=icon]:hidden"><strong>{state.student.name}</strong><small>{subscription?.name ?? "My workspace"}</small></span></Link>
+        <Link href="/settings" onClick={closeMobile} className="sidebar-profile"><StudentAvatar student={state.student} className="size-9" /><span className="min-w-0 group-data-[collapsible=icon]:hidden"><strong>{state.student.name}</strong><small>{subscription?.name ?? "My workspace"}</small></span></Link>
         <span className="px-3 text-[0.6rem] text-muted-foreground group-data-[collapsible=icon]:hidden">{releaseLabel}</span>
       </SidebarFooter>
     </Sidebar>}

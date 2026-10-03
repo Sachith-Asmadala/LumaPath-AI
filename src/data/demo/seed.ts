@@ -10,6 +10,7 @@ export const demoStudent = {
   targetRole: "DevOps Engineer",
   university: "Pacific Northwest University",
   initials: "S",
+  avatarUrl: "/demo/profile/sachith.png",
 };
 
 export const defaultOnboarding: OnboardingState = {

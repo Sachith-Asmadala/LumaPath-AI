@@ -1,11 +1,12 @@
 {
-  "version": "competition-v2",
+  "version": "competition-v3",
   "date": "2026-10-05",
   "now": "2026-10-05T03:30:00+00:00",
   "student": {
     "id": "competition-student",
     "name": "Sachith",
     "initials": "S",
+    "avatarUrl": "/demo/profile/sachith.png",
     "targetRole": "DevOps Engineer",
     "university": "Luma University"
   },

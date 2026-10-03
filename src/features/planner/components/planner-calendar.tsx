@@ -69,8 +69,8 @@ export function PlannerCalendar({ onEditTask }: { onEditTask: (block: PlanBlock)
     return () => query.removeEventListener("change", update);
   }, []);
 
-  const onDatesSet = (arg: { start: Date; end: Date; view: { type: string } }) => {
-    setViewLabel(formatViewLabel(arg.start, arg.end, arg.view.type));
+  const onDatesSet = (arg: { view: { type: string; currentStart: Date; currentEnd: Date } }) => {
+    setViewLabel(formatViewLabel(arg.view.currentStart, arg.view.currentEnd, arg.view.type));
     setView(arg.view.type);
   };
 
@@ -148,6 +148,9 @@ export function PlannerCalendar({ onEditTask }: { onEditTask: (block: PlanBlock)
               slotMinTime="08:00:00"
               slotMaxTime="22:00:00"
               slotDuration="00:30:00"
+              slotEventOverlap={false}
+              eventMinHeight={26}
+              eventShortHeight={52}
               allDaySlot={false}
               nowIndicator={!mobile}
               editable
@@ -160,11 +163,15 @@ export function PlannerCalendar({ onEditTask }: { onEditTask: (block: PlanBlock)
               eventDrop={handleChange}
               eventResize={handleChange}
               datesSet={onDatesSet}
-              dayHeaderContent={(arg) => formatDate(arg.date, { weekday: mobile ? "short" : "short", day: "numeric" })}
-              dayCellContent={(arg) => formatNumber(arg.date.getDate())}
+              dayHeaderContent={(arg) => formatDate(arg.date, arg.view.type === "dayGridMonth" ? { weekday: "short" } : { weekday: "short", day: "numeric" })}
+              dayCellContent={(arg) => arg.view.type === "dayGridMonth" ? formatNumber(arg.date.getDate()) : null}
               slotLabelContent={(arg) => formatTime(arg.date, { hour: "numeric", minute: "2-digit" })}
               eventContent={(arg) => <div className="planner-event-inner"><span className="planner-event-time">{arg.event.start ? formatTime(arg.event.start) : ""}</span><span className="planner-event-title">{arg.event.title}</span></div>}
-              eventDidMount={(arg) => { arg.el.setAttribute("aria-label", `${arg.event.title}, ${arg.event.start ? formatTime(arg.event.start) : ""}`); }}
+              eventDidMount={(arg) => {
+                const label = `${arg.event.title}, ${arg.event.start ? formatTime(arg.event.start) : ""}${arg.event.end ? ` – ${formatTime(arg.event.end)}` : ""}`;
+                arg.el.setAttribute("aria-label", label);
+                arg.el.setAttribute("title", label);
+              }}
               dateClick={(arg) => {
                 if (!arg.allDay) setSelectedBlock({ id: "new-block", taskId: null, title: t("planner.editor.newTask"), category: "Academic", startAt: toLocalIso(arg.date), endAt: toLocalIso(new Date(arg.date.getTime() + 60 * 60_000)) });
               }}

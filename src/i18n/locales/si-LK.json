@@ -1990,5 +1990,22 @@
   "marketSignals.sendForReview": "Send for review",
   "marketSignals.signalMetadata": "{methodology} · last observation {days}d ago",
   "marketSignals.observationPeriod": "through {date}",
-  "marketSignals.candidateVersion": "Candidate {candidate} · base {base}"
+  "marketSignals.candidateVersion": "Candidate {candidate} · base {base}",
+  "demoFiles.title": "ආදර්ශන ගොනු",
+  "demoFiles.cvDescription": "කල්පිත CV අනුවාද දෙකක් දැනටමත් විශ්ලේෂණය කර ඇත. මුල් CV සහ සීමාවාසික කෙටුම්පත සැසඳීමට බාගන්න.",
+  "demoFiles.learningDescription": "සකස් කළ අධ්‍යයන ද්‍රව්‍ය පහතින් බලන්න හෝ ඔබේ අධ්‍යයනය සඳහා මුල් ගොනු බාගන්න.",
+  "demoFiles.calendarDescription": "මෙම ආදර්ශ කාලසටහන දැනටමත් ආයාත කර ඇත. පවතින සිදුවීම් සුරකින ආකාරය බැලීමට එම ගොනුව පෙරදසුන් කරන්න.",
+  "demoFiles.starterCv": "මුල් CV · PDF",
+  "demoFiles.internshipCv": "සීමාවාසික CV · PDF",
+  "demoFiles.linux": "Linux අධ්‍යයන සටහන් · PDF",
+  "demoFiles.docker": "Docker ජාල ප්‍රායෝගිකය · PDF",
+  "demoFiles.cicd": "CI/CD නිකුතු මාර්ගෝපදේශය · PDF",
+  "demoFiles.timetable": "විශ්වවිද්‍යාල කාලසටහන · ICS",
+  "calendar.historyTitle": "සමමුහුර්ත ඉතිහාසය",
+  "calendar.noHistory": "දිනදර්ශන පෙරදසුන් සහ සම්පූර්ණ කළ ආයාත මෙහි දිස්වනු ඇත.",
+  "calendar.historyCounts": "ආයාත {imported} · යාවත්කාලීන {updated} · මඟහැරීම් {skipped}",
+  "calendar.syncStatus.committed": "සම්පූර්ණයි",
+  "calendar.syncStatus.preview_ready": "සමාලෝචනයට සූදානම්",
+  "calendar.syncStatus.parsing": "සකසමින්",
+  "calendar.syncStatus.failed": "අසාර්ථකයි"
 }

@@ -1,4 +1,5 @@
 "use client";
+import { DemoFiles } from "@/features/competition/components/demo-files";
 
 import { isKnowledgeResponse, withKnowledgeResponses } from "@/features/assessment/domain/knowledge-responses";
 
@@ -255,6 +256,7 @@ export default function DocumentsPage() {
 
     {error && <Card role="alert" className="mb-5 flex items-start gap-3 rounded-2xl border-risk/20 bg-risk/5 p-4 text-sm"><AlertTriangle className="mt-0.5 size-4 shrink-0 text-risk" /><div><p className="font-medium text-foreground">{t("documents.attention")}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{error}</p></div></Card>}
 
+    <DemoFiles kind="learning" />
     <div className="grid gap-5 xl:grid-cols-[390px_minmax(0,1fr)]">
       <div className="space-y-5">
         <Card className="rounded-[20px] p-5">

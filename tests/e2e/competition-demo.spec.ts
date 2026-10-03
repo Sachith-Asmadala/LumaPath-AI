@@ -58,7 +58,7 @@ test("two-minute demo: priority, disruption, approved preparation, and DOC-F33 c
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("stale storage and repeated resets restore exactly four tasks and four blocks", async ({ page }) => {
+test("stale storage and repeated resets restore tasks and synced calendar blocks", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
   await page.addInitScript(() => {
     if (location.pathname === "/competition-demo") localStorage.setItem("lumapath-demo-state-v1", '{"corrupt":true');
@@ -72,7 +72,8 @@ test("stale storage and repeated resets restore exactly four tasks and four bloc
   });
   const first = await snapshot();
   expect(first.tasks).toHaveLength(4);
-  expect(first.blocks).toHaveLength(4);
+  expect(first.blocks).toHaveLength(7);
+  expect(first.blocks.filter((block: { source?: string }) => block.source?.startsWith("Calendar"))).toHaveLength(3);
   expect(first.notifications).toHaveLength(4);
   expect(first.intelligence).toHaveLength(6);
   expect(first.productiveMinutes).toBe(0);

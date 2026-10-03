@@ -1,4 +1,5 @@
 "use client";
+import { DemoFiles } from "@/features/competition/components/demo-files";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { AlertTriangle, BadgeCheck, Check, Clipboard, Copy, Download, FileCheck2, LoaderCircle, LockKeyhole, RefreshCcw, ShieldCheck, Sparkles, Trash2, Upload, X } from "lucide-react";
@@ -163,6 +164,7 @@ export default function CvPage() {
       <Button variant="outline" className="rounded-xl" onClick={() => void load(selectedId)} disabled={loading}><RefreshCcw className="size-3.5" />{t("common.refresh")}</Button>
     </Reveal>
 
+    <DemoFiles kind="cv" />
     <Card className="mb-6 rounded-[20px] border-primary/10 bg-primary/[0.035] p-4 sm:p-5">
       <div className="flex gap-3"><ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" /><div><p className="text-sm font-semibold">{t("cv.privacyTitle")}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{t("cv.privacyText")}</p></div></div>
     </Card>
