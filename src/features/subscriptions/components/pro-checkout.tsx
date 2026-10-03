@@ -11,7 +11,9 @@ import { useDemo } from "@/state/demo-provider";
 import { useSubscription } from "./subscription-provider";
 import { demoCardNumber, formatCardNumber, formatExpiry, formatPrice, proPricing, renewalDate, validateCheckout, type BillingCycle, type CheckoutDetails, type CheckoutErrors, type DemoReceipt } from "../checkout";
 
-const benefits = ["100 assistant requests every day", "Advanced adaptive planning", "30 career comparisons per month", "More CV and document analyses", "Regional insights & saved scenarios"];
+import { ProActivationMoment } from "./pro-intelligence-home";
+
+const benefits = ["Light, dark, and system appearance", "100 assistant requests every day", "Advanced adaptive planning", "30 career comparisons per month", "More CV and document analyses", "Regional insights & saved scenarios"];
 const countries = ["Sri Lanka", "India", "Singapore", "United States", "United Kingdom", "Australia", "Canada", "Germany"];
 
 export function ProCheckout() {
@@ -31,6 +33,7 @@ function CheckoutContent() {
   const [downloadingReceipt, setDownloadingReceipt] = useState(false);
   const [receiptError, setReceiptError] = useState("");
   const submitting = useRef(false);
+  const receiptDownloadInProgress = useRef(false);
   const firstError = useRef<HTMLFormElement>(null);
   const pricing = proPricing[cycle];
   const busy = phase !== "details";
@@ -73,22 +76,25 @@ function CheckoutContent() {
       setPhase("activating");
       await switchDemoPlan("pro");
       const createdAt = new Date();
-      setReceipt({ reference: `DEMO-${crypto.randomUUID().slice(0, 8).toUpperCase()}`, email: details.email.trim(), name: details.name.trim(), country: details.country, postalCode: details.postalCode.trim(), cycle, createdAt, renewalAt: renewalDate(cycle, createdAt) });
+      const completedReceipt: DemoReceipt = { reference: `DEMO-${crypto.randomUUID().slice(0, 8).toUpperCase()}`, email: details.email.trim(), name: details.name.trim(), country: details.country, postalCode: details.postalCode.trim(), cycle, createdAt, renewalAt: renewalDate(cycle, createdAt) };
+      setReceipt(completedReceipt);
       setDetails((previous) => ({ ...previous, cardNumber: "", expiry: "", securityCode: "" }));
+      void downloadReceipt(completedReceipt);
     } catch (cause) {
       setSubmitError(cause instanceof Error ? cause.message : "We couldn't activate Pro. Please try again; no payment was collected.");
     } finally { submitting.current = false; setPhase("details"); }
   }
 
-  async function downloadReceipt() {
-    if (!receipt || downloadingReceipt) return;
+  async function downloadReceipt(targetReceipt = receipt) {
+    if (!targetReceipt || receiptDownloadInProgress.current) return;
+    receiptDownloadInProgress.current = true;
     setDownloadingReceipt(true); setReceiptError("");
     try {
       const { downloadReceiptPdf } = await import("../receipt-pdf");
-      await downloadReceiptPdf(receipt);
+      await downloadReceiptPdf(targetReceipt);
     } catch {
       setReceiptError("The PDF receipt could not be downloaded. Please try again.");
-    } finally { setDownloadingReceipt(false); }
+    } finally { receiptDownloadInProgress.current = false; setDownloadingReceipt(false); }
   }
 
   function fieldError(field: keyof CheckoutDetails) {
@@ -109,8 +115,8 @@ function CheckoutContent() {
       <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-primary">Your next chapter starts here</p>
       <h1 className="mt-3 text-center font-heading text-4xl font-semibold tracking-tight">You’re on Pro.</h1>
       <p className="mt-3 text-center text-sm leading-6 text-muted-foreground">Your demo upgrade is complete. Explore your higher limits,<br className="hidden sm:block" /> deeper insights, and adaptive planning.</p>
-      <section className="mt-8 rounded-2xl border border-border bg-surface-raised p-6" aria-label="Demo receipt"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2 text-sm font-medium"><Sparkles size={17} className="text-primary" />LumaPath Pro</div><span className="rounded-full bg-success/10 px-2.5 py-1 text-xs text-success">Activated</span></div><dl className="mt-5 space-y-3 border-t border-border/70 pt-5 text-xs"><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Billing cycle</dt><dd>{proPricing[receipt.cycle].label}</dd></div><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Demo total</dt><dd>{formatPrice(proPricing[receipt.cycle].amount)} USD</dd></div><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Amount charged</dt><dd className="text-success">$0.00</dd></div><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Reference</dt><dd className="font-mono">{receipt.reference}</dd></div></dl><p className="mt-5 rounded-lg bg-muted/60 px-3 py-2.5 text-xs leading-5 text-muted-foreground">This is a demo receipt. No payment was collected and no email was sent.</p></section>
-      <Button asChild className="mt-6 h-12 w-full rounded-xl"><Link href="/overview">Explore my Pro workspace<ArrowRight size={16} /></Link></Button><Button variant="ghost" className="mt-2 h-11 w-full text-xs" disabled={downloadingReceipt} onClick={() => void downloadReceipt()}>{downloadingReceipt ? <LoaderCircle size={14} className="animate-spin" /> : <Download size={14} />}{downloadingReceipt ? "Preparing PDF…" : "Download PDF receipt"}</Button>{receiptError && <p role="alert" className="mt-2 text-center text-xs text-destructive">{receiptError}</p>}
+      <ProActivationMoment /><section className="mt-8 rounded-2xl border border-border bg-surface-raised p-6" aria-label="Demo receipt"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2 text-sm font-medium"><Sparkles size={17} className="text-primary" />LumaPath Pro</div><span className="rounded-full bg-success/10 px-2.5 py-1 text-xs text-success">Activated</span></div><dl className="mt-5 space-y-3 border-t border-border/70 pt-5 text-xs"><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Billing cycle</dt><dd>{proPricing[receipt.cycle].label}</dd></div><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Demo total</dt><dd>{formatPrice(proPricing[receipt.cycle].amount)} USD</dd></div><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Amount charged</dt><dd className="text-success">$0.00</dd></div><div className="flex justify-between gap-4"><dt className="text-muted-foreground">Reference</dt><dd className="font-mono">{receipt.reference}</dd></div></dl><p className="mt-5 rounded-lg bg-muted/60 px-3 py-2.5 text-xs leading-5 text-muted-foreground">Your PDF receipt downloads automatically after activation. You can save another copy below. No payment was collected and no email was sent.</p></section>
+      <Button asChild className="mt-6 h-12 w-full rounded-xl"><Link href="/overview#plan-demo">Explore my Pro workspace<ArrowRight size={16} /></Link></Button><Button variant="ghost" className="mt-2 h-11 w-full text-xs" disabled={downloadingReceipt} onClick={() => void downloadReceipt()}>{downloadingReceipt ? <LoaderCircle size={14} className="animate-spin" /> : <Download size={14} />}{downloadingReceipt ? "Preparing PDF…" : "Download PDF receipt"}</Button>{receiptError && <p role="alert" className="mt-2 text-center text-xs text-destructive">{receiptError}</p>}
     </div> : <div className="mx-auto grid max-w-6xl gap-10 px-5 py-8 sm:px-8 sm:py-12 lg:grid-cols-[0.9fr_1fr] lg:gap-20">
       <aside className="min-w-0"><div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground"><span className="flex items-center gap-1.5 text-success"><Check size={12} />Choose plan</span><span className="h-px w-6 bg-border" /><span className="text-foreground">02 Checkout</span><span className="h-px w-6 bg-border" /><span>03 Ready</span></div>
         <h1 className="mt-8 font-heading text-4xl font-semibold leading-[1.15] tracking-tight sm:text-[2.75rem]">A little more room.<br /><span className="text-primary">A lot more possibility.</span></h1><p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">Invest in your next chapter. More support, smarter planning, and space to follow your ambition.</p>

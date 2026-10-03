@@ -9,5 +9,5 @@ export function PlanThemeProvider({ children }: { children: React.ReactNode }) {
   const { subscription } = useSubscription();
   const { state, signedOut } = useDemo();
   const allowDark = !signedOut && subscription?.subject_id === state.student.id && hasProFeatures(subscription?.plan);
-  return <ThemeProvider attribute="class" defaultTheme="light" forcedTheme={allowDark ? undefined : "light"} enableSystem={allowDark} disableTransitionOnChange>{children}</ThemeProvider>;
+  return <ThemeProvider attribute="class" defaultTheme="light" forcedTheme={allowDark ? undefined : "light"} enableSystem disableTransitionOnChange>{children}</ThemeProvider>;
 }

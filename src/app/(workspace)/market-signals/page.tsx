@@ -30,6 +30,8 @@ import { useLocale } from "@/i18n";
 import { useDemo } from "@/state/demo-provider";
 import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
 
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
+
 const REGION_OPTIONS = ["none", "lk"] as const;
 
 function pct(value: number) { return `${Math.round(value * 100)}%`; }
@@ -37,13 +39,15 @@ function pct(value: number) { return `${Math.round(value * 100)}%`; }
 export default function MarketSignalsPage() {
   const { state } = useDemo();
   const { subscription } = useSubscription();
+  const pro = hasProFeatures(subscription?.plan);
   const canGovern = subscription?.entitlements.taxonomy_governance?.enabled === true;
   const { t, formatDate } = useLocale();
   const studentId = state.student.id;
   const [tab, setTab] = useState("student");
   const [roles, setRoles] = useState<CareerScenarioRole[]>([]);
   const [roleId, setRoleId] = useState("devops-engineer");
-  const [region, setRegion] = useState("none");
+  const [region, setRegion] = useState(pro ? "lk" : "none");
+  useEffect(() => { setRegion(pro ? "lk" : "none"); }, [pro]);
   const [comparison, setComparison] = useState<ProfileComparison | null>(null);
   const [updates, setUpdates] = useState<StudentTaxonomyUpdate[]>([]);
   const [studentLoading, setStudentLoading] = useState(true);
@@ -74,22 +78,22 @@ export default function MarketSignalsPage() {
       const chosen = roleBody.some((item) => item.id === roleId) ? roleId : roleBody[0]?.id;
       if (chosen) setRoleId(chosen);
       const [profile, impactRows] = await Promise.all([
-        chosen ? getProfileComparison(studentId, chosen, region === "none" ? undefined : region) : Promise.resolve(null),
-        getStudentTaxonomyUpdates(studentId),
+        chosen ? getProfileComparison(studentId, chosen, !pro || region === "none" ? undefined : region) : Promise.resolve(null),
+        pro ? getStudentTaxonomyUpdates(studentId) : Promise.resolve([]),
       ]);
       setComparison(profile); setUpdates(impactRows);
     } catch (error) {
       setStudentError(error instanceof Error ? error.message : t("marketSignals.studentLoadError"));
     } finally { setStudentLoading(false); }
-  }, [region, roleId, studentId, t]);
+  }, [region, roleId, studentId, t, pro]);
 
   const refreshComparison = useCallback(async () => {
     if (!studentId || !roleId) return;
     setStudentLoading(true); setStudentError("");
-    try { setComparison(await getProfileComparison(studentId, roleId, region === "none" ? undefined : region)); }
+    try { setComparison(await getProfileComparison(studentId, roleId, !pro || region === "none" ? undefined : region)); }
     catch (error) { setStudentError(error instanceof Error ? error.message : t("marketSignals.studentLoadError")); }
     finally { setStudentLoading(false); }
-  }, [region, roleId, studentId, t]);
+  }, [region, roleId, studentId, t, pro]);
 
   const loadCurator = useCallback(async () => {
     setCuratorLoading(true); setCuratorError("");
@@ -165,7 +169,7 @@ export default function MarketSignalsPage() {
           <Card className="rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
             <CardContent className="grid gap-3 p-4 sm:p-5 lg:grid-cols-[1fr_0.8fr_auto] lg:items-end">
               <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.career")}</label><Select value={roleId} onValueChange={setRoleId}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{roles.map((role) => <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>)}</SelectContent></Select></div>
-              <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.profile")}<ProBadge /></label><Select value={region} onValueChange={setRegion}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{REGION_OPTIONS.map((item) => <SelectItem key={item} value={item}>{item === "none" ? t("marketSignals.internationalOnly") : t("marketSignals.sriLanka")}</SelectItem>)}</SelectContent></Select></div>
+              <div><label className="mb-2 block text-[0.62rem] font-medium text-muted-foreground">{t("marketSignals.profile")}<ProBadge /></label><Select value={region} onValueChange={setRegion}><SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{REGION_OPTIONS.map((item) => <SelectItem key={item} value={item} disabled={item !== "none" && !pro}>{item === "none" ? t("marketSignals.internationalOnly") : t("marketSignals.sriLanka")}</SelectItem>)}</SelectContent></Select></div>
               <Button className="h-10 rounded-xl" onClick={() => void refreshComparison()} disabled={studentLoading || !roleId}><RefreshCw className={`size-3.5 ${studentLoading ? "animate-spin" : ""}`} />{t("marketSignals.compare")}</Button>
             </CardContent>
           </Card>
@@ -175,12 +179,12 @@ export default function MarketSignalsPage() {
           {!studentLoading && comparison && <>
             <div className="grid gap-4 lg:grid-cols-2">
               <ProfileCard profile={comparison.international} title={t("marketSignals.international")} icon={Globe2} />
-              {comparison.regional ? <ProfileCard profile={comparison.regional} title={t("marketSignals.regional", { region: comparison.regional.region_code?.toUpperCase() ?? "" })} icon={MapPinned} /> : <StateCard icon={MapPinned} title={t("marketSignals.noRegionalProfile")} description={comparison.notes.at(-1) ?? t("marketSignals.noRegionalHint")} />}
+              {pro && (comparison.regional ? <ProfileCard profile={comparison.regional} title={t("marketSignals.regional", { region: comparison.regional.region_code?.toUpperCase() ?? "" })} icon={MapPinned} /> : <StateCard icon={MapPinned} title={t("marketSignals.noRegionalProfile")} description={comparison.notes.at(-1) ?? t("marketSignals.noRegionalHint")} />)}
             </div>
             <div className="rounded-[16px] border border-border/75 bg-muted/15 p-4"><div className="flex items-start gap-3"><Info className="mt-0.5 size-4 shrink-0 text-primary" /><div>{comparison.notes.map((note) => <p key={note} className="text-[0.64rem] leading-5 text-muted-foreground">{note}</p>)}</div></div></div>
           </>}
 
-          <Card className="rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
+          {pro ? <><section className="pro-card"><p className="pro-card-label">What changed for my career? <ProBadge /></p><h2 className="mt-2 text-base font-medium">Regional priorities, connected to your pathway</h2><p className="mt-2 text-xs leading-6 text-muted-foreground">{comparison?.regional ? comparison.regional.skills.filter(skill => comparison.international.skills.find(other => other.skill_id === skill.skill_id)?.required_proficiency !== skill.required_proficiency).map(skill => `${skill.name}: ${comparison.international.skills.find(other => other.skill_id === skill.skill_id)?.required_proficiency ?? 'not listed'}% international → ${skill.required_proficiency}% regional`).join(' · ') || 'The current regional profile shares the international proficiency requirements.' : 'Choose a regional profile to compare its skill requirements with the international pathway.'}</p><p className="mt-3 text-xs text-muted-foreground">Emerging or changed skills: {updates.flatMap(update => update.changes.map(change => change.skill_name)).filter((name,index,all) => all.indexOf(name) === index).join(' · ') || 'No newly published changes for your pathway.'}</p></section>          <Card className="rounded-[20px] border-border/85 bg-surface-raised py-0 shadow-none">
             <CardHeader className="px-4 pt-4 sm:px-5 sm:pt-5"><div className="flex items-center justify-between gap-3"><div><p className="type-eyebrow mb-2 text-muted-foreground">{t("marketSignals.pathwayImpact")}</p><CardTitle className="type-section-title">{t("marketSignals.reviewUpdates")}</CardTitle></div><Badge variant="outline">{updates.filter((item) => item.status === "pending").length} {t("marketSignals.pending")}</Badge></div></CardHeader>
             <CardContent className="space-y-3 px-4 pb-5 sm:px-5">
               {!updates.length && <StateCard compact icon={CheckCircle2} title={t("marketSignals.noUpdates")} description={t("marketSignals.noUpdatesHint")} />}
@@ -190,7 +194,7 @@ export default function MarketSignalsPage() {
                 {update.draft_pathway_id && <Button asChild variant="link" className="mt-2 h-auto p-0 text-xs"><Link href="/roadmap">{t("marketSignals.openDraft")}<ArrowRight className="size-3.5" /></Link></Button>}
               </div>)}
             </CardContent>
-          </Card>
+          </Card></> : <section className="pro-card"><h2 className="text-sm font-semibold">Go from global trends to your next move <ProBadge /></h2><p className="mt-2 text-xs leading-6 text-muted-foreground">Pro compares regional requirements, highlights changed skills, and previews the impact on your own pathway.</p><Button asChild variant="outline" size="sm" className="mt-3"><Link href="/pricing">Explore Pro Market Signals</Link></Button></section>}
         </TabsContent>
 
         <TabsContent value="curator" className="mt-4 space-y-4">

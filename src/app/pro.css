@@ -1,0 +1,14 @@
+.pro-badge { display: inline-flex; align-items: center; gap: 5px; border: 1px solid color-mix(in srgb,var(--primary) 35%,transparent); border-radius: 7px; padding: 3px 8px; background: linear-gradient(120deg,color-mix(in srgb,var(--primary) 12%,var(--card)),var(--card)); color: var(--primary); font-size: 10px; font-weight: 650; letter-spacing: .1em; box-shadow: inset 0 1px 0 #ffffff14; }
+.pro-header { position: relative; isolation: isolate; border-bottom: 1px solid color-mix(in srgb,var(--primary) 18%,var(--border)); padding-bottom: 20px; }
+.pro-header::before { content: ""; pointer-events: none; position: absolute; z-index: -1; inset: -24px -18px 0; border-radius: 28px; background: radial-gradient(ellipse at 20% 25%,color-mix(in srgb,var(--primary) 10%,transparent),transparent 65%),radial-gradient(ellipse at 80% 70%,color-mix(in srgb,var(--success) 7%,transparent),transparent 70%); animation: pro-breathe 9s ease-in-out infinite alternate; }
+@keyframes pro-breathe { from { opacity: .45; transform: translateX(-3px); } to { opacity: 1; transform: translateX(3px); } }
+.workspace-shell[data-plan="pro"] main [data-slot="card"], .pro-card { box-shadow: 0 8px 26px -22px color-mix(in srgb,var(--primary) 45%,#000),inset 0 1px 0 #ffffff0a; transition: border-color .25s ease,box-shadow .25s ease,background-color .25s ease; }
+.pro-card { border: 1px solid color-mix(in srgb,var(--primary) 16%,var(--border)); background: var(--card); border-radius: 20px; padding: 20px; min-width: 0; }
+.pro-card:hover { border-color: color-mix(in srgb,var(--primary) 30%,var(--border)); }
+.pro-card-label { display: flex; align-items: center; gap: 8px; color: var(--primary); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.pro-usage { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 11px; color: var(--muted-foreground); }
+.pro-usage strong { color: var(--foreground); font-weight: 550; }
+.pro-transfer-map { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,200px),1fr)); gap: 12px; }
+.pro-activation-step { animation: pro-arrive .35s ease both; }
+@keyframes pro-arrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media(prefers-reduced-motion:reduce) { .pro-header::before,.pro-activation-step { animation: none; } .pro-card,.workspace-shell[data-plan="pro"] main [data-slot="card"] { transition: none; } }

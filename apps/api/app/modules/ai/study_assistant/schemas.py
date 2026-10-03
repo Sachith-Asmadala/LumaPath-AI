@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ....core.quiz_responses import with_knowledge_responses
+
 from datetime import datetime
 from enum import Enum
 from typing import Annotated, Literal
@@ -150,14 +152,13 @@ class QuizQuestion(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str
     prompt: NonEmpty
-    choices: list[NonEmpty] = Field(min_length=2, max_length=6)
-    answer_index: int = Field(ge=0, le=5)
+    choices: list[NonEmpty] = Field(min_length=2, max_length=8)
+    answer_index: int = Field(ge=0, le=7)
     explanation: str = Field(default="", max_length=1000)
 
     @model_validator(mode="after")
     def answer_in_range(self) -> "QuizQuestion":
-        if self.answer_index >= len(self.choices):
-            raise ValueError("Quiz answer index is outside the available choices.")
+        self.choices, self.answer_index = with_knowledge_responses(self.choices, self.answer_index)
         return self
 
 

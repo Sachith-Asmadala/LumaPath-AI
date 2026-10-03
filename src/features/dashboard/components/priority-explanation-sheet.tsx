@@ -1,6 +1,10 @@
 "use client";
 
-import { competitionPriorityFactors } from "@/data/demo/competition";
+import Link from "next/link";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
+import { advancedPriorityFactors } from "@/features/subscriptions/pro-intelligence";
+import { ProBadge } from "@/features/subscriptions/components/pro-badge";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { Sparkles, X } from "lucide-react";
@@ -12,6 +16,8 @@ import { selectNextBestAction } from "@/features/dashboard/domain/dashboard";
 
 export function PriorityExplanationSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const { state } = useDemo();
+  const { subscription } = useSubscription();
+  const pro = hasProFeatures(subscription?.plan);
   const reduceMotion = useReducedMotion();
   const [animateBars, setAnimateBars] = useState(false);
   const action = selectNextBestAction(state);
@@ -38,7 +44,7 @@ export function PriorityExplanationSheet({ open, onOpenChange }: { open: boolean
           </div>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-6">
-          {state.competition ? <div className="space-y-3" aria-label="Priority score breakdown">{competitionPriorityFactors(state).map(factor=><div key={factor.label} className="rounded-xl border border-border bg-background/50 p-4"><h3 className="text-sm font-medium">{factor.label}</h3><p className="mt-1 text-xs leading-5 text-muted-foreground">{factor.detail}</p></div>)}<p className="text-xs leading-5 text-muted-foreground">These are rule-based planning factors from the seeded tasks, pathway and stated capacity. They are not probabilities.</p></div> : <><div className="mb-6 flex items-end justify-between">
+          {!pro ? <div className="space-y-4"><p className="text-sm leading-6">{action.rationale}</p><p className="text-xs leading-5 text-muted-foreground">A {action.durationMinutes}-minute step with {action.deadlineRisk} deadline risk, within your available capacity.</p><div className="rounded-xl border border-primary/20 bg-primary/5 p-4"><p className="text-sm font-medium">Go deeper with <ProBadge /></p><p className="mt-2 text-xs leading-5 text-muted-foreground">See dependency impact, evidence confidence and how each factor connects to your career.</p><Link href="/checkout" className="mt-3 inline-block text-xs font-medium text-primary">Unlock advanced explanations →</Link></div></div> : <><div className="mb-5 space-y-3" aria-label="Advanced priority explanation"><ProBadge />{advancedPriorityFactors(state).map(factor=><div key={factor.label} className="rounded-xl border border-border bg-background/50 p-4"><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-medium">{factor.label}</h3><span className="text-xs text-primary">{factor.value}</span></div><p className="mt-1 text-xs leading-5 text-muted-foreground">{factor.detail}</p></div>)}</div>{!state.competition && <><div className="mb-6 flex items-end justify-between">
             <div><p className="type-eyebrow text-muted-foreground">Priority score</p><p className="mt-2 font-mono text-[2.6rem] leading-none tracking-[-0.08em] text-foreground">{action.score}<span className="ml-1 text-xl text-muted-foreground">/100</span></p></div>
             <div className="mb-1 rounded-[12px] border border-primary/15 bg-primary/[0.055] px-3 py-2 text-right"><p className="text-[0.62rem] text-muted-foreground">Positive signals</p><p className="font-mono text-sm text-primary">+{positiveTotal}</p></div>
           </div>
@@ -54,7 +60,7 @@ export function PriorityExplanationSheet({ open, onOpenChange }: { open: boolean
               </div>;
             })}
           </div>
-          </>}<div className="mt-7 rounded-[15px] border border-border/80 bg-background/60 p-4">
+          </>}</>}<div className="mt-7 rounded-[15px] border border-border/80 bg-background/60 p-4">
             <p className="type-eyebrow mb-2 text-muted-foreground">What the factors mean</p>
             <p className="text-[0.72rem] leading-5 text-foreground/80">Deadline, career and prerequisite signals raise priority. Effort is a small penalty; available capacity reflects the time you said you have.</p>
           </div>

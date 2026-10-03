@@ -44,7 +44,7 @@ export default function AssessmentPage() {
       <div className="mb-6 max-w-[640px]">
         <p className="type-eyebrow mb-2 text-primary">Your starting point</p>
         <h1 className="font-heading text-[clamp(1.8rem,4vw,2.55rem)] font-semibold leading-tight tracking-[-0.04em] text-foreground">DevOps Baseline Assessment</h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">Answer 12 short questions across six core skills. Your results will show where you stand today.</p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">Answer 12 short questions across six core skills. Your results will show where you stand today. If you’re unsure, choose one of the two reflection options instead of guessing.</p>
       </div>
       <Card className="gap-0 rounded-[22px] border border-border/85 bg-surface-raised py-0 shadow-[0_18px_50px_-38px_rgba(0,0,0,0.45)]">
         <div className="border-b border-border/75 px-5 py-5 sm:px-8 sm:py-6">

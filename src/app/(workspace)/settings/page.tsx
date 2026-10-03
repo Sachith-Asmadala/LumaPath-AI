@@ -17,6 +17,7 @@ import { releaseLabel } from "@/lib/release";
 import { localeOptions } from "@/i18n/config";
 import { useLocale } from "@/i18n/locale-provider";
 import { NotificationPreferencesCard } from "@/features/notifications/components/notification-preferences-card";
+import { ProControls } from "@/features/subscriptions/components/pro-controls";
 import styles from "./settings.module.css";
 
 const themes = [{ id: "light", icon: Sun }, { id: "dark", icon: Moon }, { id: "system", icon: Monitor }] as const;
@@ -88,6 +89,8 @@ export default function SettingsPage() {
         </Card>
       </section>
     </div>
+
+    <ProControls />
 
     <section id="settings-notifications" aria-label={t("settings.notifications")} className={styles.notifications}><NotificationPreferencesCard /></section>
 

@@ -1,3 +1,4 @@
+import { withKnowledgeResponses } from "@/features/assessment/domain/knowledge-responses";
 import { dockerReassessmentQuestions, type SkillReassessmentQuestion } from "@/features/career/domain/skill-reassessment";
 
 type QuestionSeed = [string, string, string, string, string, string];
@@ -45,7 +46,7 @@ const bank: Record<string, readonly QuestionSeed[]> = {
 };
 export function reassessmentQuestions(skillId: string): readonly SkillReassessmentQuestion[] {
   if (skillId === "docker") return dockerReassessmentQuestions;
-  return (bank[skillId] ?? []).map(([id, question, correctAnswer, ...other]) => ({ id: `${skillId}-${id}`, question, correctAnswer, options: [correctAnswer, ...other] }));
+  return (bank[skillId] ?? []).map(([id, question, correctAnswer, ...other]) => ({ id: `${skillId}-${id}`, question, correctAnswer, options: withKnowledgeResponses([correctAnswer, ...other]) }));
 }
 export function scoreSkillReassessment(skillId: string, answers: Record<string, string>) {
   const questions = reassessmentQuestions(skillId);

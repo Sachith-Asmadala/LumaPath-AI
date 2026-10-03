@@ -10,6 +10,7 @@ import "./globals.css";
 import "./public.css";
 import "./workspace.css";
 import "./ambient.css";
+import "./pro.css";
 
 export const metadata: Metadata = {
   title: {

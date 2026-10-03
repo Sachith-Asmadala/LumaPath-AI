@@ -14,6 +14,11 @@ import { EmptyCollection, ViewSwitch, WorkspaceSearch } from "@/features/workspa
 import type { DailyFeedItem, DailyFeedResponse, FeedView } from "@/features/intelligence/domain/daily-feed";
 import { addFeedItemToPlan, feedInteraction, loadDailyFeed } from "@/features/intelligence/services/intelligence";
 import { useDemo } from "@/state/demo-provider";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
+
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
+import { useProExperience } from "@/features/subscriptions/components/pro-experience-provider";
+import { ProBadge } from "@/features/subscriptions/components/pro-badge";
 
 const kindTone: Record<string, string> = {
   learning_article: "border-primary/15 bg-primary/[0.045] text-primary",
@@ -29,7 +34,7 @@ function FeedArticle({ children }: { children: ReactNode }) {
   return <motion.article inert={!present} aria-hidden={!present} initial={{ opacity: 0, y: reduced ? 0 : 7 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: reduced ? 1 : 0.98 }} transition={{ duration: reduced ? 0 : 0.2 }} className="min-w-0">{children}</motion.article>;
 }
 
-function FeedStateCard({ response, retry }: { response: DailyFeedResponse; retry: () => void }) {
+function FeedStateCard({ response, retry, pro }: { response: DailyFeedResponse; retry: () => void; pro: boolean }) {
   const noPathway = response.state === "no_pathway";
   const failed = response.state === "ingestion_failure";
   return <Card className={`rounded-[18px] border-border/80 bg-surface-raised shadow-none ${failed ? "border-warning/25" : ""}`}>
@@ -37,7 +42,7 @@ function FeedStateCard({ response, retry }: { response: DailyFeedResponse; retry
       <div className={`grid size-10 place-items-center rounded-[13px] ${failed ? "bg-warning/[0.08] text-warning" : "bg-primary/[0.07] text-primary"}`}>
         {failed ? <AlertTriangle className="size-5" /> : <Activity className="size-5" />}
       </div>
-      <div><h2 className="font-heading text-lg font-semibold">{noPathway ? "Your pathway comes first" : failed ? "Trusted-source refresh is unavailable" : "No fresh trusted updates today"}</h2><p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground">{response.message}</p></div>
+      <div><h2 className="font-heading text-lg font-semibold">{noPathway ? "Your pathway comes first" : failed ? "Trusted-source refresh is unavailable" : "No fresh trusted updates today"}</h2><p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground">{pro && !noPathway && !failed ? "Your next intelligence refresh will combine pathway progress, capacity, evidence and current opportunities." : response.message}</p></div>
       <div className="flex flex-wrap gap-2">{noPathway ? <Button asChild className="h-9 rounded-xl text-xs"><Link href="/career-path">Open Career Path</Link></Button> : <Button variant="outline" className="h-9 rounded-xl text-xs" onClick={retry}><RefreshCw className="size-3.5" />Try again</Button>}</div>
       <p className="text-[0.61rem] leading-5 text-muted-foreground">{response.freshness_policy}</p>
     </CardContent>
@@ -46,6 +51,9 @@ function FeedStateCard({ response, retry }: { response: DailyFeedResponse; retry
 
 export function IntelligenceFeed() {
   const { state, addTask } = useDemo();
+  const { subscription } = useSubscription();
+  const pro = hasProFeatures(subscription?.plan);
+  const { preferences } = useProExperience();
   const [view, setView] = useState<FeedView>("today");
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState<DailyFeedResponse | null>(null);
@@ -63,29 +71,38 @@ export function IntelligenceFeed() {
     finally { setLoading(false); }
   }, [state.student.id, view]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { void load(); }, [load, subscription?.plan]);
+
+  useEffect(() => { if (!pro) setView("today"); }, [pro]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    const items = response?.items ?? [];
+    const items = pro ? [...(response?.items ?? [])].sort((a,b) => Number(b.difficulty === preferences.difficulty) - Number(a.difficulty === preferences.difficulty) || b.relevance_score - a.relevance_score) : (response?.items ?? []).slice(0,3);
     if (!needle) return items;
     return items.filter((item) => `${item.title} ${item.source.name} ${item.why_this_matters} ${item.topics.join(" ")} ${item.skills.join(" ")}`.toLowerCase().includes(needle));
-  }, [query, response?.items]);
+  }, [query, response?.items, pro, preferences.difficulty]);
 
   async function interact(item: DailyFeedItem, action: "save" | "unsave" | "dismiss" | "report", reason = "") {
     if (!state.student.id) return;
+    if (!pro && (action === "save" || action === "unsave")) return;
     setBusyId(item.article_id);
+    const optimistic = action === "save" || action === "unsave";
+    if (optimistic) setResponse(current => current ? {...current, items: current.items.map(row => row.article_id === item.article_id ? {...row, interaction_state: action === "save" ? "saved" : "new"} : row)} : current);
     try {
       const result = await feedInteraction(state.student.id, item.article_id, action, reason);
       toast.success(result.message);
       if (action === "report") { setReportItem(null); setReportReason(""); }
-      await load();
-    } catch (problem) { toast.error(problem instanceof Error ? problem.message : "The feed action failed."); }
+      if (optimistic) { if (view === "saved" && action === "unsave") setResponse(current => current ? {...current, items: current.items.filter(row => row.article_id !== item.article_id)} : current); }
+      else await load();
+    } catch (problem) {
+      if (optimistic) setResponse(current => current ? {...current, items: current.items.map(row => row.article_id === item.article_id ? {...row, interaction_state: item.interaction_state} : row)} : current);
+      toast.error(problem instanceof Error ? problem.message : "The feed action failed.");
+    }
     finally { setBusyId(null); }
   }
 
   async function addToPlan(item: DailyFeedItem) {
-    if (!state.student.id) return;
+    if (!state.student.id || !pro) return;
     setBusyId(item.article_id);
     try {
       const handoff = await addFeedItemToPlan(state.student.id, item.article_id, {
@@ -101,30 +118,31 @@ export function IntelligenceFeed() {
   }
 
   return <div>
-    <div className="workspace-toolbar"><ViewSwitch label="Daily intelligence collection" value={view} onChange={(value) => setView(value as FeedView)} options={[{ value: "today", label: "Today" }, { value: "saved", label: "Saved" }, { value: "planned", label: "In your plan" }]} /><WorkspaceSearch value={query} onChange={setQuery} label="Search daily intelligence" /></div>
+    <div className="mb-4 rounded-2xl border border-border p-4"><p className="text-sm font-medium">{pro ? <>Your personalized intelligence <ProBadge /></> : 'Your daily briefing · Free'}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{pro ? `Full feed, source confidence and next actions. ${preferences.difficulty[0].toUpperCase()+preferences.difficulty.slice(1)} learning appears first.` : 'Up to 3 useful updates each day. Pro adds the full feed, relevance explanations, saved intelligence and Add to Plan.'}</p>{!pro && <Link href="/pricing" className="mt-2 inline-block text-xs text-primary">Explore Pro intelligence →</Link>}</div>
+    <div className="workspace-toolbar"><ViewSwitch label="Daily intelligence collection" value={view} onChange={(value) => setView(value as FeedView)} options={pro ? [{ value: "today", label: "Today" }, { value: "saved", label: "Saved" }, { value: "planned", label: "In your plan" }] : [{ value: "today", label: "Today" }]} /><WorkspaceSearch value={query} onChange={setQuery} label="Search daily intelligence" /></div>
 
     {response?.ingestion.state === "degraded" && response.items.length > 0 && <div className="mb-3 flex items-start gap-2 rounded-[13px] border border-warning/20 bg-warning/[0.035] px-3.5 py-3 text-[0.65rem] leading-5 text-muted-foreground" role="status"><AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-warning" /><span>{response.ingestion.message} Fresh approved items remain visible; failed sources are not substituted with stale content.</span></div>}
 
     {error && <Card className="mb-3 rounded-[18px] border-destructive/25 bg-destructive/[0.035] shadow-none"><CardContent className="flex flex-wrap items-center justify-between gap-3 p-4"><p className="text-sm text-destructive" role="alert">{error}</p><Button variant="outline" size="sm" onClick={() => void load()}><RefreshCw className="size-3.5" />Retry</Button></CardContent></Card>}
 
     {loading ? <div className="grid gap-3 lg:grid-cols-2" aria-label="Loading daily intelligence" role="status">{[0, 1, 2, 3].map((item) => <div key={item} className="h-64 animate-pulse rounded-[18px] border border-border/70 bg-surface-raised motion-reduce:animate-none" />)}</div>
-      : response && view === "today" && response.state !== "ready" ? <FeedStateCard response={response} retry={() => void load()} />
+      : response && view === "today" && response.state !== "ready" ? <FeedStateCard pro={pro} response={response} retry={() => void load()} />
       : visible.length === 0 ? <EmptyCollection title={query ? "No matching updates" : view === "saved" ? "Nothing saved yet" : view === "planned" ? "No feed items in your plan" : "You’re all caught up"} description={query ? "Try a different search phrase." : view === "saved" ? "Save a trusted update from Today and it will stay easy to revisit here while the source remains approved." : view === "planned" ? "Approve an update for your Planner and it will appear here." : response?.message ?? "No fresh trusted updates are available."} onReset={query ? () => setQuery("") : undefined} />
       : <div className="grid gap-3 lg:grid-cols-2"><AnimatePresence initial={false}>{visible.map((item, index) => <FeedArticle key={item.article_id}>
         <Card className={`${index === 0 && view === "today" ? "intelligence-featured" : ""} h-full rounded-[18px] border-border/80 bg-surface-raised py-0 shadow-none transition-colors hover:border-border`}>
           <CardContent className="flex h-full flex-col p-4 sm:p-5">
-            <div className="flex flex-wrap items-start justify-between gap-2"><Badge variant="outline" className={`rounded-full px-2.5 py-1 text-[0.6rem] font-medium ${kindTone[item.category] ?? "border-border text-muted-foreground"}`}><Activity className="mr-1 size-3" />{item.category_label}</Badge><span className="text-right text-[0.61rem] leading-5 text-muted-foreground"><span className="inline-flex items-center gap-1"><ShieldCheck className="size-3 text-success" />{item.source.name} · {item.source.trust_score}/100</span><br />Published {new Date(item.published_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span></div>
+            <div className="flex flex-wrap items-start justify-between gap-2"><Badge variant="outline" className={`rounded-full px-2.5 py-1 text-[0.6rem] font-medium ${kindTone[item.category] ?? "border-border text-muted-foreground"}`}><Activity className="mr-1 size-3" />{item.category_label}</Badge><span className="text-right text-[0.61rem] leading-5 text-muted-foreground"><span className="inline-flex items-center gap-1"><ShieldCheck className="size-3 text-success" />{item.source.name}{pro && ` · ${item.source.trust_score}/100 trust`}</span><br />Published {new Date(item.published_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span></div>
             <h2 className="mt-4 font-heading text-[1.05rem] font-semibold leading-snug tracking-[-0.02em] text-foreground">{item.title}</h2>
             {item.excerpt && <p className="mt-2 line-clamp-3 text-[0.67rem] leading-5 text-muted-foreground">{item.excerpt}</p>}
-            <div className="mt-3 rounded-[13px] border border-primary/10 bg-primary/[0.025] p-3"><p className="type-eyebrow mb-1.5 text-[0.55rem] text-primary">Why this matters to you</p><p className="text-[0.68rem] leading-5 text-foreground/80">{item.why_this_matters}</p></div>
-            <div className="mt-3 flex flex-wrap gap-1.5">{item.skills.slice(0, 3).map((skill) => <Badge key={skill} variant="secondary" className="rounded-full text-[0.56rem] font-normal">{skill}</Badge>)}<Badge variant="secondary" className="rounded-full text-[0.56rem] font-normal">{item.difficulty}</Badge><Badge variant="secondary" className="rounded-full text-[0.56rem] font-normal">{Math.round(item.relevance_score)}% relevance</Badge></div>
+            {pro && <div className="mt-3 rounded-[13px] border border-primary/10 bg-primary/[0.025] p-3"><p className="type-eyebrow mb-1.5 text-[0.55rem] text-primary">Why this matters to you</p><p className="text-[0.68rem] leading-5 text-foreground/80">{item.why_this_matters}</p></div>}
+            <div className="mt-3 flex flex-wrap gap-1.5">{item.skills.slice(0, 3).map((skill) => <Badge key={skill} variant="secondary" className="rounded-full text-[0.56rem] font-normal">{skill}</Badge>)}<Badge variant="secondary" className="rounded-full text-[0.56rem] font-normal">{item.difficulty}</Badge>{pro && <Badge variant="secondary" className="rounded-full text-[0.56rem] font-normal">{Math.round(item.relevance_score)}% relevance</Badge>}</div>
             <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-4"><span className="inline-flex items-center gap-1.5 text-[0.62rem] text-muted-foreground"><Clock3 className="size-3.5" />{item.reading_minutes} min · fresh until {new Date(item.expires_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span><div className="flex flex-wrap items-center gap-1.5">
               <Button asChild variant="ghost" size="sm" className="h-8 rounded-[10px] px-2 text-[0.63rem] text-muted-foreground"><a href={item.canonical_url} target="_blank" rel="noreferrer"><ExternalLink className="size-3.5" />Source</a></Button>
-              {item.interaction_state !== "planned" && <><Button disabled={busyId === item.article_id} onClick={() => void interact(item, item.interaction_state === "saved" ? "unsave" : "save")} variant="ghost" size="sm" className={`h-8 rounded-[10px] px-2 text-[0.63rem] ${item.interaction_state === "saved" ? "text-primary" : "text-muted-foreground"}`} aria-label={item.interaction_state === "saved" ? `Unsave ${item.title}` : `Save ${item.title}`}><Bookmark className="size-3.5" />{item.interaction_state === "saved" ? "Saved" : "Save"}</Button><Button disabled={busyId === item.article_id} onClick={() => void interact(item, "dismiss")} variant="ghost" size="icon-sm" className="size-8 text-muted-foreground" aria-label={`Dismiss ${item.title}`}><EyeOff className="size-3.5" /></Button></>}
+              {pro && item.interaction_state !== "planned" && <><Button disabled={busyId === item.article_id} onClick={() => void interact(item, item.interaction_state === "saved" ? "unsave" : "save")} variant="ghost" size="sm" className={`h-8 rounded-[10px] px-2 text-[0.63rem] ${item.interaction_state === "saved" ? "text-primary" : "text-muted-foreground"}`} aria-label={item.interaction_state === "saved" ? `Unsave ${item.title}` : `Save ${item.title}`}><Bookmark className="size-3.5" />{item.interaction_state === "saved" ? "Saved" : "Save"}</Button><Button disabled={busyId === item.article_id} onClick={() => void interact(item, "dismiss")} variant="ghost" size="icon-sm" className="size-8 text-muted-foreground" aria-label={`Dismiss ${item.title}`}><EyeOff className="size-3.5" /></Button></>}
               <Button disabled={busyId === item.article_id} onClick={() => { setReportItem(item); setReportReason(""); }} variant="ghost" size="icon-sm" className="size-8 text-muted-foreground" aria-label={`Report ${item.title}`}><Flag className="size-3.5" /></Button>
-              {item.interaction_state === "planned" ? <Button asChild variant="outline" className="h-8 rounded-[10px] px-2.5 text-[0.62rem]"><Link href="/planner">Open Planner</Link></Button> : <Button disabled={busyId === item.article_id} onClick={() => void addToPlan(item)} size="sm" className="h-8 rounded-[10px] px-2.5 text-[0.62rem]"><Plus className="size-3.5" />Add to Plan</Button>}
+              {pro && (item.interaction_state === "planned" ? <Button asChild variant="outline" className="h-8 rounded-[10px] px-2.5 text-[0.62rem]"><Link href="/planner">Open Planner</Link></Button> : <Button disabled={busyId === item.article_id} onClick={() => void addToPlan(item)} size="sm" className="h-8 rounded-[10px] px-2.5 text-[0.62rem]"><Plus className="size-3.5" />Add to Plan</Button>)}
             </div></div>
-            <p className="mt-2.5 border-t border-border/60 pt-2.5 text-[0.59rem] leading-5 text-muted-foreground">Ranked with {item.ranking_version} · explanation {item.explanation_version}. LumaPath stores permitted metadata/excerpts only and opens the publisher source for the full item.</p>
+            {pro && <p className="mt-2.5 border-t border-border/60 pt-2.5 text-[0.59rem] leading-5 text-muted-foreground">Ranked with {item.ranking_version} · explanation {item.explanation_version}. LumaPath stores permitted metadata/excerpts only and opens the publisher source for the full item.</p>}
           </CardContent>
         </Card>
       </FeedArticle>)}</AnimatePresence></div>}

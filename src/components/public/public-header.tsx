@@ -5,10 +5,14 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { Button } from "@/components/ui/button";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
+import { hasProFeatures } from "@/features/subscriptions/entitlements";
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  return <Button variant="ghost" size="icon" className="size-10 rounded-full text-muted-foreground" aria-label="Toggle color theme" onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}><Sun className="size-4 light:hidden" /><Moon className="hidden size-4 light:block" /></Button>;
+  const { subscription } = useSubscription();
+  const allowDark = hasProFeatures(subscription?.plan);
+  return <Button variant="ghost" size="icon" disabled={!allowDark} className="size-10 rounded-full text-muted-foreground" title={allowDark ? "Toggle color theme" : "Dark theme is included with Pro"} aria-label={allowDark ? "Toggle color theme" : "Dark theme · Included with Pro"} onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}><Sun className="size-4 light:hidden" /><Moon className="hidden size-4 light:block" /></Button>;
 }
 
 export function PublicHeader({ simple = false }: { simple?: boolean }) {

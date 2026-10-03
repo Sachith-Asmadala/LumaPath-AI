@@ -10,9 +10,11 @@ import { AnimatedCard, MotionButton, StaggerContainer } from "@/components/motio
 import type { DailyFeedItem } from "@/features/intelligence/domain/daily-feed";
 import { addFeedItemToPlan, feedInteraction, loadDailyFeed } from "@/features/intelligence/services/intelligence";
 import { useDemo } from "@/state/demo-provider";
+import { useSubscription } from "@/features/subscriptions/components/subscription-provider";
 
 export function CareerIntelligencePreview() {
   const { state, addTask, addOpportunityPreparation } = useDemo();
+  const { subscription } = useSubscription();
   const reduced = useReducedMotion();
   const [item, setItem] = useState<DailyFeedItem | null>(null);
   const [feedMessage, setFeedMessage] = useState("Loading today’s trusted updates…");
@@ -32,7 +34,7 @@ export function CareerIntelligencePreview() {
     }
   }, [state.student.id]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { void load(); }, [load, subscription?.plan]);
 
   const save = async () => {
     if (!item || !state.student.id) return;

@@ -505,6 +505,8 @@ interface DemoContextValue {
   startCompetitionDemo: () => Promise<void>;
   moveCompetitionDeadline: () => Promise<void>;
   updateCapacity: (capacity: StudentCapacity) => Promise<void>;
+  saveCapacity: (capacity: StudentCapacity) => void;
+  applyPlannedBlocks: (blocks: PlanBlock[], message: string) => void;
   keepCurrentPlan: () => void;
   applyRecoveryChoice: (choice: RecoveryChoice) => Promise<boolean>;
   addUrgentDeadline: () => Promise<void>;
@@ -722,6 +724,13 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }, (stage) => dispatch({ type: "capacity-stage", capacity, stage }));
   }, [showSteps]);
 
+  const saveCapacity = useCallback((capacity: StudentCapacity) => {
+    dispatch({ type: "patch", patch: { capacity } });
+  }, []);
+  const applyPlannedBlocks = useCallback((planBlocks: PlanBlock[], message: string) => {
+    dispatch({ type: "patch", patch: { planBlocks, simulation: { kind: null, step: null, message, result: [], announcement: message } } });
+  }, []);
+
   const startCompetitionDemo = useCallback(async () => {
     if (process.env.NODE_ENV === "production") throw new Error("Competition demo is unavailable in production.");
     const response = await fetch("/api/competition-demo/reset", { method: "POST", headers: { "X-Luma-Student-Id": state.student.id }, cache: "no-store", signal: AbortSignal.timeout(40_000) });
@@ -731,6 +740,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     runId.current += 1; running.current = false;
     try {
       for (const key of [demoStateStorageKey, onboardingStorageKey, baselineStorageKey, onboardingDraftStorageKey]) localStorage.removeItem(key);
+      localStorage.removeItem(`lumapath-pro-experience-v1:${fresh.student.id}`);
       localStorage.setItem(onboardingStorageKey, JSON.stringify(fresh.onboarding));
       localStorage.setItem(`lumapath-plus-welcome-v1:${fresh.student.id}`, "seen");
       storeDemoState(fresh);
@@ -886,6 +896,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     startCompetitionDemo,
     moveCompetitionDeadline,
     updateCapacity,
+    saveCapacity,
+    applyPlannedBlocks,
     keepCurrentPlan,
     applyRecoveryChoice,
     addUrgentDeadline,
@@ -910,7 +922,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     markNotificationRead,
     setFeedStatus,
     setSimulationAnnouncement,
-  }), [learningAction, submitSkillReassessment, state, onboardingReady, signedOut, signOut, resumeSession, competitionResetVersion, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, startCompetitionDemo, moveCompetitionDeadline, updateCapacity, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, addTasks, applyImportedCalendarActions, applyApprovedPathwayActions, importLmsAssignments, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
+  }), [learningAction, submitSkillReassessment, state, onboardingReady, signedOut, signOut, resumeSession, competitionResetVersion, updateOnboarding, completeOnboarding, submitAssessment, submitDockerReassessment, chooseResource, addFreePath, scheduleFreePath, scheduleSelectedResource, resetDemo, startCompetitionDemo, moveCompetitionDeadline, updateCapacity, saveCapacity, applyPlannedBlocks, keepCurrentPlan, applyRecoveryChoice, addUrgentDeadline, applyRecoveryPlan, generatePlan, replanWeek, completeTask, completeFocusSession, selectAlternative, completeSkill, verifyEvidence, addIntelligenceItemToPlan, addOpportunityPreparation, updatePlanBlock, updateTask, missTask, addTask, addTasks, applyImportedCalendarActions, applyApprovedPathwayActions, importLmsAssignments, markNotificationRead, setFeedStatus, setSimulationAnnouncement]);
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }

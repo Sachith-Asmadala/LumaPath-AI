@@ -1,3 +1,4 @@
+import { withKnowledgeResponses } from "@/features/assessment/domain/knowledge-responses";
 import { learningProgress } from "@/features/learning/domain/learning";
 import type { DemoState } from "@/data/demo/types";
 
@@ -14,7 +15,7 @@ export const dockerReassessmentQuestions: readonly SkillReassessmentQuestion[] =
   { id: "docker-network", question: "How can two containers on the same user-defined network reach each other?", options: ["By container or service name", "Only through localhost", "Only through a public IP", "By image tag"], correctAnswer: "By container or service name" },
   { id: "docker-volume", question: "What keeps application data when its container is removed?", options: ["A named volume", "The container's writable layer", "An EXPOSE instruction", "A build cache"], correctAnswer: "A named volume" },
   { id: "docker-compose", question: "What is Docker Compose used for?", options: ["Defining and running a multi-service application", "Publishing an image registry", "Replacing a Dockerfile", "Scanning Git commits"], correctAnswer: "Defining and running a multi-service application" },
-];
+].map(question => ({ ...question, options: withKnowledgeResponses(question.options) }));
 
 export function scoreDockerReassessment(answers: Record<string, string>): { score: number; correctCount: number } | null {
   if (!dockerReassessmentQuestions.every((question) => question.options.includes(answers[question.id]))) return null;
